@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #299dc6;
+  --color-brand-blue-hover: #2389ae;
+  --color-brand-blue-light: #e8f4fa;
+  --color-brand-blue-soft: #299dc612;
+  --color-brand-green: #62975f;
+  --color-brand-green-hover: #568451;
+  --color-brand-green-light: #edf5ec;
+  --color-brand-green-soft: #62975f12;
+  --color-page-bg: #f8f9fb;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--color-page-bg);
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #299dc6 !important;
+    box-shadow: 0 0 0 3px rgba(41, 157, 198, 0.15);
+  }
+}

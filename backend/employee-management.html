@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Employee Management – Digitalize The Globe</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --primary:#2563eb; --primary-light:#3b82f6; --primary-dark:#1d4ed8;
+  --primary-bg:#eff6ff; --primary-border:#bfdbfe;
+  --accent-purple:#7c3aed; --accent-teal:#0d9488; --accent-orange:#ea580c;
+  --accent-pink:#db2777; --accent-green:#16a34a;
+  --sidebar-bg:#0f172a; --sidebar-text:#94a3b8;
+  --bg:#f1f5f9; --card-bg:#ffffff;
+  --text-primary:#0f172a; --text-secondary:#64748b; --text-muted:#94a3b8;
+  --border:#e2e8f0; --border-focus:#93c5fd;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.07),0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.10);
+  --radius:16px; --radius-sm:10px; --radius-xs:8px;
+  --sidebar-w:240px; --header-h:64px;
+  --transition:all .22s cubic-bezier(.4,0,.2,1);
+  --danger:#ef4444; --danger-bg:#fef2f2;
+  --success:#16a34a; --success-bg:#f0fdf4;
+  --warn:#d97706; --warn-bg:#fffbeb;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:100;transition:var(--transition);overflow:hidden;}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 20px 16px;border-bottom:1px solid #1e293b;}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--accent-purple));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;box-shadow:0 4px 12px rgba(37,99,235,.4);}
+.logo-text{font-size:13px;font-weight:700;color:#fff;line-height:1.2;}
+.logo-sub{font-size:10px;color:var(--sidebar-text);}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;scrollbar-width:none;}
+.sidebar-nav::-webkit-scrollbar{display:none;}
+.nav-section-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;padding:8px 20px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--sidebar-text);font-size:13.5px;font-weight:500;transition:var(--transition);position:relative;text-decoration:none;}
+.nav-item:hover{background:#1e293b;color:#e2e8f0;}
+.nav-item.active{background:linear-gradient(90deg,rgba(37,99,235,.18),rgba(37,99,235,.04));color:#fff;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);border-radius:0 2px 2px 0;}
+.nav-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13px;flex-shrink:0;background:rgba(255,255,255,.04);}
+.nav-item.active .nav-icon{background:rgba(37,99,235,.25);color:var(--primary-light);}
+.nav-badge{margin-left:auto;background:var(--primary);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+.nav-arrow{margin-left:auto;font-size:10px;color:#475569;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid #1e293b;}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;background:#1e293b;border-radius:12px;cursor:pointer;}
+.user-avatar{width:34px;height:34px;background:linear-gradient(135deg,var(--primary),var(--accent-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+.user-name{font-size:12.5px;font-weight:600;color:#e2e8f0;}
+.user-role{font-size:10.5px;color:#64748b;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{height:var(--header-h);background:var(--card-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:50;}
+.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:18px;padding:6px;border-radius:8px;transition:var(--transition);}
+.menu-toggle:hover{background:var(--bg);}
+.topbar-greet{font-size:14.5px;font-weight:600;color:var(--text-primary);}
+.topbar-greet span{color:var(--primary);}
+.quote-ticker{flex:1;overflow:hidden;margin:0 20px;}
+.quote-text{font-size:12.5px;color:var(--text-muted);font-style:italic;white-space:nowrap;animation:ticker 28s linear infinite;}
+@keyframes ticker{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+.topbar-actions{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.icon-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--bg);border:none;cursor:pointer;color:var(--text-secondary);font-size:15px;transition:var(--transition);position:relative;}
+.icon-btn:hover{background:#e2e8f0;color:var(--text-primary);}
+.notif-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid var(--card-bg);}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:24px 28px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted);margin-bottom:4px;}
+.breadcrumb a{color:var(--primary);text-decoration:none;font-weight:600;}
+.breadcrumb a:hover{text-decoration:underline;}
+.breadcrumb-sep{color:var(--border);}
+.page-title{font-size:20px;font-weight:800;color:var(--text-primary);}
+.page-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:var(--transition);font-family:inherit;text-decoration:none;}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.3);}
+.btn-primary:hover{background:var(--primary-dark);box-shadow:0 4px 14px rgba(37,99,235,.4);transform:translateY(-1px);}
+.btn-outline{background:var(--card-bg);color:var(--text-secondary);border:1.5px solid var(--border);}
+.btn-outline:hover{background:var(--bg);border-color:var(--primary);color:var(--primary);}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:1.5px solid #fca5a5;}
+.btn-danger:hover{background:#fee2e2;}
+.btn-success{background:var(--success-bg);color:var(--success);border:1.5px solid #86efac;}
+.btn-success:hover{background:#dcfce7;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-icon{width:36px;height:36px;padding:0;justify-content:center;}
+
+/* ── VIEW TOGGLE ── */
+.view-toggle{display:flex;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:3px;overflow:hidden;}
+.view-tab{padding:6px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition);color:var(--text-secondary);}
+.view-tab.active{background:var(--card-bg);color:var(--primary);box-shadow:var(--shadow-sm);}
+
+/* ── CONTENT AREA ── */
+.content{padding:20px 28px 32px;}
+
+/* ═══════════════════════════════
+   LIST VIEW
+═══════════════════════════════ */
+.list-view{display:none;flex-direction:column;gap:20px;}
+.list-view.show{display:flex;}
+
+/* Controls row */
+.table-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.per-page{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);}
+.per-page select{padding:6px 28px 6px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--card-bg);color:var(--text-primary);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+.search-box{position:relative;}
+.search-box input{padding:8px 12px 8px 36px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;background:var(--card-bg);width:240px;color:var(--text-primary);transition:var(--transition);}
+.search-box input:focus{outline:none;border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(147,197,253,.25);width:280px;}
+.search-box i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;}
+
+/* Tabs */
+.emp-tabs{display:flex;border-bottom:2px solid var(--border);}
+.emp-tab{padding:10px 20px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition);display:flex;align-items:center;gap:7px;}
+.emp-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.emp-tab-count{font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--primary-bg);color:var(--primary);}
+.emp-tab.active .emp-tab-count{background:var(--primary);color:#fff;}
+
+/* Table card */
+.table-card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+.emp-table{width:100%;border-collapse:collapse;min-width:820px;}
+.emp-table thead th{padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);background:#f8fafc;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+.emp-table thead th:hover{background:#f1f5f9;color:var(--text-primary);}
+.emp-table thead th i{font-size:9px;margin-left:4px;color:var(--border);}
+.emp-table tbody tr{border-bottom:1px solid #f1f5f9;transition:var(--transition);}
+.emp-table tbody tr:last-child{border-bottom:none;}
+.emp-table tbody tr:hover{background:#f8fafc;}
+.emp-table tbody td{padding:12px 16px;font-size:13px;color:var(--text-secondary);white-space:nowrap;}
+.emp-id{display:inline-flex;align-items:center;padding:4px 10px;background:var(--primary-bg);color:var(--primary);border:1.5px solid var(--primary-border);border-radius:8px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;cursor:pointer;transition:var(--transition);text-decoration:none;}
+.emp-id:hover{background:var(--primary);color:#fff;}
+.emp-name-cell{display:flex;align-items:center;gap:9px;}
+.emp-avatar-sm{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.emp-full-name{font-size:13px;font-weight:600;color:var(--text-primary);}
+.dept-badge{display:inline-flex;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;background:var(--primary-bg);color:var(--primary);}
+.action-btns{display:flex;gap:6px;}
+.act-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:none;cursor:pointer;font-size:13px;transition:var(--transition);}
+.act-edit{background:#f0fdf4;color:var(--success);}
+.act-edit:hover{background:var(--success);color:#fff;}
+.act-delete{background:var(--danger-bg);color:var(--danger);}
+.act-delete:hover{background:var(--danger);color:#fff;}
+.act-view{background:var(--primary-bg);color:var(--primary);}
+.act-view:hover{background:var(--primary);color:#fff;}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--border);font-size:13px;color:var(--text-muted);flex-wrap:wrap;gap:10px;}
+.page-btns{display:flex;gap:4px;}
+.page-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1.5px solid var(--border);background:var(--card-bg);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-secondary);transition:var(--transition);}
+.page-btn:hover,.page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ═══════════════════════════════
+   CREATE / EDIT VIEW
+═══════════════════════════════ */
+.form-view{display:none;flex-direction:column;gap:24px;}
+.form-view.show{display:flex;}
+
+/* Step indicator */
+.steps-bar{background:var(--card-bg);border-radius:var(--radius);padding:20px 28px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.steps-inner{display:flex;align-items:center;gap:0;position:relative;}
+.step-item{display:flex;align-items:center;flex:1;position:relative;}
+.step-item:last-child{flex:0;}
+.step-connector{flex:1;height:2px;background:var(--border);margin:0 8px;transition:var(--transition);}
+.step-connector.done{background:var(--primary);}
+.step-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;border:2px solid var(--border);background:var(--card-bg);color:var(--text-muted);transition:var(--transition);cursor:pointer;}
+.step-circle.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.18);}
+.step-circle.done{background:var(--success);border-color:var(--success);color:#fff;}
+.step-label{position:absolute;top:44px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;}
+.step-circle.active + .step-label,
+.step-item:has(.step-circle.active) .step-label{color:var(--primary);}
+.step-item:has(.step-circle.done) .step-label{color:var(--success);}
+.steps-labels{display:flex;justify-content:space-between;margin-top:14px;padding:0 0;}
+.step-lbl{font-size:11px;font-weight:600;color:var(--text-muted);}
+.step-lbl.active{color:var(--primary);}
+.step-lbl.done{color:var(--success);}
+
+/* Form grid */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+@media(max-width:900px){.form-grid{grid-template-columns:1fr;}}
+
+.form-section{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);overflow:hidden;animation:fadeUp .35s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.section-header{display:flex;align-items:center;gap:10px;padding:18px 22px 14px;border-bottom:1px solid var(--border);}
+.section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex-shrink:0;}
+.section-title{font-size:14.5px;font-weight:700;color:var(--text-primary);}
+.section-sub{font-size:11.5px;color:var(--text-muted);}
+.section-body{padding:20px 22px;display:flex;flex-direction:column;gap:16px;}
+
+/* Form fields */
+.field-row{display:grid;gap:14px;}
+.field-row.cols2{grid-template-columns:1fr 1fr;}
+.field-row.cols3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:600px){.field-row.cols2,.field-row.cols3{grid-template-columns:1fr;}}
+
+.field{display:flex;flex-direction:column;gap:5px;}
+.field-label{font-size:12px;font-weight:700;color:var(--text-secondary);display:flex;align-items:center;gap:4px;}
+.required{color:var(--danger);font-size:12px;}
+.field-input{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:13.5px;font-family:inherit;color:var(--text-primary);background:var(--card-bg);transition:var(--transition);outline:none;}
+.field-input:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(147,197,253,.2);}
+.field-input:disabled{background:#f8fafc;color:var(--text-muted);cursor:not-allowed;}
+.field-input.readonly{background:#f8fafc;color:var(--text-secondary);}
+.field-input::placeholder{color:var(--text-muted);}
+textarea.field-input{resize:vertical;min-height:90px;line-height:1.5;}
+
+/* Select wrapper */
+.select-wrap{position:relative;}
+.select-wrap select{width:100%;padding:9px 32px 9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:13.5px;font-family:inherit;color:var(--text-primary);background:var(--card-bg);appearance:none;cursor:pointer;transition:var(--transition);outline:none;}
+.select-wrap select:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(147,197,253,.2);}
+.select-wrap::after{content:'\f078';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--text-muted);pointer-events:none;}
+
+/* Radio */
+.radio-group{display:flex;gap:12px;flex-wrap:wrap;}
+.radio-item{display:flex;align-items:center;gap:7px;cursor:pointer;}
+.radio-item input[type="radio"]{accent-color:var(--primary);width:15px;height:15px;cursor:pointer;}
+.radio-item span{font-size:13.5px;font-weight:500;color:var(--text-secondary);}
+
+/* Input with icon */
+.input-icon-wrap{position:relative;}
+.input-icon-wrap .field-input{padding-right:38px;}
+.input-icon-wrap .field-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;cursor:pointer;}
+.input-icon-wrap .field-icon:hover{color:var(--primary);}
+
+/* ID badge */
+.id-display{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--primary-bg);border:1.5px solid var(--primary-border);border-radius:var(--radius-xs);}
+.id-display span{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--primary);}
+.id-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--primary);color:#fff;margin-left:auto;}
+
+/* Documents section */
+.doc-full{grid-column:1/-1;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.doc-item{border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;transition:var(--transition);cursor:pointer;background:#fafbfc;}
+.doc-item:hover{border-color:var(--primary);background:var(--primary-bg);}
+.doc-item.uploaded{border-style:solid;border-color:var(--success);background:var(--success-bg);}
+.doc-icon{width:38px;height:38px;border-radius:9px;background:var(--primary-bg);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:16px;flex-shrink:0;}
+.doc-item.uploaded .doc-icon{background:var(--success-bg);color:var(--success);}
+.doc-info{flex:1;min-width:0;}
+.doc-name{font-size:12.5px;font-weight:600;color:var(--text-primary);margin-bottom:2px;}
+.doc-status{font-size:11px;color:var(--text-muted);}
+.doc-item.uploaded .doc-status{color:var(--success);}
+.doc-req{color:var(--danger);font-size:10px;margin-left:2px;}
+.doc-upload-btn{background:none;border:none;cursor:pointer;font-size:16px;color:var(--primary);transition:var(--transition);padding:4px;}
+.doc-upload-btn:hover{color:var(--primary-dark);}
+
+/* Form footer */
+.form-footer{background:var(--card-bg);border-radius:var(--radius);padding:18px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;bottom:0;z-index:10;}
+.footer-info{font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+
+/* ── Delete modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card-bg);border-radius:var(--radius);padding:28px;max-width:420px;width:90%;box-shadow:var(--shadow-lg);animation:modalIn .25s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-icon{width:56px;height:56px;background:var(--danger-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--danger);margin:0 auto 16px;}
+.modal-title{font-size:17px;font-weight:800;color:var(--text-primary);text-align:center;margin-bottom:8px;}
+.modal-body{font-size:13.5px;color:var(--text-secondary);text-align:center;line-height:1.6;margin-bottom:24px;}
+.modal-actions{display:flex;gap:10px;justify-content:center;}
+
+/* ── Sidebar overlay ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;backdrop-filter:blur(2px);}
+
+/* ── Toast ── */
+.toast-container{position:fixed;top:16px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--card-bg);border-radius:12px;box-shadow:var(--shadow-lg);border-left:4px solid var(--success);min-width:260px;animation:toastIn .3s ease;font-size:13px;font-weight:600;color:var(--text-primary);}
+.toast.error{border-left-color:var(--danger);}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+.toast i{font-size:15px;}
+.toast.success i{color:var(--success);}
+.toast.error i{color:var(--danger);}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);width:260px;}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
+  .sidebar-overlay.show{display:block;}
+  .main{margin-left:0;}
+  .menu-toggle{display:flex;}
+  .topbar{padding:0 16px;}
+  .quote-ticker{display:none;}
+  .page-header{padding:16px 16px 0;}
+  .content{padding:14px 16px 24px;}
+  .form-grid{grid-template-columns:1fr;}
+  .search-box input{width:180px;}
+  .search-box input:focus{width:200px;}
+}
+@media(max-width:480px){
+  .page-actions{flex-direction:column;align-items:flex-start;}
+  .view-toggle{width:100%;}
+  .view-tab{flex:1;text-align:center;}
+  .table-controls{flex-direction:column;align-items:stretch;}
+  .search-box{width:100%;}
+  .search-box input,.search-box input:focus{width:100%;}
+  .modal{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="modal-title">Delete Employee?</div>
+    <div class="modal-body">Are you sure you want to delete <strong id="deleteEmpName">this employee</strong>? This action cannot be undone and all associated data will be permanently removed.</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDelete()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()"><i class="fa-solid fa-trash"></i> Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="fa-solid fa-globe"></i></div>
+    <div><div class="logo-text">Digitalize</div><div class="logo-sub">The Globe – HRM</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item" onclick="goToDashboard()"><div class="nav-icon"><i class="fa-solid fa-gauge-high"></i></div>Dashboard</div>
+    <div class="nav-section-label">People</div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-users"></i></div>Staff<span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="nav-item active"><div class="nav-icon"><i class="fa-solid fa-user-tie"></i></div>Employee<span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="nav-section-label">Productivity</div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-list-check"></i></div>To-Do List<span class="nav-badge">3</span></div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-bell"></i></div>Notice<span class="nav-badge">2</span></div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-diagram-project"></i></div>Project</div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-building"></i></div>Units</div>
+    <div class="nav-section-label">HR Operations</div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-umbrella-beach"></i></div>Leave<span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-fingerprint"></i></div>Attendance<span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span></div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-clock"></i></div>TimeSheet</div>
+    <div class="nav-item"><div class="nav-icon"><i class="fa-solid fa-sack-dollar"></i></div>Payroll<span class="nav-arrow"><i class="fa-solid fa-chevron-right"></i></span></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">DG</div>
+      <div><div class="user-name">Digitalize Globe</div><div class="user-role">Super Admin</div></div>
+      <div style="margin-left:auto;color:#475569;font-size:12px;"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="topbar-greet">Hi, <span>Digitalize The Globe!</span> 👋</div>
+    <div class="quote-ticker"><div class="quote-text">"Your limitation — it's only your imagination." &nbsp;&nbsp;&nbsp; "Don't watch the clock; do what it does. Keep going." &nbsp;&nbsp;&nbsp; "Push yourself, because no one else is going to do it for you."</div></div>
+    <div class="topbar-actions">
+      <button class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn" style="position:relative;"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+      <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+    </div>
+  </header>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">
+        <a href="#">Home</a><span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:9px;"></i></span>
+        <span id="breadcrumbCurrent">Employee</span>
+      </div>
+      <div class="page-title" id="pageTitle">Manage Employee</div>
+    </div>
+    <div class="page-actions" id="pageActions">
+      <div class="view-toggle">
+        <div class="view-tab active" onclick="showView('list')">
+          <i class="fa-solid fa-list" style="font-size:12px;"></i> List View
+        </div>
+        <div class="view-tab" onclick="showView('create')">
+          <i class="fa-solid fa-plus" style="font-size:12px;"></i> Add Employee
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Export</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ LIST VIEW ═══ -->
+    <div class="list-view show" id="listView">
+
+      <!-- Tabs -->
+      <div class="emp-tabs">
+        <div class="emp-tab active" onclick="switchTab('active',this)">
+          <i class="fa-solid fa-circle-check" style="font-size:12px;"></i>
+          Active Employees
+          <span class="emp-tab-count">8</span>
+        </div>
+        <div class="emp-tab" onclick="switchTab('inactive',this)">
+          <i class="fa-solid fa-circle-xmark" style="font-size:12px;"></i>
+          Inactive Employees
+          <span class="emp-tab-count">2</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="table-controls">
+        <div class="per-page">
+          Show
+          <select onchange="changePerPage(this.value)">
+            <option>10</option><option>25</option><option>50</option>
+          </select>
+          entries
+        </div>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search employees..." oninput="filterTable(this.value)"/>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-scroll">
+          <table class="emp-table" id="empTable">
+            <thead id="empThead">
+              <tr>
+                <th>Employee ID <i class="fa-solid fa-sort"></i></th>
+                <th>Name <i class="fa-solid fa-sort"></i></th>
+                <th>Email <i class="fa-solid fa-sort"></i></th>
+                <th>Branch <i class="fa-solid fa-sort"></i></th>
+                <th>Department <i class="fa-solid fa-sort"></i></th>
+                <th>Designation <i class="fa-solid fa-sort"></i></th>
+                <th>Date of Joining <i class="fa-solid fa-sort"></i></th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="empTbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="paginationInfo">Showing 1 to 8 of 8 entries</span>
+          <div class="page-btns">
+            <div class="page-btn"><i class="fa-solid fa-chevron-left" style="font-size:10px;"></i></div>
+            <div class="page-btn active">1</div>
+            <div class="page-btn"><i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /list-view -->
+
+    <!-- ═══ CREATE / EDIT VIEW ═══ -->
+    <div class="form-view" id="formView">
+
+      <!-- Steps -->
+      <div class="steps-bar">
+        <div class="steps-inner">
+          <div class="step-item">
+            <div class="step-circle active" id="step1circle" onclick="goStep(1)">1</div>
+            <div class="step-connector" id="conn1"></div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle" id="step2circle" onclick="goStep(2)">2</div>
+            <div class="step-connector" id="conn2"></div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle" id="step3circle" onclick="goStep(3)">3</div>
+            <div class="step-connector" id="conn3"></div>
+          </div>
+          <div class="step-item">
+            <div class="step-circle" id="step4circle" onclick="goStep(4)"><i class="fa-solid fa-check" style="font-size:12px;"></i></div>
+          </div>
+        </div>
+        <div class="steps-labels">
+          <span class="step-lbl active" id="lbl1">Personal Details</span>
+          <span class="step-lbl" id="lbl2">Company Info</span>
+          <span class="step-lbl" id="lbl3">Documents & Bank</span>
+          <span class="step-lbl" id="lbl4">Review & Save</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: Personal + Company -->
+      <div id="stepPanel1">
+        <div class="form-grid">
+          <!-- Personal -->
+          <div class="form-section" style="animation-delay:.05s;">
+            <div class="section-header">
+              <div class="section-icon" style="background:linear-gradient(135deg,#7c3aed,#a855f7);"><i class="fa-solid fa-user"></i></div>
+              <div><div class="section-title">Personal Details</div><div class="section-sub">Basic employee information</div></div>
+            </div>
+            <div class="section-body">
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Name <span class="required">*</span></label>
+                  <input class="field-input" type="text" placeholder="Enter employee name" id="fName"/>
+                </div>
+                <div class="field">
+                  <label class="field-label">Phone <span class="required">*</span></label>
+                  <input class="field-input" type="tel" placeholder="Enter phone number" id="fPhone"/>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Date of Birth <span class="required">*</span></label>
+                  <div class="input-icon-wrap">
+                    <input class="field-input" type="date" id="fDob" value="2000-01-01"/>
+                    <span class="field-icon"><i class="fa-regular fa-calendar"></i></span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field-label">Gender <span class="required">*</span></label>
+                  <div style="padding:9px 0 4px;">
+                    <div class="radio-group">
+                      <label class="radio-item"><input type="radio" name="gender" value="male" checked/><span>Male</span></label>
+                      <label class="radio-item"><input type="radio" name="gender" value="female"/><span>Female</span></label>
+                      <label class="radio-item"><input type="radio" name="gender" value="other"/><span>Other</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Email <span class="required">*</span></label>
+                  <input class="field-input" type="email" placeholder="employee@company.com" id="fEmail"/>
+                </div>
+                <div class="field">
+                  <label class="field-label">Password <span class="required">*</span></label>
+                  <div class="input-icon-wrap">
+                    <input class="field-input" type="password" placeholder="Set password" id="fPassword"/>
+                    <span class="field-icon" onclick="togglePass()"><i class="fa-regular fa-eye" id="eyeIcon"></i></span>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Address <span class="required">*</span></label>
+                <textarea class="field-input" placeholder="Enter full address" id="fAddress"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company -->
+          <div class="form-section" style="animation-delay:.10s;">
+            <div class="section-header">
+              <div class="section-icon" style="background:linear-gradient(135deg,#2563eb,#3b82f6);"><i class="fa-solid fa-building"></i></div>
+              <div><div class="section-title">Company Details</div><div class="section-sub">Role and assignment info</div></div>
+            </div>
+            <div class="section-body">
+              <div class="field">
+                <label class="field-label">Employee ID</label>
+                <div class="id-display">
+                  <i class="fa-solid fa-id-badge" style="color:var(--primary); font-size:15px;"></i>
+                  <span id="empIdDisplay">#DTG023</span>
+                  <span class="id-badge">Auto</span>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Select Branch <span class="required">*</span></label>
+                  <div class="select-wrap">
+                    <select id="fBranch" onchange="updateDept()">
+                      <option value="">Select Branch</option>
+                      <option>Pune</option>
+                      <option>Mumbai</option>
+                      <option>Bangalore</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field-label">Department <span class="required">*</span></label>
+                  <div class="select-wrap">
+                    <select id="fDept" onchange="updateDesig()">
+                      <option value="">Select Department</option>
+                      <option>Development</option>
+                      <option>Design</option>
+                      <option>HR</option>
+                      <option>Finance</option>
+                      <option>Marketing</option>
+                      <option>Operations</option>
+                      <option>Sales</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Select Designation <span class="required">*</span></label>
+                <div class="select-wrap">
+                  <select id="fDesig">
+                    <option value="">Select Designation</option>
+                    <option>Web Developer</option>
+                    <option>Full-Stack Developer</option>
+                    <option>Software Developer</option>
+                    <option>UI/UX Designer</option>
+                    <option>HR Manager</option>
+                    <option>Accountant</option>
+                    <option>Sales Executive</option>
+                    <option>Operations Manager</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Salary Type</label>
+                  <div class="select-wrap">
+                    <select id="fSalaryType">
+                      <option>Monthly</option>
+                      <option>Weekly</option>
+                      <option>Hourly</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field-label">Basic Salary</label>
+                  <div class="input-icon-wrap">
+                    <input class="field-input" type="number" placeholder="0.00" id="fSalary" style="padding-left:28px;"/>
+                    <span class="field-icon" style="left:10px;right:auto;color:var(--text-secondary);cursor:default;">₹</span>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Company Date of Joining <span class="required">*</span></label>
+                <div class="input-icon-wrap">
+                  <input class="field-input" type="date" id="fJoining"/>
+                  <span class="field-icon"><i class="fa-regular fa-calendar"></i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /step1 -->
+
+      <!-- STEP 2: Documents + Bank -->
+      <div id="stepPanel2" style="display:none;">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <!-- Documents -->
+          <div class="form-section">
+            <div class="section-header">
+              <div class="section-icon" style="background:linear-gradient(135deg,#0d9488,#2dd4bf);"><i class="fa-solid fa-folder-open"></i></div>
+              <div><div class="section-title">Document Details</div><div class="section-sub">Upload required employee documents</div></div>
+            </div>
+            <div class="section-body">
+              <div class="doc-grid" id="docGrid">
+                <!-- JS rendered -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Bank -->
+          <div class="form-section">
+            <div class="section-header">
+              <div class="section-icon" style="background:linear-gradient(135deg,#ea580c,#fb923c);"><i class="fa-solid fa-building-columns"></i></div>
+              <div><div class="section-title">Bank Account Details</div><div class="section-sub">For salary disbursement</div></div>
+            </div>
+            <div class="section-body">
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Account Holder Name <span class="required">*</span></label>
+                  <input class="field-input" type="text" placeholder="Full name as on account" id="fAccName"/>
+                </div>
+                <div class="field">
+                  <label class="field-label">Account Number <span class="required">*</span></label>
+                  <input class="field-input" type="text" placeholder="Enter account number" id="fAccNum"/>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">Bank Name <span class="required">*</span></label>
+                  <input class="field-input" type="text" placeholder="e.g. State Bank of India" id="fBankName"/>
+                </div>
+                <div class="field">
+                  <label class="field-label">Branch Location</label>
+                  <input class="field-input" type="text" placeholder="Bank branch location" id="fBankBranch"/>
+                </div>
+              </div>
+              <div class="field-row cols2">
+                <div class="field">
+                  <label class="field-label">IFSC / Identifier Code</label>
+                  <input class="field-input" type="text" placeholder="e.g. SBIN0001234" id="fIfsc" style="font-family:'DM Mono',monospace; text-transform:uppercase;"/>
+                </div>
+                <div class="field">
+                  <label class="field-label">Tax Payer ID (PAN)</label>
+                  <input class="field-input" type="text" placeholder="e.g. ABCDE1234F" id="fPan" style="font-family:'DM Mono',monospace; text-transform:uppercase;"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /step2 -->
+
+      <!-- STEP 3: Review -->
+      <div id="stepPanel3" style="display:none;">
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon" style="background:linear-gradient(135deg,#16a34a,#4ade80);"><i class="fa-solid fa-circle-check"></i></div>
+            <div><div class="section-title">Review & Confirm</div><div class="section-sub">Please verify all details before saving</div></div>
+          </div>
+          <div class="section-body">
+            <div id="reviewContent" style="display:flex;flex-direction:column;gap:20px;"></div>
+          </div>
+        </div>
+      </div><!-- /step3 -->
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <div class="footer-info"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> <span id="footerInfo">Step 1 of 3 — Fill in personal & company details</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline" id="btnBack" onclick="prevStep()" style="display:none;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn btn-outline" onclick="showView('list')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+          <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+          <button class="btn btn-success" id="btnSave" onclick="saveEmployee()" style="display:none;"><i class="fa-solid fa-floppy-disk"></i> Save Employee</button>
+        </div>
+      </div>
+    </div><!-- /form-view -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+/* ──────────────────────────────────────
+   DATA
+────────────────────────────────────── */
+const COLORS = ['#7c3aed','#2563eb','#16a34a','#0d9488','#ea580c','#db2777','#0284c7','#d97706'];
+const employees = [
+  {id:'#DTG001',name:'Alwyna',email:'alwyna@digitalizetheglobe.com',branch:'Pune',dept:'Development',desig:'Web Developer',joining:'Aug 8, 2023',status:'active'},
+  {id:'#DTG003',name:'Ashwini Gajanan Tiwalkar',email:'ashwini@digitalizetheglobe.com',branch:'Pune',dept:'Development',desig:'Full-Stack Developer',joining:'Feb 21, 2024',status:'active'},
+  {id:'#DTG004',name:'Prasad Bhagwan Aswar',email:'prasad@digitalizetheglobe.com',branch:'Pune',dept:'Development',desig:'Full-Stack Developer',joining:'Feb 22, 2024',status:'active'},
+  {id:'#DTG005',name:'Adarsh Sanjivan Waghmare',email:'adarsh@digitalizetheglobe.com',branch:'Pune',dept:'Development',desig:'Software Developer',joining:'Apr 1, 2024',status:'active'},
+  {id:'#DTG006',name:'Krutika Jadhav',email:'krutika@digitalizetheglobe.com',branch:'Pune',dept:'Development',desig:'Web Developer',joining:'Jun 12, 2024',status:'active'},
+  {id:'#DTG007',name:'Priya Kulkarni',email:'priya@digitalizetheglobe.com',branch:'Pune',dept:'Design',desig:'UI/UX Designer',joining:'Mar 5, 2024',status:'active'},
+  {id:'#DTG008',name:'Rahul Mehta',email:'rahul@digitalizetheglobe.com',branch:'Pune',dept:'Sales',desig:'Sales Executive',joining:'Jan 10, 2024',status:'active'},
+  {id:'#DTG009',name:'Sneha Joshi',email:'sneha@digitalizetheglobe.com',branch:'Pune',dept:'HR',desig:'HR Manager',joining:'May 20, 2023',status:'active'},
+  {id:'#DTG010',name:'Vikram Patil',email:'vikram@digitalizetheglobe.com',branch:'Mumbai',dept:'Finance',desig:'Accountant',joining:'Nov 3, 2022',status:'inactive',termination:'Jan 15, 2024'},
+  {id:'#DTG011',name:'Meera Nair',email:'meera@digitalizetheglobe.com',branch:'Bangalore',dept:'Operations',desig:'Operations Manager',joining:'Jul 7, 2023',status:'inactive',termination:'Mar 30, 2024'},
+];
+
+const DOCS = [
+  {name:'Aadhar Card',required:true},
+  {name:'PAN Card',required:true},
+  {name:'10th Marksheet',required:false},
+  {name:'12th Marksheet',required:false},
+  {name:'Degree Certificate',required:true},
+  {name:'Experience Letter',required:false},
+  {name:'Offer Letter',required:true},
+  {name:'Passport Photo',required:true},
+];
+
+let currentTab = 'active';
+let currentStep = 1;
+let totalSteps = 3;
+let deleteTarget = null;
+let uploadedDocs = {};
+
+/* ──────────────────────────────────────
+   SIDEBAR
+────────────────────────────────────── */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+function goToDashboard(){
+  // placeholder
+}
+
+/* ──────────────────────────────────────
+   VIEW SWITCHING
+────────────────────────────────────── */
+function showView(v){
+  const lv = document.getElementById('listView');
+  const fv = document.getElementById('formView');
+  const tabs = document.querySelectorAll('.view-tab');
+  if(v==='list'){
+    lv.classList.add('show'); fv.classList.remove('show');
+    document.getElementById('pageTitle').textContent='Manage Employee';
+    document.getElementById('breadcrumbCurrent').textContent='Employee';
+    tabs[0].classList.add('active'); tabs[1].classList.remove('active');
+    currentStep=1; renderSteps();
+  } else {
+    lv.classList.remove('show'); fv.classList.add('show');
+    document.getElementById('pageTitle').textContent='Create Employee';
+    document.getElementById('breadcrumbCurrent').textContent='Create Employee';
+    tabs[1].classList.add('active'); tabs[0].classList.remove('active');
+    renderDocs();
+    setToday();
+    currentStep=1; renderSteps();
+  }
+}
+
+/* ──────────────────────────────────────
+   TABLE
+────────────────────────────────────── */
+function initials(name){ return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+function renderTable(data, tab){
+  const tbody = document.getElementById('empTbody');
+  const thead = document.getElementById('empThead');
+  const isActive = tab==='active';
+
+  thead.innerHTML = `<tr>
+    <th>Employee ID <i class="fa-solid fa-sort"></i></th>
+    <th>Name <i class="fa-solid fa-sort"></i></th>
+    <th>Email <i class="fa-solid fa-sort"></i></th>
+    <th>Branch <i class="fa-solid fa-sort"></i></th>
+    <th>Department <i class="fa-solid fa-sort"></i></th>
+    <th>Designation <i class="fa-solid fa-sort"></i></th>
+    <th>${isActive?'Date of Joining':'Date of Joining'} <i class="fa-solid fa-sort"></i></th>
+    ${!isActive?'<th>Termination Date <i class="fa-solid fa-sort"></i></th>':''}
+    <th>Action</th>
+  </tr>`;
+
+  if(!data.length){
+    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-users-slash" style="font-size:28px;display:block;margin-bottom:10px;"></i>No employees found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map((e,i)=>{
+    const color = COLORS[i%COLORS.length];
+    const actions = isActive
+      ? `<button class="act-btn act-view" title="View" onclick="viewEmp('${e.id}')"><i class="fa-solid fa-eye"></i></button>
+         <button class="act-btn act-edit" title="Edit" onclick="editEmp('${e.id}')"><i class="fa-solid fa-pencil"></i></button>
+         <button class="act-btn act-delete" title="Delete" onclick="openDelete('${e.id}','${e.name}')"><i class="fa-solid fa-trash"></i></button>`
+      : `<button class="act-btn act-view" title="View"><i class="fa-solid fa-eye"></i></button>`;
+
+    return `<tr>
+      <td><span class="emp-id">${e.id}</span></td>
+      <td><div class="emp-name-cell"><div class="emp-avatar-sm" style="background:${color};">${initials(e.name)}</div><div><div class="emp-full-name">${e.name}</div></div></div></td>
+      <td style="color:var(--text-muted);">${e.email}</td>
+      <td>${e.branch}</td>
+      <td><span class="dept-badge">${e.dept}</span></td>
+      <td>${e.desig}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;">${e.joining}</td>
+      ${!isActive?`<td style="color:var(--danger);font-family:'DM Mono',monospace;font-size:12px;">${e.termination||'—'}</td>`:''}
+      <td><div class="action-btns">${actions}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function switchTab(tab, el){
+  currentTab = tab;
+  document.querySelectorAll('.emp-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const data = employees.filter(e=>e.status===tab);
+  renderTable(data, tab);
+}
+
+function filterTable(q){
+  const data = employees.filter(e=>e.status===currentTab);
+  const filtered = q ? data.filter(e=>JSON.stringify(e).toLowerCase().includes(q.toLowerCase())) : data;
+  renderTable(filtered, currentTab);
+}
+
+function changePerPage(v){ /* pagination placeholder */ }
+
+function openDelete(id, name){
+  deleteTarget = id;
+  document.getElementById('deleteEmpName').textContent = name;
+  document.getElementById('deleteModal').classList.add('show');
+}
+function closeDelete(){
+  document.getElementById('deleteModal').classList.remove('show');
+}
+function confirmDelete(){
+  closeDelete();
+  showToast(`Employee ${deleteTarget} deleted successfully`, 'success');
+}
+function viewEmp(id){ showToast(`Viewing employee ${id}`, 'success'); }
+function editEmp(id){
+  showView('create');
+  showToast(`Editing employee ${id}`, 'success');
+}
+
+/* ──────────────────────────────────────
+   STEPS
+────────────────────────────────────── */
+function renderSteps(){
+  for(let s=1;s<=4;s++){
+    const c = document.getElementById(`step${s}circle`);
+    const l = document.getElementById(`lbl${s}`);
+    c.classList.remove('active','done');
+    if(l){ l.classList.remove('active','done'); }
+    if(s<currentStep){ c.classList.add('done'); c.innerHTML='<i class="fa-solid fa-check" style="font-size:11px;"></i>'; if(l) l.classList.add('done'); }
+    else if(s===currentStep){ c.classList.add('active'); c.innerHTML=s; if(l) l.classList.add('active'); }
+    else { c.innerHTML = s===4 ? '<i class="fa-solid fa-check" style="font-size:12px;"></i>' : s; }
+  }
+  for(let c=1;c<=3;c++){
+    const conn = document.getElementById(`conn${c}`);
+    if(conn) conn.classList.toggle('done', c < currentStep);
+  }
+
+  // show/hide panels
+  document.getElementById('stepPanel1').style.display = currentStep===1?'block':'none';
+  document.getElementById('stepPanel2').style.display = currentStep===2?'block':'none';
+  document.getElementById('stepPanel3').style.display = currentStep===3?'block':'none';
+
+  document.getElementById('btnBack').style.display = currentStep>1?'inline-flex':'none';
+  document.getElementById('btnNext').style.display = currentStep<totalSteps?'inline-flex':'none';
+  document.getElementById('btnSave').style.display = currentStep===totalSteps?'inline-flex':'none';
+
+  const infos = ['Step 1 of 3 — Fill in personal & company details','Step 2 of 3 — Upload documents & bank info','Step 3 of 3 — Review all details and save'];
+  document.getElementById('footerInfo').textContent = infos[currentStep-1]||infos[0];
+}
+
+function nextStep(){
+  if(currentStep < totalSteps){ currentStep++; renderSteps(); if(currentStep===totalSteps) buildReview(); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+function prevStep(){
+  if(currentStep > 1){ currentStep--; renderSteps(); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+function goStep(s){ if(s<=currentStep){ currentStep=s; renderSteps(); if(s===totalSteps) buildReview(); } }
+
+/* ──────────────────────────────────────
+   REVIEW
+────────────────────────────────────── */
+function buildReview(){
+  const rc = document.getElementById('reviewContent');
+  const val = id => (document.getElementById(id)||{}).value||'—';
+  const gender = document.querySelector('input[name="gender"]:checked');
+  rc.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">Personal Details</div>
+        ${reviewRow('Name',val('fName'))}
+        ${reviewRow('Phone',val('fPhone'))}
+        ${reviewRow('Email',val('fEmail'))}
+        ${reviewRow('Date of Birth',val('fDob'))}
+        ${reviewRow('Gender',gender?gender.value:'—')}
+        ${reviewRow('Address',val('fAddress'))}
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">Company Details</div>
+        ${reviewRow('Employee ID',document.getElementById('empIdDisplay').textContent)}
+        ${reviewRow('Branch',val('fBranch'))}
+        ${reviewRow('Department',val('fDept'))}
+        ${reviewRow('Designation',val('fDesig'))}
+        ${reviewRow('Joining Date',val('fJoining'))}
+        ${reviewRow('Salary',val('fSalary')?'₹'+val('fSalary'):' — ')}
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:16px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">Bank Details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>${reviewRow('Account Holder',val('fAccName'))}${reviewRow('Account No.',val('fAccNum'))}</div>
+        <div>${reviewRow('Bank Name',val('fBankName'))}${reviewRow('IFSC',val('fIfsc'))}</div>
+      </div>
+    </div>
+    <div style="background:var(--success-bg);border:1px solid #86efac;border-radius:10px;padding:14px;display:flex;align-items:center;gap:10px;">
+      <i class="fa-solid fa-circle-check" style="color:var(--success);font-size:18px;"></i>
+      <span style="font-size:13px;font-weight:600;color:var(--success);">Everything looks good! Click "Save Employee" to complete.</span>
+    </div>
+  `;
+}
+
+function reviewRow(label,val){
+  return `<div style="display:flex;flex-direction:column;gap:2px;margin-bottom:10px;">
+    <span style="font-size:11px;font-weight:600;color:var(--text-muted);">${label}</span>
+    <span style="font-size:13.5px;font-weight:600;color:var(--text-primary);">${val||'—'}</span>
+  </div>`;
+}
+
+/* ──────────────────────────────────────
+   DOCUMENTS
+────────────────────────────────────── */
+function renderDocs(){
+  const g = document.getElementById('docGrid');
+  g.innerHTML = DOCS.map(d=>`
+    <div class="doc-item ${uploadedDocs[d.name]?'uploaded':''}" id="docItem_${d.name.replace(/ /g,'_')}" onclick="uploadDoc('${d.name}')">
+      <div class="doc-icon"><i class="fa-solid ${uploadedDocs[d.name]?'fa-file-circle-check':'fa-file-arrow-up'}"></i></div>
+      <div class="doc-info">
+        <div class="doc-name">${d.name}${d.required?'<span class="doc-req">*</span>':''}</div>
+        <div class="doc-status">${uploadedDocs[d.name]?'✓ Uploaded':'Click to upload'}</div>
+      </div>
+      <button class="doc-upload-btn" title="Upload"><i class="fa-solid ${uploadedDocs[d.name]?'fa-check-circle':'fa-cloud-arrow-up'}"></i></button>
+    </div>
+  `).join('');
+}
+
+function uploadDoc(name){
+  uploadedDocs[name] = true;
+  renderDocs();
+  showToast(`${name} uploaded successfully`, 'success');
+}
+
+/* ──────────────────────────────────────
+   MISC
+────────────────────────────────────── */
+function setToday(){
+  const t = new Date().toISOString().split('T')[0];
+  if(document.getElementById('fJoining')) document.getElementById('fJoining').value = t;
+}
+
+function togglePass(){
+  const p = document.getElementById('fPassword');
+  const e = document.getElementById('eyeIcon');
+  if(p.type==='password'){ p.type='text'; e.className='fa-regular fa-eye-slash'; }
+  else { p.type='password'; e.className='fa-regular fa-eye'; }
+}
+
+function updateDept(){/* dynamic - placeholder */}
+function updateDesig(){/* dynamic - placeholder */}
+
+function saveEmployee(){
+  const name = (document.getElementById('fName')||{}).value;
+  if(!name){ showToast('Please fill in the employee name', 'error'); return; }
+  showToast(`Employee ${name} created successfully!`, 'success');
+  setTimeout(()=>showView('list'), 1200);
+}
+
+function showToast(msg, type='success'){
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-circle-exclamation'}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.style.opacity='0', 2800);
+  setTimeout(()=>t.remove(), 3100);
+}
+
+/* ──────────────────────────────────────
+   INIT
+────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderTable(employees.filter(e=>e.status==='active'), 'active');
+  renderSteps();
+  setToday();
+});
+</script>
+</body>
+</html>

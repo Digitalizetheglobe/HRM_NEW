@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F4F2EE;
+  --surface:#FFFFFF;
+  --surface2:#F8F7F4;
+  --border:#E2E0DA;
+  --text:#1A1917;
+  --muted:#6B6860;
+  --accent:#2563EB;
+  --accent-light:#EFF4FF;
+  --green:#16A34A;
+  --green-light:#F0FDF4;
+  --amber:#D97706;
+  --amber-light:#FFFBEB;
+  --red:#DC2626;
+  --red-light:#FEF2F2;
+  --purple:#7C3AED;
+  --purple-light:#F5F3FF;
+  --cyan:#0891B2;
+  --cyan-light:#ECFEFF;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.serif{font-family:'Instrument Serif',serif}
+
+/* Layout */
+.shell{display:grid;grid-template-columns:260px 1fr 260px;grid-template-rows:auto 1fr;min-height:100vh;gap:0}
+.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:60px;position:sticky;top:0;z-index:100}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:4px}
+.main{padding:24px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+.right-col{background:var(--surface);border-left:1px solid var(--border);padding:20px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+
+/* Topbar */
+.logo{font-size:18px;font-weight:600;letter-spacing:-.4px;color:var(--accent);margin-right:8px}
+.logo span{color:var(--text)}
+.topbar-search{flex:1;max-width:320px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.topbar-search input{border:none;background:none;outline:none;font-size:13px;color:var(--text);width:100%;font-family:inherit}
+.topbar-search input::placeholder{color:var(--muted)}
+.spacer{flex:1}
+.topbar-icons{display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;color:var(--muted);font-size:16px;position:relative}
+.icon-btn:hover{background:var(--bg)}
+.badge{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--surface)}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.5px}
+
+/* Sidebar nav */
+.nav-section{font-size:10px;font-weight:600;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;padding:12px 12px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-light);color:var(--accent)}
+.nav-item i{font-size:17px;width:18px;text-align:center}
+.nav-item .count{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:600;padding:1px 6px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.1px}
+.card-action{font-size:12px;color:var(--accent);cursor:pointer;font-weight:500}
+.card-action:hover{text-decoration:underline}
+
+/* Welcome strip */
+.welcome{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;background:linear-gradient(135deg,#1E40AF 0%,#2563EB 50%,#3B82F6 100%);border-radius:var(--radius);color:#fff;position:relative;overflow:hidden}
+.welcome::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
+.welcome::after{content:'';position:absolute;right:40px;bottom:-60px;width:160px;height:160px;background:rgba(255,255,255,.04);border-radius:50%}
+.welcome-greeting{font-size:11px;font-weight:500;opacity:.8;margin-bottom:2px;letter-spacing:.5px;text-transform:uppercase}
+.welcome-name{font-size:22px;font-weight:600;font-family:'Instrument Serif',serif;letter-spacing:-.3px}
+.welcome-date{font-size:12px;opacity:.7;margin-top:4px}
+.welcome-time{font-size:36px;font-weight:300;font-variant-numeric:tabular-nums;opacity:.9;position:relative;z-index:1}
+
+/* Profile card */
+.profile-section{display:flex;flex-direction:column;align-items:center;padding:24px 16px;text-align:center;border-bottom:1px solid var(--border);margin-bottom:16px}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;margin-bottom:12px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.profile-name{font-size:16px;font-weight:600;letter-spacing:-.2px;margin-bottom:2px}
+.profile-dept{font-size:12px;color:var(--muted);margin-bottom:8px}
+.profile-badge{background:var(--accent-light);color:var(--accent);border-radius:20px;font-size:11px;font-weight:600;padding:3px 10px;display:inline-block}
+.profile-info{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.profile-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.profile-row i{font-size:14px;color:var(--accent);opacity:.7;width:16px}
+.profile-row span{color:var(--text)}
+
+/* Punch card */
+.punch-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.punch-header{padding:16px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.punch-body{padding:20px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.status-pill.in{background:var(--green-light);color:var(--green)}
+.status-pill.out{background:var(--red-light);color:var(--red)}
+.status-pill.idle{background:var(--surface2);color:var(--muted)}
+.status-dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green)}
+.dot-red{background:var(--red)}
+.dot-gray{background:var(--muted)}
+.punch-times{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.punch-time-box{background:var(--surface2);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border)}
+.punch-time-label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.punch-time-val{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.punch-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:10px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid #FCA5A5}
+.btn-danger:hover{background:#fee2e2}
+.btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg)}
+#gpsMessage{font-size:12px;padding:8px 12px;border-radius:var(--radius-sm);margin-top:12px;display:none}
+#gpsMessage.success{background:var(--green-light);color:var(--green);display:block}
+#gpsMessage.error{background:var(--red-light);color:var(--red);display:block}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.stat-val{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.5px;line-height:1}
+.stat-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-change{font-size:11px;margin-top:8px;font-weight:500}
+.stat-change.up{color:var(--green)}
+.stat-change.down{color:var(--red)}
+
+/* Tables */
+.table-wrap{overflow:auto;max-height:220px}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;background:var(--surface);position:sticky;top:0}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+
+/* Priority badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-high{background:#FEF2F2;color:#DC2626}
+.badge-medium{background:#FFFBEB;color:#D97706}
+.badge-low{background:#F0FDF4;color:#16A34A}
+.badge-done{background:#F0FDF4;color:#16A34A}
+.badge-pending{background:#FFFBEB;color:#D97706}
+.badge-info{background:var(--accent-light);color:var(--accent)}
+.badge-cyan{background:var(--cyan-light);color:var(--cyan)}
+.badge-purple{background:var(--purple-light);color:var(--purple)}
+
+/* Calendar */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-nav{display:flex;gap:4px}
+.cal-nav-btn{width:28px;height:28px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--muted);transition:all .15s}
+.cal-nav-btn:hover{background:var(--bg);color:var(--text)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day-label{text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;text-transform:uppercase;letter-spacing:.5px}
+.cal-day{text-align:center;padding:6px 2px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);transition:all .12s;position:relative}
+.cal-day:hover{background:var(--surface2);color:var(--text)}
+.cal-day.today{background:var(--accent);color:#fff;font-weight:700}
+.cal-day.has-event::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.cal-day.today.has-event::after{background:#fff}
+.cal-day.other-month{opacity:.3}
+
+/* Events */
+.event-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.event-item:last-child{border-bottom:none}
+.event-dot{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.event-birthday{background:#DCFCE7;color:#16A34A}
+.event-anniversary{background:var(--accent-light);color:var(--accent)}
+.event-general{background:var(--cyan-light);color:var(--cyan)}
+.event-today{background:#FEF9C3;color:#CA8A04}
+.event-info{flex:1}
+.event-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px}
+.event-sub{font-size:11px;color:var(--muted)}
+.today-badge{font-size:10px;font-weight:700;background:#FEF9C3;color:#854D0E;padding:2px 7px;border-radius:20px;display:inline-block;margin-left:6px}
+
+/* Meeting list */
+.meeting-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.meeting-item:last-child{border-bottom:none}
+.meeting-time-col{min-width:64px;text-align:right}
+.meeting-time{font-size:12px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.meeting-date{font-size:10px;color:var(--muted)}
+.meeting-divider{width:1px;height:32px;background:var(--border)}
+.meeting-info .meeting-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px}
+.meeting-info .meeting-type{font-size:11px;color:var(--muted)}
+
+/* Leave list */
+.leave-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.leave-item:last-child{border-bottom:none}
+.leave-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.leave-name{font-size:12px;font-weight:500;color:var(--text)}
+.leave-reason{font-size:11px;color:var(--muted)}
+
+/* Modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--radius);padding:28px;max-width:360px;width:90%;box-shadow:var(--shadow-md);transform:translateY(8px);transition:transform .2s}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:8px}
+.modal-body{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.modal-btns{display:flex;gap:10px}
+
+/* Section heading */
+.section-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Notice truncation */
+.notice-title{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+
+/* Grid-2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">Apex<span>HR</span></div>
+  <div class="topbar-search">
+    <i class="ti ti-search" style="color:var(--muted);font-size:15px"></i>
+    <input type="text" placeholder="Search anything...">
+  </div>
+  <div class="spacer"></div>
+  <div class="topbar-icons">
+    <div class="icon-btn"><i class="ti ti-bell"></i><div class="badge"></div></div>
+    <div class="icon-btn"><i class="ti ti-mail"></i></div>
+    <div class="icon-btn"><i class="ti ti-settings"></i></div>
+    <div class="avatar-sm">JD</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="profile-section">
+    <div class="profile-avatar">JD</div>
+    <div class="profile-name">James Decker</div>
+    <div class="profile-dept">Product Design</div>
+    <div class="profile-badge">UI/UX Designer</div>
+    <div class="profile-info">
+      <div class="profile-row"><i class="ti ti-phone" aria-hidden="true"></i><span>+91 98765 43210</span></div>
+      <div class="profile-row"><i class="ti ti-mail" aria-hidden="true"></i><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px">james@apexhr.io</span></div>
+      <div class="profile-row"><i class="ti ti-calendar" aria-hidden="true"></i><span>Joined 14 Mar 2022</span></div>
+    </div>
+  </div>
+
+  <div class="nav-section">Navigation</div>
+  <div class="nav-item active"><i class="ti ti-dashboard" aria-hidden="true"></i>Dashboard</div>
+  <div class="nav-item"><i class="ti ti-clock" aria-hidden="true"></i>Attendance</div>
+  <div class="nav-item"><i class="ti ti-calendar-event" aria-hidden="true"></i>Leave Management</div>
+  <div class="nav-item"><i class="ti ti-list-check" aria-hidden="true"></i>To-Do Tasks<span class="count">3</span></div>
+  <div class="nav-item"><i class="ti ti-users" aria-hidden="true"></i>Directory</div>
+  <div class="nav-item"><i class="ti ti-video" aria-hidden="true"></i>Meetings<span class="count">2</span></div>
+
+  <div class="nav-section">Company</div>
+  <div class="nav-item"><i class="ti ti-speakerphone" aria-hidden="true"></i>Notices</div>
+  <div class="nav-item"><i class="ti ti-building" aria-hidden="true"></i>Departments</div>
+  <div class="nav-item"><i class="ti ti-file-description" aria-hidden="true"></i>Payroll</div>
+
+  <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);margin-top:20px">
+    <div class="nav-item"><i class="ti ti-logout" aria-hidden="true"></i>Sign Out</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- Welcome Strip -->
+  <div class="welcome">
+    <div>
+      <div class="welcome-greeting">Good morning</div>
+      <div class="welcome-name">James Decker 👋</div>
+      <div class="welcome-date" id="todayDate">Tuesday, 20 May 2025</div>
+    </div>
+    <div class="welcome-time" id="liveTime">--:--</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val">22</div>
+      <div class="stat-label">Days Present</div>
+      <div class="stat-change up"><i class="ti ti-trending-up" style="font-size:12px"></i> 96% this month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--amber)">1.5</div>
+      <div class="stat-label">Leaves Pending</div>
+      <div class="stat-change" style="color:var(--muted)">2.5 total used</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--accent)">3</div>
+      <div class="stat-label">Open Tasks</div>
+      <div class="stat-change down"><i class="ti ti-alert-triangle" style="font-size:12px"></i> 1 overdue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--green)">8h 12m</div>
+      <div class="stat-label">Avg Daily Hours</div>
+      <div class="stat-change up"><i class="ti ti-trending-up" style="font-size:12px"></i> +0h 20m</div>
+    </div>
+  </div>
+
+  <!-- Punch + Notices -->
+  <div class="grid2">
+
+    <!-- Punch Card -->
+    <div class="punch-card">
+      <div class="punch-header">
+        <div class="card-title"><i class="ti ti-fingerprint" style="color:var(--accent);margin-right:6px;font-size:16px"></i>Attendance — Today</div>
+        <span class="status-pill idle" id="statusPill"><span class="status-dot dot-gray"></span><span id="statusText">Not Punched In</span></span>
+      </div>
+      <div class="punch-body">
+        <div class="punch-times">
+          <div class="punch-time-box">
+            <div class="punch-time-label">Punch In</div>
+            <div class="punch-time-val" id="punchInTime">--:--</div>
+          </div>
+          <div class="punch-time-box">
+            <div class="punch-time-label">Punch Out</div>
+            <div class="punch-time-val" id="punchOutTime">--:--</div>
+          </div>
+        </div>
+        <div class="punch-btns">
+          <button class="btn btn-primary" id="punchInBtn" onclick="punchIn()"><i class="ti ti-login"></i> Punch In</button>
+          <button class="btn btn-danger" id="punchOutBtn" onclick="openModal()" disabled><i class="ti ti-logout"></i> Punch Out</button>
+        </div>
+        <div id="gpsMessage"></div>
+      </div>
+    </div>
+
+    <!-- Notices -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="card-header" style="padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:0">
+        <div class="card-title"><i class="ti ti-speakerphone" style="color:var(--accent);margin-right:6px;font-size:16px"></i>Company Notices</div>
+        <span class="card-action">View all</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Notice</th><th>Valid Until</th></tr></thead>
+          <tbody>
+            <tr><td><div class="notice-title">Office will remain closed on Friday, 23rd May...</div></td><td style="white-space:nowrap;font-size:12px;color:var(--muted)">23 May 2025</td></tr>
+            <tr><td><div class="notice-title">Mandatory security awareness training for all staff</div></td><td style="white-space:nowrap;font-size:12px;color:var(--muted)">30 May 2025</td></tr>
+            <tr><td><div class="notice-title">Updated WFH policy — please read the new guidelines</div></td><td style="white-space:nowrap;font-size:12px;color:var(--muted)">01 Jun 2025</td></tr>
+            <tr><td><div class="notice-title">Annual performance review cycle begins next week</div></td><td style="white-space:nowrap;font-size:12px;color:var(--muted)">15 Jun 2025</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- To-Do Tasks -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="card-header" style="padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:0">
+      <div class="card-title"><i class="ti ti-list-check" style="color:var(--accent);margin-right:6px;font-size:16px"></i>My Tasks</div>
+      <span class="card-action">+ Add task</span>
+    </div>
+    <table>
+      <thead><tr><th>Task</th><th>Priority</th><th>Due Date</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="font-size:13px">Redesign the onboarding flow for mobile</td><td><span class="badge badge-high">High</span></td><td style="font-size:12px;color:var(--muted)">20 May 2025</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        <tr><td style="font-size:13px">Prepare Q2 design handoff doc</td><td><span class="badge badge-medium">Medium</span></td><td style="font-size:12px;color:var(--muted)">25 May 2025</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        <tr><td style="font-size:13px">Review and approve icon set PR</td><td><span class="badge badge-low">Low</span></td><td style="font-size:12px;color:var(--muted)">22 May 2025</td><td><span class="badge badge-done">Completed</span></td></tr>
+        <tr><td style="font-size:13px">Update Figma component library</td><td><span class="badge badge-medium">Medium</span></td><td style="font-size:12px;color:var(--muted)">28 May 2025</td><td><span class="badge badge-pending">Pending</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Meetings + Colleagues on Leave -->
+  <div class="grid2">
+
+    <!-- Meetings -->
+    <div class="card-sm">
+      <div class="card-header">
+        <div class="card-title"><i class="ti ti-video" style="color:var(--accent);margin-right:6px;font-size:16px"></i>Upcoming Meetings</div>
+      </div>
+      <div class="meeting-item">
+        <div class="meeting-time-col"><div class="meeting-time">10:00 AM</div><div class="meeting-date">Today</div></div>
+        <div class="meeting-divider"></div>
+        <div class="meeting-info"><div class="meeting-title">Design Sprint Kickoff</div><div class="meeting-type"><span class="badge badge-info">Google Meet</span></div></div>
+      </div>
+      <div class="meeting-item">
+        <div class="meeting-time-col"><div class="meeting-time">2:30 PM</div><div class="meeting-date">Today</div></div>
+        <div class="meeting-divider"></div>
+        <div class="meeting-info"><div class="meeting-title">Product Roadmap Review</div><div class="meeting-type"><span class="badge badge-purple">Teams</span></div></div>
+      </div>
+      <div class="meeting-item">
+        <div class="meeting-time-col"><div class="meeting-time">11:00 AM</div><div class="meeting-date">Wed</div></div>
+        <div class="meeting-divider"></div>
+        <div class="meeting-info"><div class="meeting-title">1:1 with Manager</div><div class="meeting-type"><span class="badge badge-cyan">Zoom</span></div></div>
+      </div>
+    </div>
+
+    <!-- On Leave -->
+    <div class="card-sm">
+      <div class="card-header">
+        <div class="card-title"><i class="ti ti-user-off" style="color:var(--amber);margin-right:6px;font-size:16px"></i>Not Working Today</div>
+      </div>
+      <div class="leave-item">
+        <div class="leave-avatar" style="background:#7C3AED">SK</div>
+        <div><div class="leave-name">Sneha Kumar</div><div class="leave-reason">Sick Leave</div></div>
+        <span class="badge badge-medium" style="margin-left:auto">Leave</span>
+      </div>
+      <div class="leave-item">
+        <div class="leave-avatar" style="background:#D97706">RP</div>
+        <div><div class="leave-name">Rahul Pawar</div><div class="leave-reason">Week Off</div></div>
+        <span class="badge" style="background:#F5F3FF;color:var(--purple);margin-left:auto">WO</span>
+      </div>
+      <div class="leave-item">
+        <div class="leave-avatar" style="background:#0891B2">AM</div>
+        <div><div class="leave-name">Anjali Mehta</div><div class="leave-reason">Casual Leave</div></div>
+        <span class="badge badge-medium" style="margin-left:auto">Leave</span>
+      </div>
+      <div class="leave-item">
+        <div class="leave-avatar" style="background:#16A34A">VN</div>
+        <div><div class="leave-name">Vikram Nair</div><div class="leave-reason">Week Off</div></div>
+        <span class="badge" style="background:#F5F3FF;color:var(--purple);margin-left:auto">WO</span>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+
+<!-- RIGHT COLUMN -->
+<div class="right-col">
+
+  <!-- Mini Calendar -->
+  <div>
+    <div class="cal-header">
+      <div style="font-size:13px;font-weight:600">May 2025</div>
+      <div class="cal-nav">
+        <div class="cal-nav-btn"><i class="ti ti-chevron-left" style="font-size:12px"></i></div>
+        <div class="cal-nav-btn"><i class="ti ti-chevron-right" style="font-size:12px"></i></div>
+      </div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div style="height:1px;background:var(--border)"></div>
+
+  <!-- Events -->
+  <div>
+    <div class="section-title"><i class="ti ti-confetti" style="font-size:14px"></i>Events this month</div>
+    <div class="event-item">
+      <div class="event-dot event-birthday"><i class="ti ti-cake" style="font-size:14px"></i></div>
+      <div class="event-info">
+        <div class="event-title">Priya Sharma's Birthday <span class="today-badge">Today</span></div>
+        <div class="event-sub">Product Team · 20 May</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot event-anniversary"><i class="ti ti-heart" style="font-size:14px"></i></div>
+      <div class="event-info">
+        <div class="event-title">Rajan's Work Anniversary</div>
+        <div class="event-sub">Engineering · 22 May · 5 years 🎉</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot event-general"><i class="ti ti-calendar-event" style="font-size:14px"></i></div>
+      <div class="event-info">
+        <div class="event-title">All-Hands Town Hall</div>
+        <div class="event-sub">Entire Company · 27 May · 3 PM</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot event-birthday"><i class="ti ti-cake" style="font-size:14px"></i></div>
+      <div class="event-info">
+        <div class="event-title">Arun Joshi's Birthday</div>
+        <div class="event-sub">Finance · 29 May</div>
+      </div>
+    </div>
+    <div class="event-item">
+      <div class="event-dot event-anniversary"><i class="ti ti-heart" style="font-size:14px"></i></div>
+      <div class="event-info">
+        <div class="event-title">Divya's Work Anniversary</div>
+        <div class="event-sub">Design · 31 May · 3 years</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border)"></div>
+
+  <!-- Quick actions -->
+  <div>
+    <div class="section-title"><i class="ti ti-bolt" style="font-size:14px"></i>Quick actions</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary" style="font-size:12px;padding:9px 12px;justify-content:flex-start;gap:10px"><i class="ti ti-calendar-plus"></i>Apply for Leave</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:9px 12px;justify-content:flex-start;gap:10px"><i class="ti ti-file-text"></i>Download Payslip</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:9px 12px;justify-content:flex-start;gap:10px"><i class="ti ti-clock-edit"></i>Regularise Attendance</button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:9px 12px;justify-content:flex-start;gap:10px"><i class="ti ti-chart-bar"></i>View Attendance Report</button>
+    </div>
+  </div>
+
+</div><!-- /right-col -->
+
+</div><!-- /shell -->
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-title">⏱️ Clock Out Confirmation</div>
+    <div class="modal-body">Are you sure you want to punch out? This action will record your departure time for today.</div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex:1" onclick="punchOut()">Yes, Punch Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Live time
+function updateTime(){
+  const now=new Date();
+  document.getElementById('liveTime').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  document.getElementById('todayDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+updateTime();setInterval(updateTime,1000);
+
+// Punch state
+let punchedIn=false,punchedOut=false;
+let punchInTime=null;
+
+function fmt(d){return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
+function setMsg(text,type){const el=document.getElementById('gpsMessage');el.textContent=text;el.className=type}
+
+function setStatus(state){
+  const pill=document.getElementById('statusPill');
+  const txt=document.getElementById('statusText');
+  if(state==='in'){pill.className='status-pill in';txt.textContent='Punched In';pill.querySelector('.status-dot').className='status-dot dot-green'}
+  else if(state==='out'){pill.className='status-pill out';txt.textContent='Punched Out';pill.querySelector('.status-dot').className='status-dot dot-red'}
+  else{pill.className='status-pill idle';txt.textContent='Not Punched In';pill.querySelector('.status-dot').className='status-dot dot-gray'}
+}
+
+function punchIn(){
+  if(punchedIn)return;
+  const btn=document.getElementById('punchInBtn');
+  btn.innerHTML='<i class="ti ti-loader"></i> ⏳ Punching In...';btn.disabled=true;
+  setTimeout(()=>{
+    punchedIn=true;punchInTime=new Date();
+    document.getElementById('punchInTime').textContent=fmt(punchInTime);
+    setStatus('in');
+    document.getElementById('punchOutBtn').disabled=false;
+    btn.innerHTML='<i class="ti ti-check"></i> Punched In';
+    btn.style.background='var(--green)';
+    setMsg('✓ Punch In recorded at '+fmt(punchInTime),'success');
+  },1000);
+}
+
+function openModal(){if(!punchedIn||punchedOut)return;document.getElementById('confirmModal').classList.add('show')}
+function closeModal(){document.getElementById('confirmModal').classList.remove('show')}
+
+function punchOut(){
+  closeModal();
+  if(!punchedIn||punchedOut)return;
+  const btn=document.getElementById('punchOutBtn');
+  btn.innerHTML='⏳ Punching Out...';btn.disabled=true;
+  setTimeout(()=>{
+    punchedOut=true;const t=new Date();
+    document.getElementById('punchOutTime').textContent=fmt(t);
+    setStatus('out');
+    setMsg('✓ Punch Out recorded at '+fmt(t),'success');
+    btn.innerHTML='<i class="ti ti-check"></i> Punched Out';
+  },1000);
+}
+
+// Calendar
+function buildCal(){
+  const grid=document.getElementById('calGrid');
+  const days=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  days.forEach(d=>{const el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el)});
+  const today=new Date();
+  const yr=2025,mo=4;// May 2025
+  const first=new Date(yr,mo,1).getDay();
+  const total=31;
+  const events=[5,10,14,20,22,27,29,31];
+  const todayD=today.getDate();
+  for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cal-day other-month';el.textContent=31-first+i+1;grid.appendChild(el)}
+  for(let d=1;d<=total;d++){
+    const el=document.createElement('div');
+    el.className='cal-day'+(d===todayD?' today':'')+(events.includes(d)?' has-event':'');
+    el.textContent=d;grid.appendChild(el);
+  }
+}
+buildCal();
+</script>
+</body>
+</html>
