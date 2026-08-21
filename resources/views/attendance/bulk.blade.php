@@ -7,7 +7,7 @@
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Home') }}</a></li>
     <li class="breadcrumb-item">{{ __('Bulk Attendance') }}</li>
 @endsection
-
+<!-- code add -->
 
 @push('script-page')
     <script>
