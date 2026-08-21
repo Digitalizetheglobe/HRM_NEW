@@ -732,7 +732,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('employee/{id}/welcome-email', [EmployeeController::class, 'sendWelcomeEmail'])->name('employee.welcome.email')->middleware(['auth', 'XSS']);
 
-    Route::put('employee/{employee}', [EmployeeController::class, 'update'])->name('employee.update');
 
 
     Route::delete('lastlogin/{id}', [EmployeeController::class, 'logindestroy'])->name('employee.logindestroy')->middleware(
