@@ -2232,7 +2232,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/leave/markAsRead', [LeaveController::class, 'markAsRead'])->name('leave.markAsRead');
     Route::post('/leave/markAllAsRead', [LeaveController::class, 'markAllAsRead'])->name('leave.markAllAsRead');
-    Route::get('/leave/action/{id}/{status}', [LeaveController::class, 'action'])->name('leave.action');
     Route::get('/leave', [LeaveController::class, 'index'])->name('leave.index');
     Route::get('/leave-notifications', [LeaveController::class, 'getLeaveNotifications'])->name('leave.notifications');
 
