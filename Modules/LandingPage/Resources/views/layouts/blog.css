@@ -1,0 +1,374 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    /* background-color: #f4f4f4; */
+}
+.container {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.content {
+    display: flex;
+    gap: 50px;
+    margin-top: 50px;
+}
+
+.blog-list {
+    flex: 2;
+}
+
+.blog-post {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.blog-post img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.blog-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.blog-link:hover {
+    text-decoration: none;
+}
+
+.blog-post h2 {
+    font-size: 22px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.blog-post p {
+    font-size: 14px;
+    color: #888;
+}
+
+.right-sidebar {
+    flex: 1;
+    position: relative;
+}
+
+.sticky-box {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+    text-align: center;
+}
+
+.sticky-box h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.form-section {
+    flex: 1;
+    max-width: 400px;
+    width: 100%;
+}
+
+.form-section input,
+.form-section textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+.form-section input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.form-section label {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.form-section button {
+    width: 100%;
+    padding: 15px;
+    background-color: #62975f;
+    color: white;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-section button:hover {
+    background-color: #005b33;
+}
+
+/* Error message styling */
+#error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+/* intl-tel-input custom styles */
+.iti {
+    width: 100%;
+}
+
+/* Align the country code dropdown with input padding */
+.iti__selected-flag {
+    padding: 12px 15px;
+}
+
+/* Ensure phone input takes full width */
+.form-section .iti input {
+    width: 100%;
+    padding-left: 60px; /* Adjust for flag dropdown width */
+}
+
+/* Media Queries */
+/* Keep the layout as is for laptops and above */
+@media (max-width: 991px) {
+    .content {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .right-sidebar {
+        min-width: 100%;
+        position: relative;
+    }
+    
+    .blog-list {
+        min-width: 100%;
+    }
+}
+
+/* Tablet and mobile-specific adjustments */
+@media (max-width: 768px) {
+    .blog-post h2 {
+        font-size: 20px;
+    }
+
+    .blog-post p {
+        font-size: 13px;
+    }
+
+    .sticky-box h3 {
+        font-size: 20px;
+    }
+
+    .form-section {
+        max-width: 100%;
+    }
+
+    .sticky-box {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .blog-post h2 {
+        font-size: 18px;
+    }
+
+    .blog-post p {
+        font-size: 12px;
+    }
+
+    .sticky-box h3 {
+        font-size: 18px;
+    }
+
+    .form-section input,
+    .form-section textarea {
+        padding: 10px;
+    }
+
+    .form-section button {
+        padding: 12px;
+        font-size: 1rem;
+    }
+}
+
+
+
+/* NAvbar */
+/* Common styles */
+/* Navbar styling */
+.navbar-connect {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 50px;
+    padding-right: 50px;
+    background-color: white;
+    border-bottom: 1px solid #eee;
+    height: 75px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: box-shadow 0.3s ease; /* Smooth transition for the shadow */
+}
+
+/* Add shadow when the page is scrolled */
+.navbar-connect.scrolled {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+}
+
+/* Responsive Styling */
+@media (max-width: 1024px) {
+    .navbar-connect {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+/* Logo styling */
+.navbar-logo img {
+    height: 230px; /* Logo size for larger screens */
+    display: block;
+    margin: 0;
+    padding: 0;
+    max-width: 1500px;
+}
+
+/* Center Menu Styling */
+.navbar-menu {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center; /* Center the menu items */
+    flex-grow: 1; /* Makes the menu grow to fill available space */
+}
+
+.navbar-menu li {
+    margin: 0 15px; /* Space between menu items */
+}
+
+.navbar-menu li a {
+    text-decoration: none;
+    color: #000;
+    font-size: 18px;
+}
+
+.navbar-menu li a:hover {
+    color: #2c9ec6;
+}
+
+/* Login Button */
+.navbar-login a {
+    text-decoration: none;
+    color: white;
+    background-color: #62975f;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.navbar-login a:hover {
+    background-color: #005b33;
+    color: white;
+}
+
+/* Mobile Menu Toggle */
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.navbar-toggle .bar {
+    height: 3px;
+    width: 25px;
+    background-color: #000;
+    margin: 4px 0;
+    transition: 0.4s;
+}
+
+/* Responsive Styling */
+@media (max-width: 1024px) {
+    .navbar-menu {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: flex;
+    }
+
+    .navbar-menu.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-menu li {
+        margin: 15px 0;
+    }
+
+    /* Logo size adjustment for mobile */
+    .navbar-logo img {
+        height: 130px; /* Logo size for mobile */
+    }
+
+    /* Place the login button above the menu */
+    .navbar-login {
+        display: flex;
+        justify-content: center;
+        /* margin-bottom: 20px; */
+    }
+
+    .navbar-menu.active .navbar-login {
+        order: -1; /* Moves the login button above the menu items */
+    }
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 768px) {
+    .navbar-connect {
+        padding: 0 20px;
+    }
+
+    .navbar-login a {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    .navbar-logo img {
+        height: 130px;
+    }
+}
+
+/* navbar end
+ */
+
+

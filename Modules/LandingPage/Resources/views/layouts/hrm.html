@@ -1,0 +1,653 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+        <!-- <link rel="stylesheet" href="zohocustom.css"> -->
+        <link rel="stylesheet" href="{{ Module::asset('LandingPage:Resources/views/layouts/zohocustom.css') }}">
+        <link rel="stylesheet" href="{{ Module::asset('LandingPage:Resources/views/layouts/2474.css') }}">
+        <link rel="stylesheet" href="{{ Module::asset('LandingPage:Resources/views/layouts/style.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+            <link rel="stylesheet" href="{{ Module::asset('LandingPage:Resources/views/layouts/footer.css') }}">
+
+
+        <!-- jQuery and Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+ 
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Experience Section</title>
+   
+</head>
+<body>
+
+    <div class="navbar-connect">
+        <div class="navbar-logo">
+            <a href="/">
+            <img src="<?php echo asset('Modules/LandingPage/Resources/views/layouts/images/logo.png'); ?>" alt="Connect360">
+            </a>
+        </div>
+    
+        <ul class="navbar-menu" id="nav-links">
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="#">Contact</a></li>
+</ul>
+
+
+
+
+
+    
+        <div class="navbar-login">
+            <a href="{{ route('login') }}">Login</a>
+        </div>
+    
+        <div class="navbar-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </div>
+    
+    
+    
+    <!-- Banner -->
+    
+    <section id="banner">
+        <div class="container-banner">
+            <div class="text-section">
+                <h1>STREAMLINE SUCCESS THROUGH.</h1>
+                <h2>HR Management</h2>
+                <p>
+                    Boost your HR efficiency and employee satisfaction with our cutting-edge HRM software, tailored to meet the unique needs of your organization.
+                </p>
+            </div>
+            <div class="form-section">
+                <form action="#">
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="tel" placeholder="Phone Number" required>
+                    <input type="email" placeholder="Email Address" required>
+                    <textarea rows="4" placeholder="Message" required></textarea>
+                    <label>
+                        <input type="checkbox" required> Yes, I agree with the privacy policy and terms and conditions.
+                    </label>
+                    <button class="table-button1">Choose Starter</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <!-- Banner End -->
+     <!-- Feature Section -->
+    <section class="feature-section">
+        <div >
+            <h1>Our Amazing Features Helpful for your HR</h1>
+            <p>
+              Streamline your HR tasks with our powerful features. From payroll processing to project tracking, our tools simplify management, boost productivity, and enhance employee satisfaction.
+            </p>
+        </div>
+
+        <div class="feture">
+            <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/HRM.gif') }}" alt="Description of image">
+        </div>
+           
+          
+    </section>
+    <!-- End Feture Section -->
+    <!-- Feture SHow -->
+    <section id="feture-show">
+        <div class="unique-container">
+            <h1 class="unique-heading">Transforming<span style="color: #005b33; font-weight: bold;"> HR Management</span> for Success</h1>
+            <div class="unique-buttons">
+                <a href="#" class="unique-btn-demo">Book A Demo!</a>
+                <a href="#function-section" class="unique-btn-features">See All Features</a>
+            </div>
+            
+        </div>
+        <div class="image-container">
+        <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/HRMFE.gif') }}" alt="HR Management" class="big-image">
+        </div>  
+    </section>
+    
+    
+     
+     <!-- End Feture Show -->
+
+     <!-- Function SHow -->
+    <section id="function-section">
+        <h1 class="function-heading">Discover Our Comprehensive <span style="color: #005b33s;">HRM Functions</span></h1>
+        <p class="function-paragraph">
+            Explore our range of powerful HRM functions designed to streamline your processes and enhance efficiency across every aspect of human resource management.
+        </p>
+
+        <!-- First Card Section -->
+        <div class="card-section">
+            <div class="container">
+                <div class="card">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/meeting.gif') }}" alt="Meeting Icon">
+                    <h3>Streamline Workforce Management</h3>
+                    <p>Effortlessly manage onboarding, development, and offboarding. Keep your team organized and productive.</p>
+                </div>
+                <div class="card">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/clock.gif') }}" alt="Clock Icon">
+                    <h3>Simplify Attendance Tracking</h3>
+                    <p>Effortlessly monitor employee attendance, ensuring accountability and boosting overall productivity.</p>
+                </div>
+                <div class="card">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/leave.gif') }}" alt="Leave Icon">
+                    <h3>Streamlined Leave Requests</h3>
+                    <p>Enable easy leave requests and approvals, promoting a healthy work-life balance for your team.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Card Section with Background -->
+        <div class="card-section">
+            <div class="container">
+                <div class="card">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/salary.gif') }}" alt="Salary Icon">
+                    <h3>Automate Payroll Processing</h3>
+                    <p>Quickly and accurately calculate payroll, reducing errors and ensuring timely payments.</p>
+                </div>
+                <div class="card">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/document.gif') }}" alt="Document Icon">
+                    <h3>Organize Employee Documents</h3>
+                    <p>Manage employee documentation with ease, ensuring everything is secure and organized.</p>
+                </div>
+                <div class="card" style="height:300px">
+                    <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/tick.gif') }}" alt="Tick Icon">
+                    <h3>Ensure Compliance</h3>
+                    <p>Stay compliant with HR regulations by managing employee data and processes efficiently.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+      
+     
+     <!-- End Function Show -->
+
+     <!-- slider  -->
+     <section id="slider-section">
+        <h1 class="slider-heading">Explore Our <span style="color:#005b33">HRM</span> in Action</h1>
+        <p class="slider-paragraph">
+            Browse through our gallery to see how our HRM software streamlines processes, enhances productivity, and transforms HR management. Discover real-world examples and visual insights into our comprehensive features and benefits.
+        </p>
+        <div class="slider">
+            <div id="carouselExampleSlidesOnly" class="carousel slide slider1" data-ride="carousel" data-interval="2000"> <!-- Set to 5000ms -->
+                <div class="carousel-inner">
+                <div class="carousel-item active">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/1.png') }}" alt="First slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/2.png') }}" alt="Second slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/3.png') }}" alt="Third slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/4.png') }}" alt="Fourth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/5.png') }}" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/6.png') }}" alt="Sixth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/7.png') }}" alt="Seventh slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/8.png') }}" alt="Eighth slide">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+      <!-- end slider -->
+
+      <!-- Why choose us -->
+       
+
+    <section class="special-features-section">
+        <h1 class="slider-heading" style="font-size: 2.5rem;">Special Features</h1>
+        <div class="icon-line"></div>
+        <p class="slider-paragraph" style="font-size: 1.2rem;">Appino is launched with everything you need. We've got a lot of amazing and cool features, so here we go, with unlimited features, go and check out!</p>
+    </section>
+
+    <section>
+        <div class="main-container">
+            <!-- First Div - Gradient Cards -->
+            <div class="section first-section">
+                <div class="gradient-card">
+                    <h5>Comprehensive All-in-One HRM Solutions for Your Business</h5>
+                </div>
+                <div class="gradient-card">
+                    <h5>Intuitive and Easy-to-Use Interface for Everyone</h5>
+                </div>
+                <div class="gradient-card">
+                    <h5>Scalable and Flexible for Businesses of All Sizes</h5>
+                </div>
+            </div>
+
+            <!-- Second Div - Mobile Preview with Video -->
+            <div class="section middle-section">
+                <div class="phone-container">
+                    <video autoplay loop muted playsinline>
+                        <source src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/mobile.mp4') }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <!-- Third Div - Gradient Cards -->
+            <div class="section third-section">
+                <div class="gradient-card">
+                    <h5>24/7 Dedicated Expert Support Whenever You Need It</h5>
+                </div>
+                <div class="gradient-card">
+                    <h5>Advanced Analytics and Reporting for Informed Decisions</h5>
+                </div>
+                <div class="gradient-card">
+                    <h5>Top-Notch Security and Compliance for Your Peace of Mind</h5>
+                </div>
+            </div>
+        </div>
+    </section>
+
+       <!-- End Why choose us  -->
+
+      <!-- prizing -->
+    <section id="prizing">
+            <h1 class="slider-heading">Explore Our <span style="color: #005b33;">HRM</span> in Action</h1>
+            <p class="slider-paragraph">
+                Browse through our gallery to see how our HRM software streamlines processes, enhances productivity, and transforms HR management. Discover real-world examples and visual insights into our comprehensive features and benefits.
+            </p>
+            <div class="pricing-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="table-th">Modules and Features</th>
+                            <th>Starter<br>₹ <span style="color: #62965d;">0</span> /month<br><h6>(25 Employees)</h6>
+                                <button class="table-button">Choose Starter</button>
+                            </th>
+                            <th>Essential<br>₹<span style="color: #62965d;"> 3495 </span> /month<br><h6>(50 Employees)</h6>
+                                <button class="table-button">Choose Essential</button>
+                            </th>
+                            <th>Growth<br>₹<span style="color: #62965d;"> 5495 </span> /month<br><h6>(50 Employees)</h6>
+                                <button class="table-button">Choose Growth</button>
+                            </th>
+                            <th>Enterprise<br>₹<span style="color: #62965d;"> 7495 </span> /month<br><h6>(50 Employees)</h6>
+                                <button class="table-button">Choose Enterprise</button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Number of Employees</td>
+                            <td>Limited</td>
+                            <td>Unlimited</td>
+                            <td>Unlimited</td>
+                            <td>Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>
+                        <tr>
+                            <td>Cost Per Additional Employee</td>
+                            <td>Not Applicable</td>
+                            <td>₹30/month</td>
+                            <td>₹60/month</td>
+                            <td>₹100/month</td>
+                        </tr>   
+                        <!-- Additional rows omitted for brevity -->
+                    </tbody>
+                </table>
+            </div>
+    </section>
+
+
+    <script>
+        // Get the pricing section and the table body
+        const pricingSection = document.getElementById('prizing');
+        const tableBody = document.querySelector('.pricing-table tbody');
+
+        // Add a scroll event listener to the window
+        window.addEventListener('scroll', function () {
+            // Check if the pricing section is in view
+            const sectionRect = pricingSection.getBoundingClientRect();
+
+            // If the pricing section is visible, adjust the scroll of the table body
+            if (sectionRect.top <= window.innerHeight && sectionRect.bottom >= 0) {
+                const scrollAmount = window.scrollY - pricingSection.offsetTop;
+                tableBody.scrollTop = scrollAmount; // Synchronize the scroll amount
+            }
+        });
+    </script>
+
+
+<!-- end prizing -->
+
+
+
+
+       
+
+    <!-- contact form -->
+    <section class="app-section">
+        <div class="container-call call-to-action">
+            <div class="app-content">
+                <h2 style="text-align: left;">Get a Sneak Peek — <br>Book Your Demo!</h2>
+                <p style="text-align: left;">Discover how our solution fits your needs. Book a demo today for a quick, personalized tour of the features that matter most to you.</p>
+                <div class="app-buttons">
+                    <a href="#" target="_blank" class="google-play-button">
+                        Call To More
+                    </a>
+                </div>
+
+            </div>
+            <div class="app-image">
+                <img src="{{ asset('Modules/LandingPage/Resources/views/layouts/images/call-to-action.png') }}" alt="Phone Mockup" />
+            </div>
+        </div>
+    </section>
+
+        
+     <!-- End contact form -->
+
+
+     <footer class="footer-container">
+        <div class="footer-content">
+            <!-- Left: Menu Links -->
+            <div class="footer-links">
+                <a href="#">Pricing</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                
+            </div>
+
+            <!-- Center: Copyright -->
+            <div class="footer-copyright">
+                <p>© 2024 Connect360. All rights reserved.</p>
+            </div>
+
+            <!-- Right: Icons with hover info -->
+            <div class="footer-icons">
+                <div class="icon">
+                    <i class="fa fa-phone"></i>
+                    <div class="icon-info">Call: +123-456-7890</div>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-envelope"></i>
+                    <div class="icon-info">Email: info@example.com</div>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-map-marker"></i>
+                    <div class="icon-info">Address: 123 Example St.</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+     <!-- popup -->
+
+    
+    <!-- Popup Modal -->
+    <div id="popup-modal" class="popup-overlay">
+        <div class="custom-popup-content">
+            <!-- Left Side: Heading, Paragraph, and Subpoints -->
+            <div class="custom-popup-left">
+                <h2><span style="color: #299dc6;">Connect360</span> for Your Business!</h2>
+                <p>Join 23,000+ companies that endorse Connect360 for its exceptional software, support, and services.</p>
+                <h4 style="margin-top: 50px; color:#299dc6">Why Choose Us?</h4>
+                <ul>
+                    <li>Most affordable plans in the industry</li>
+                    <li>Powerful, mobile-friendly employee self-service</li>
+                    <li>Access to demo data for easy onboarding</li>
+                    <li>Comprehensive guided admin tours</li>
+                </ul>
+            </div>
+
+            <!-- Right Side: Name, Phone, Email Form -->
+            <div class="custom-popup-right">
+                <form id="popup-form">
+                    <label for="name">Name*</label>
+                    <input type="text" id="name" class="form-input" placeholder="Enter your name" required />
+
+                    <label for="number">Phone Number*</label>
+                    <input type="tel" id="number" class="form-input" placeholder="Enter your phone number" required />
+
+                    <label for="email">Email Address*</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required />
+
+                    <label for="options">Select an Option*</label>
+                    <div class="form-select-container">
+                        <select id="options" class="form-select">
+                            <option value="option1">Select package</option>
+                            <option value="option2">Starter</option>
+                            <option value="option3">Essential</option>
+                            <option value="option3">Growth</option>
+                            <option value="option3">Enterprise</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
+            </div>
+
+            <!-- Close Button -->
+            <span class="custom-close-popup">&times;</span>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for Popup and Form handling
+
+        const popupModal = document.getElementById("popup-modal");
+        const buttons = document.querySelectorAll(".table-button");
+        const closeBtn = document.querySelector(".custom-close-popup");
+
+        // Open popup on button click
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                popupModal.style.display = "block";
+            });
+        });
+
+        // Close popup on close button click
+        closeBtn.addEventListener("click", function () {
+            popupModal.style.display = "none";
+        });
+
+        // Close popup when clicking outside the modal
+        window.addEventListener("click", function (event) {
+            if (event.target === popupModal) {
+                popupModal.style.display = "none";
+            }
+        });
+
+        // Handle form submission
+        const form = document.getElementById('popup-form');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent page refresh
+
+            const name = document.getElementById('name').value;
+            const number = document.getElementById('number').value;
+            const email = document.getElementById('email').value;
+
+            alert(`Name: ${name}\nPhone: ${number}\nEmail: ${email}`);
+
+            // Close the popup
+            popupModal.style.display = "none";
+        });
+    </script>
+    <!-- End popup -->
+
+    
+    
+    
+    
+    
+    
+
+
+
+
+<!-- <button id="bookDemoBtn" class="book-demo-btn">
+    <span>Book A Demo</span>
+</button> -->
+<!-- <div class="modal-dialog modal-dialog-centered">
+<button id="bookDemoBtn" class="book-demo-btn">
+    <span>Book A Demo</span>
+</button>
+</div> -->
+
+
+    <!-- Popup -->
+    <!-- <div id="popupForm" class="+">
+    <div class="popup-content">
+        <span class="close">&times;</span>
+        <h2>Book A Demo</h2>
+        <form id="demoForm">
+            <div class="form-group">
+                <label for="firstName">First Name*</label>
+                <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name*</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email*</label>
+                <input type="email" id="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject*</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Select</option>
+                    <option value="inquiry">Inquiry</option>
+                    <option value="support">Support</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">How can we help?*</label>
+                <textarea id="message" name="message" placeholder="Message" required></textarea>
+            </div>
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+    </div>
+</div> -->
+
+<!-- <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+
+</div> -->
+
+    <script>    // Get the popup and button elements
+        const popupForm = document.getElementById('popupForm');
+        const bookDemoBtn = document.getElementById('bookDemoBtn');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        
+        // Show the popup when button is clicked
+        bookDemoBtn.onclick = function() {
+            popupForm.style.display = 'flex';
+        }
+        
+        // Close the popup when close button is clicked
+        closeBtn.onclick = function() {
+            popupForm.style.display = 'none';
+        }
+        
+        // Close the popup if user clicks outside of the form
+        window.onclick = function(event) {
+            if (event.target == popupForm) {
+                popupForm.style.display = 'none';
+            }
+        }</script>
+
+</body>
+</html>
