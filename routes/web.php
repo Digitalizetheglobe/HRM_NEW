@@ -722,7 +722,6 @@ Route::group(['middleware' => ['auth']], function () {
             'XSS',
         ]
     );
-    Route::get('employee/{id}/edit', [EmployeeController::class, 'edit'])->name('employee.edit');
 
     Route::resource('employee', EmployeeController::class)->middleware(
         [
