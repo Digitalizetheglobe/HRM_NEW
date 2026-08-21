@@ -1629,7 +1629,6 @@ Route::group(['middleware' => ['auth']], function () {
             'XSS',
         ]
     );
-    Route::get('notification-templates/{id?}/{lang?}/', [NotificationTemplatesController::class, 'index'])->name('notification-templates.index')->middleware(['auth', 'XSS']);
 
     Route::get('/leave/notifications', [LeaveController::class, 'notifications'])
     ->name('leave.notifications');
