@@ -1931,14 +1931,6 @@ Route::group(['middleware' => ['auth']], function () {
         ]
     );
 
-    Route::get('interview-schedule/create/{id?}', [InterviewScheduleController::class, 'create'])->name('interview-schedule.create')->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-
-    Route::any('/interview-schedule/get_interview-schedule_data', [InterviewScheduleController::class, 'get_interview_schedule_data'])->name('interview-schedule.get_interview-schedule_data')->middleware(['auth', 'XSS']);
 
 
     //================================= Custom Landing Page ====================================//
