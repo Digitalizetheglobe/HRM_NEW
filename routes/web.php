@@ -1630,8 +1630,7 @@ Route::group(['middleware' => ['auth']], function () {
         ]
     );
 
-    Route::get('/leave/notifications', [LeaveController::class, 'notifications'])
-    ->name('leave.notifications');
+
 
     Route::post('/notification/mark-read/{notification}', [UserController::class, 'markNotificationRead'])
     ->name('notification.markRead')
