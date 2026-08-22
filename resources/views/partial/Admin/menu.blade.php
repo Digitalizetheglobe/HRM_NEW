@@ -25,7 +25,7 @@
         <a href="{{ route('dashboard') }}" class="b-brand">
             <!-- ========   change your logo hear   ============ -->
             <img src="{{ $logo . (isset($company_logo) && !empty($company_logo) ? $company_logo . '?' . time() : 'logo-dark.png' . '?' . time()) }}"
-                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height: 250px; width: auto;">
+                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height: 200px; width: auto;">
         </a>
     </div>
     <div class="navbar-content">
