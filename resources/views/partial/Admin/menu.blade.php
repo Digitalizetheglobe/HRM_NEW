@@ -142,7 +142,7 @@
                                     <span class="dash-micon text-white text-2xl shadow-none" style="background: none;">
                                         <i class="ti ti-users text-white text-2xl"></i>
                                     </span>
-                            <span class="dash-mtext">{{ __('Employee') }}</span>
+                            <span class="dash-mtext">{{ __('All Employee') }}</span>
                         </a>
 
                     </li>
@@ -153,7 +153,7 @@
                             <span class="dash-micon text-white text-2xl shadow-none" style="background: none;">
                                         <i class="ti ti-users text-white text-2xl"></i>
                             </span>
-                            <span class="dash-mtext">{{ __('Employee') }}</span>
+                            <span class="dash-mtext">{{ __('All Employee') }}</span>
                         </a>
                     </li>
                 @endif
