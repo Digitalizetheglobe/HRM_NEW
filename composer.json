@@ -7,6 +7,12 @@
         "laravel"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/laravel-payhere"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "anandsiddharth/laravel-paytm-wallet": "^2.0",

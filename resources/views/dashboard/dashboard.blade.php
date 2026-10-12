@@ -1555,15 +1555,8 @@ function calculateCurrentHours(data) {
                 return Math.min(serverHours, maxHoursForDay);
             }
             
-            // Use the calculated hours, but don't let it exceed server hours by too much
-            // (server hours are more accurate as they use the correct attendance date)
-            if (calculatedHours > serverHours + 0.5) {
-                // If calculated is significantly more than server, there's a date mismatch
-                // Use server hours
-                return Math.min(serverHours, maxHoursForDay);
-            }
-            
-            return Math.min(calculatedHours, maxHoursForDay);
+            // Use the calculated hours, capped at max hours for the day
+            return Math.min(Math.max(calculatedHours, serverHours), maxHoursForDay);
         } catch (e) {
             console.error('Error calculating current hours:', e);
             return Math.min(serverHours || 0, maxHoursForDay);

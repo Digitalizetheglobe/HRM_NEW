@@ -1360,12 +1360,23 @@ Route::group(['middleware' => ['auth']], function () {
         ]
     );
 
+    Route::post('attendance-calendar/quick-update', [AttendanceEmployeeController::class, 'quickUpdateAttendance'])->name('attendance.calendar.quick-update')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
     //import attendance
     Route::get('import/attendance/file', [AttendanceEmployeeController::class, 'importFile'])->name('attendance.file.import');
     Route::post('import/attendance', [AttendanceEmployeeController::class, 'import'])->name('attendance.import');
-
     Route::get('attendance/export', [AttendanceEmployeeController::class, 'export'])->name('attendance.export');
-    Route::post('attendance/overview', [AttendanceEmployeeController::class, 'attendanceOverview'])->name('attendance.overview');
+    Route::post('attendance/overview', [AttendanceEmployeeController::class, 'attendanceOverview'])->name('attendance.overview')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
     Route::get('attendance/report', [AttendanceEmployeeController::class, 'report'])->name('attendance.report')->middleware(
         [
             'auth',

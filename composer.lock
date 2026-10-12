@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db07359b21474ed11d4a6bb1200891a0",
+    "content-hash": "0c74ef14c3f75e0309887ded11d8b9f4",
     "packages": [
         {
             "name": "anandsiddharth/laravel-paytm-wallet",
@@ -2948,26 +2948,20 @@
         {
             "name": "lahirulhr/laravel-payhere",
             "version": "0.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Visanduma/laravel-payhere.git",
-                "reference": "e5886224b4819f7f68e73c000478d50772b913b6"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Visanduma/laravel-payhere/zipball/e5886224b4819f7f68e73c000478d50772b913b6",
-                "reference": "e5886224b4819f7f68e73c000478d50772b913b6",
-                "shasum": ""
+                "type": "path",
+                "url": "packages/laravel-payhere",
+                "reference": "b7e141b5f74060a3cd2a2a970946cbaaf88b310c"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.4",
-                "illuminate/contracts": "^10.0",
+                "illuminate/contracts": "^9.0|^10.0",
                 "php": "^8.0",
                 "spatie/laravel-package-tools": "^1.9.2"
             },
             "require-dev": {
                 "nunomaduro/collision": "^6.0",
-                "orchestra/testbench": "^8.0",
+                "orchestra/testbench": "^7.0",
                 "pestphp/pest": "^1.23",
                 "pestphp/pest-plugin-laravel": "^1.4",
                 "phpunit/phpunit": "^9.6.0"
@@ -2989,7 +2983,22 @@
                     "Lahirulhr\\PayHere\\Database\\Factories\\": "database/factories"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Lahirulhr\\PayHere\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "phpstan": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest coverage"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -3007,17 +3016,9 @@
                 "laravel",
                 "laravel-payhere"
             ],
-            "support": {
-                "issues": "https://github.com/Visanduma/laravel-payhere/issues",
-                "source": "https://github.com/Visanduma/laravel-payhere/tree/0.2.1"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/lahirulhr",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-12-26T06:08:23+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "laravel/framework",

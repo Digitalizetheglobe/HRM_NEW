@@ -986,6 +986,7 @@ namespace App\Http\Controllers;
 
                             $employeeData[$attendance['date']] = [
                                 'type' => $type,
+                                'status' => $attendance['status'],
                                 'clock_in' => $attendance['clock_in'],
                                 'clock_out' => $attendance['clock_out'],
                                 'late' => $attendance['late'],
@@ -1072,6 +1073,96 @@ namespace App\Http\Controllers;
             } else {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }
+        }
+
+        public function quickUpdateAttendance(Request $request)
+        {
+            if (!\Auth::user()->can('Create Attendance') && !\Auth::user()->can('Edit Attendance') && \Auth::user()->type !== 'company' && \Auth::user()->type !== 'hr') {
+                return response()->json(['success' => false, 'message' => __('Permission denied.')], 403);
+            }
+
+            $validator = \Validator::make($request->all(), [
+                'employee_id' => 'required|exists:employees,id',
+                'date' => 'required|date',
+                'status' => 'required|in:Present,Half Day,Absent',
+                'clock_in' => 'nullable',
+                'clock_out' => 'nullable',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+            }
+
+            $employeeId = $request->employee_id;
+            $date = $request->date;
+            $statusInput = $request->status;
+            $clockIn = !empty($request->clock_in) ? (strlen($request->clock_in) == 5 ? $request->clock_in . ':00' : $request->clock_in) : null;
+            $clockOut = !empty($request->clock_out) ? (strlen($request->clock_out) == 5 ? $request->clock_out . ':00' : $request->clock_out) : null;
+
+            $record = AttendanceEmployee::where('employee_id', $employeeId)->where('date', $date)->first();
+
+            if ($statusInput === 'Absent') {
+                if ($record) {
+                    $record->delete();
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => __('Attendance updated to Absent successfully.')
+                ]);
+            }
+
+            // Present or Half Day
+            if (empty($clockIn)) {
+                return response()->json(['success' => false, 'message' => __('Punch-in time is required for Present / Half Day.')], 422);
+            }
+
+            // Calculate late
+            $late = $this->calculateLateMark($clockIn, $date, $employeeId);
+            $earlyArrival = $this->calculateEarlyArrival($clockIn, $date, $employeeId);
+            $earlyLeaving = (!empty($clockOut) && $clockOut !== '00:00:00') ? $this->calculateEarlyLeaving($clockOut, $date, $employeeId) : '00:00:00';
+
+            // Determine final status
+            $finalStatus = $statusInput;
+            $finalReason = null;
+
+            if (!empty($clockOut) && $clockOut !== '00:00:00') {
+                $workedSeconds = strtotime($clockOut) - strtotime($clockIn);
+                $workedHours = max(0, $workedSeconds / 3600);
+                $statusData = $this->determineStatus($date, $workedHours, $employeeId, $clockIn);
+                if ($statusInput === 'Half Day') {
+                    $finalStatus = AttendanceEmployee::STATUS_HALF_DAY;
+                    $finalReason = $statusData['reason'] ?? 'Half Day';
+                } else {
+                    $finalStatus = $statusData['status'];
+                    $finalReason = $statusData['reason'];
+                }
+            } else {
+                $finalStatus = ($statusInput === 'Half Day') ? AttendanceEmployee::STATUS_HALF_DAY : AttendanceEmployee::STATUS_PRESENT;
+                $finalReason = null;
+            }
+
+            if (!$record) {
+                $record = new AttendanceEmployee();
+                $record->employee_id = $employeeId;
+                $record->date = $date;
+                $record->created_by = \Auth::user()->creatorId();
+            }
+
+            $record->clock_in = $clockIn;
+            $record->clock_out = $clockOut ?? '00:00:00';
+            $record->status = $finalStatus;
+            $record->status_reason = $finalReason;
+            $record->late = $late ?? '00:00:00';
+            $record->early_arrival = $earlyArrival ?? '00:00:00';
+            $record->early_leaving = $earlyLeaving ?? '00:00:00';
+            $record->overtime = '00:00:00';
+            $record->total_rest = '00:00:00';
+            $record->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Attendance successfully updated!')
+            ]);
         }
 
         public function export(Request $request)
@@ -1917,9 +2008,14 @@ namespace App\Http\Controllers;
     
             $data = [];
     
+            $tz = \App\Models\Utility::getValByName('timezone') ?: config('app.timezone', 'Asia/Kolkata');
+            if (!empty($tz)) {
+                date_default_timezone_set($tz);
+            }
+
             if ($filterType === 'today' || $filterType === 'date') {
                 if ($filterType === 'today') {
-                    $date = \Carbon\Carbon::today()->format('Y-m-d');
+                    $date = \Carbon\Carbon::today($tz)->format('Y-m-d');
                 } else {
                     $requestDate = $request->input('date');
                     if (empty($requestDate)) {
@@ -1930,7 +2026,7 @@ namespace App\Http\Controllers;
                         ]);
                     }
                     try {
-                        $date = \Carbon\Carbon::parse($requestDate)->format('Y-m-d');
+                        $date = \Carbon\Carbon::parse($requestDate, $tz)->format('Y-m-d');
                     } catch (\Exception $e) {
                         return response()->json([
                             'success' => false,
@@ -1939,8 +2035,8 @@ namespace App\Http\Controllers;
                     }
                 }
                 
-                $startDate = \Carbon\Carbon::parse($date)->startOfDay();
-                $endDate = \Carbon\Carbon::parse($date)->endOfDay();
+                $startDate = \Carbon\Carbon::parse($date, $tz)->startOfDay();
+                $endDate = \Carbon\Carbon::parse($date, $tz)->endOfDay();
     
                 $attendance = \App\Models\AttendanceEmployee::where('employee_id', $employeeId)
                     ->where('date', $date)
@@ -2014,9 +2110,9 @@ namespace App\Http\Controllers;
                             $totalSeconds = $clockInTime->diffInSeconds($clockOutTime);
                             $hoursCompleted = $totalSeconds / 3600;
                             
-                            $h = floor($totalSeconds / 3600);
-                            $m = floor(($totalSeconds / 60) % 60);
-                            $s = $totalSeconds % 60;
+                            $h = (int)floor($totalSeconds / 3600);
+                            $m = (int)floor($totalSeconds / 60) % 60;
+                            $s = (int)$totalSeconds % 60;
                             
                             $duration_formatted = $h . " " . ($h == 1 ? "hour" : "hours") . ", " . $m . " " . ($m == 1 ? "minute" : "minutes") . ", " . $s . " " . ($s == 1 ? "second" : "seconds");
                             $duration_hms = sprintf('%d:%02d:%02d', $h, $m, $s);
@@ -2046,15 +2142,15 @@ namespace App\Http\Controllers;
                     
                     if ($workedSeconds < $requiredSeconds) {
                         $remaining_seconds = $requiredSeconds - $workedSeconds;
-                        $h_rem = floor($remaining_seconds / 3600);
-                        $m_rem = floor(($remaining_seconds / 60) % 60);
-                        $s_rem = $remaining_seconds % 60;
+                        $h_rem = (int)floor($remaining_seconds / 3600);
+                        $m_rem = (int)floor($remaining_seconds / 60) % 60;
+                        $s_rem = (int)$remaining_seconds % 60;
                         $remaining_formatted = $h_rem . " " . ($h_rem == 1 ? "hour" : "hours") . ", " . $m_rem . " " . ($m_rem == 1 ? "minute" : "minutes") . ", " . $s_rem . " " . ($s_rem == 1 ? "second" : "seconds");
                     } elseif ($workedSeconds > $requiredSeconds) {
                         $overtime_seconds = $workedSeconds - $requiredSeconds;
-                        $h_ot = floor($overtime_seconds / 3600);
-                        $m_ot = floor(($overtime_seconds / 60) % 60);
-                        $s_ot = $overtime_seconds % 60;
+                        $h_ot = (int)floor($overtime_seconds / 3600);
+                        $m_ot = (int)floor($overtime_seconds / 60) % 60;
+                        $s_ot = (int)$overtime_seconds % 60;
                         $overtime_formatted = $h_ot . " " . ($h_ot == 1 ? "hour" : "hours") . ", " . $m_ot . " " . ($m_ot == 1 ? "minute" : "minutes") . ", " . $s_ot . " " . ($s_ot == 1 ? "second" : "seconds");
                     }
     

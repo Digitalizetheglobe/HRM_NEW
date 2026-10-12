@@ -263,16 +263,36 @@
                             $isToday   = $dateString == date('Y-m-d');
                             $dayOfWeek = date('N', strtotime($dateString));
                             $isWeekend = ($dayOfWeek >= 6);
+
+                            $rawStatus = '';
+                            $clockInVal = '';
+                            $clockOutVal = '';
+                            if (!empty($dayData)) {
+                                $rawStatus = $dayData['status'] ?? (isset($dayData['type']) ? ($dayData['type'] == 'absent' ? 'Absent' : ($dayData['type'] == 'present' ? 'Present' : (in_array($dayData['type'], ['half_day', 'single_punch']) ? 'Half Day' : ''))) : '');
+                                $clockInVal = !empty($dayData['clock_in']) && $dayData['clock_in'] != '00:00:00' ? substr($dayData['clock_in'], 0, 5) : '';
+                                $clockOutVal = !empty($dayData['clock_out']) && $dayData['clock_out'] != '00:00:00' ? substr($dayData['clock_out'], 0, 5) : '';
+                            }
+                            $canEditDay = (\Auth::user()->can('Create Attendance') || \Auth::user()->can('Edit Attendance') || \Auth::user()->type == 'company' || \Auth::user()->type == 'hr') && $selectedEmployee;
                         @endphp
 
-                        <div class="attn-day {{ $statusClass }} {{ $isToday ? 'day--today' : '' }} {{ $isWeekend && !$dayData ? 'day--weekend-bg' : '' }}"
-                             title="{{ $title }}">
+                        <div class="attn-day {{ $statusClass }} {{ $isToday ? 'day--today' : '' }} {{ $isWeekend && !$dayData ? 'day--weekend-bg' : '' }} {{ $canEditDay ? 'attn-day--clickable' : '' }}"
+                             title="{{ $title }}{{ $canEditDay ? "\n" . __('Click to edit attendance') : '' }}"
+                             @if($canEditDay)
+                             data-date="{{ $dateString }}"
+                             data-formatted-date="{{ date('D, d M Y', strtotime($dateString)) }}"
+                             data-status="{{ $rawStatus }}"
+                             data-clock-in="{{ $clockInVal }}"
+                             data-clock-out="{{ $clockOutVal }}"
+                             @endif>
 
                             {{-- Day number --}}
                             <div class="day-num {{ $isToday ? 'day-num--today' : '' }}">
-                                {{ $day }}
+                                <span>{{ $day }}</span>
                                 @if($isToday)
                                     <span class="today-indicator"></span>
+                                @endif
+                                @if($canEditDay)
+                                    <span class="cell-edit-btn ms-auto" title="{{ __('Edit') }}"><i class="ti ti-pencil"></i></span>
                                 @endif
                             </div>
 
@@ -347,6 +367,84 @@
     @endif
 
 </div>{{-- /row --}}
+
+{{-- Quick Attendance Edit Modal --}}
+<div class="modal fade" id="quickAttendanceModal" tabindex="-1" aria-labelledby="quickAttendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header text-white" style="background: linear-gradient(135deg, #001a3b 0%, #111135 100%); padding: 18px 24px;">
+                <div>
+                    <h5 class="modal-title text-white mb-0" id="quickAttendanceModalLabel">
+                        <i class="ti ti-calendar-event me-2"></i>{{ __('Manage Attendance') }}
+                    </h5>
+                    <small class="text-white-50" id="modalSubTitle">{{ $selectedEmployee->name ?? '' }}</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="quickAttendanceForm">
+                @csrf
+                <input type="hidden" name="employee_id" id="modalEmployeeId" value="{{ $selectedEmployee->id ?? '' }}">
+                <input type="hidden" name="date" id="modalDate" value="">
+                
+                <div class="modal-body p-4">
+                    <div class="alert alert-info py-2 px-3 d-flex align-items-center mb-3" style="border-radius: 10px; font-size: 0.88rem;">
+                        <i class="ti ti-info-circle fs-4 me-2"></i>
+                        <span>Date: <strong id="modalDateDisplay" class="text-dark"></strong></span>
+                    </div>
+
+                    {{-- Status Selector --}}
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold text-dark">{{ __('Attendance Status') }} <span class="text-danger">*</span></label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="status" id="statusPresent" value="Present" autocomplete="off" checked>
+                            <label class="btn btn-outline-success flex-fill text-center py-2" for="statusPresent">
+                                <i class="ti ti-circle-check d-block fs-5"></i> Present
+                            </label>
+
+                            <input type="radio" class="btn-check" name="status" id="statusHalfDay" value="Half Day" autocomplete="off">
+                            <label class="btn btn-outline-warning flex-fill text-center py-2" for="statusHalfDay">
+                                <i class="ti ti-clock-half-2 d-block fs-5"></i> Half Day
+                            </label>
+
+                            <input type="radio" class="btn-check" name="status" id="statusAbsent" value="Absent" autocomplete="off">
+                            <label class="btn btn-outline-danger flex-fill text-center py-2" for="statusAbsent">
+                                <i class="ti ti-circle-x d-block fs-5"></i> Absent
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Times Row --}}
+                    <div id="timeFieldsRow" class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark">{{ __('Clock In Time') }} <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="ti ti-login text-success"></i></span>
+                                <input type="time" name="clock_in" id="modalClockIn" class="form-control" placeholder="10:35">
+                            </div>
+                            <small class="text-muted d-block mt-1">Ex: 10:35 AM</small>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-dark">{{ __('Clock Out Time') }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="ti ti-logout text-danger"></i></span>
+                                <input type="time" name="clock_out" id="modalClockOut" class="form-control" placeholder="Optional">
+                            </div>
+                            <small class="text-muted d-block mt-1">Leave empty if not punched out</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light px-4 py-3" style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" id="btnSaveQuickAttendance" class="btn btn-primary px-4">
+                        <i class="ti ti-check me-1"></i> {{ __('Save Changes') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <style>
 /* =========================================================
@@ -708,5 +806,154 @@
     .attn-emp-info h5 { font-size: 1rem; }
     .attn-calendar-header { padding: 12px 14px; }
 }
+
+/* ── Interactive edit styling ── */
+.attn-day--clickable {
+    cursor: pointer;
+}
+.attn-day--clickable:hover {
+    box-shadow: 0 4px 14px rgba(0, 26, 59, 0.16) !important;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+.cell-edit-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-size: 0.8rem;
+    color: var(--cal-primary);
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+}
+.attn-day--clickable:hover .cell-edit-btn {
+    opacity: 0.85;
+}
+.cell-edit-btn:hover {
+    opacity: 1 !important;
+    background: rgba(92, 89, 232, 0.12);
+    transform: scale(1.1);
+}
 </style>
+
+@push('script-page')
+<script>
+$(document).ready(function() {
+    // Open Quick Attendance Modal on clicking any calendar cell
+    $('.attn-day--clickable').on('click', function(e) {
+        var $cell = $(this);
+        var date = $cell.data('date');
+        var formattedDate = $cell.data('formatted-date');
+        var currentStatus = $cell.data('status') || '';
+        var clockIn = $cell.data('clock-in') || '';
+        var clockOut = $cell.data('clock-out') || '';
+
+        $('#modalDate').val(date);
+        $('#modalDateDisplay').text(formattedDate);
+        $('#modalClockIn').val(clockIn);
+        $('#modalClockOut').val(clockOut);
+
+        // Set radio status
+        if (currentStatus === 'Half Day') {
+            $('#statusHalfDay').prop('checked', true);
+            $('#timeFieldsRow').slideDown(150);
+        } else if (currentStatus === 'Absent') {
+            $('#statusAbsent').prop('checked', true);
+            $('#timeFieldsRow').slideUp(150);
+        } else {
+            // Present or default
+            $('#statusPresent').prop('checked', true);
+            $('#timeFieldsRow').slideDown(150);
+            if (!clockIn) {
+                // If today and user doesn't have clock in set, default current time or 10:00
+                var now = new Date();
+                var hours = String(now.getHours()).padStart(2, '0');
+                var minutes = String(now.getMinutes()).padStart(2, '0');
+                $('#modalClockIn').val(hours + ':' + minutes);
+            }
+        }
+
+        var modal = new bootstrap.Modal(document.getElementById('quickAttendanceModal'));
+        modal.show();
+    });
+
+    function calculateHalfDayClockOut() {
+        var clockIn = $('#modalClockIn').val();
+        var dateStr = $('#modalDate').val();
+        if (!clockIn || !dateStr) return;
+
+        // Parse date to check if Saturday
+        var dateObj = new Date(dateStr + 'T00:00:00');
+        var isSaturday = (dateObj.getDay() === 6); // 6 is Saturday
+        var hoursToAdd = isSaturday ? 4 : 5;
+
+        var parts = clockIn.split(':');
+        var inHours = parseInt(parts[0], 10);
+        var inMinutes = parseInt(parts[1], 10);
+
+        var totalMinutes = (inHours * 60) + inMinutes + (hoursToAdd * 60);
+        var outHours = Math.floor(totalMinutes / 60) % 24;
+        var outMinutes = totalMinutes % 60;
+
+        var formattedOut = String(outHours).padStart(2, '0') + ':' + String(outMinutes).padStart(2, '0');
+        $('#modalClockOut').val(formattedOut);
+    }
+
+    // Toggle time fields when status changes & auto compute Half Day clock out
+    $('input[name="status"]').on('change', function() {
+        var status = $(this).val();
+        if (status === 'Absent') {
+            $('#timeFieldsRow').slideUp(150);
+        } else {
+            $('#timeFieldsRow').slideDown(150);
+            if (status === 'Half Day') {
+                calculateHalfDayClockOut();
+            }
+        }
+    });
+
+    // When clock in changes and Half Day is active, update clock out
+    $('#modalClockIn').on('change input', function() {
+        if ($('#statusHalfDay').is(':checked')) {
+            calculateHalfDayClockOut();
+        }
+    });
+
+    // AJAX submit form
+    $('#quickAttendanceForm').on('submit', function(e) {
+        e.preventDefault();
+        var $btn = $('#btnSaveQuickAttendance');
+        var originalText = $btn.html();
+        $btn.prop('disabled', true).html('<i class="ti ti-loader rotate"></i> {{ __("Saving...") }}');
+
+        var formData = $(this).serialize();
+
+        $.ajax({
+            url: "{{ route('attendance.calendar.quick-update') }}",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                $btn.prop('disabled', false).html(originalText);
+                if (response.success) {
+                    show_toastr('Success', response.message, 'success');
+                    $('#quickAttendanceModal').modal('hide');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 600);
+                } else {
+                    show_toastr('Error', response.message || 'Something went wrong', 'error');
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html(originalText);
+                var errorMsg = 'An error occurred';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                show_toastr('Error', errorMsg, 'error');
+            }
+        });
+    });
+});
+</script>
+@endpush
 @endsection
