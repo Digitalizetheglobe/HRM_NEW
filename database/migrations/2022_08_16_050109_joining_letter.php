@@ -13,7 +13,7 @@ class JoiningLetter extends Migration
      */
     public function up()
     {
-        Schema::create('joining_letters', function (Blueprint $table) {
+        if (! Schema::hasTable('joining_letters')) Schema::create('joining_letters', function (Blueprint $table) {
             $table->id();
             $table->string('lang', 100);
             $table->text('content');

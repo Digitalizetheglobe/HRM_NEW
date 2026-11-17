@@ -13,8 +13,7 @@ class CreateEmployeesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'employees', function (Blueprint $table){
+        if (! Schema::hasTable('employees')) Schema::create('employees', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('user_id');
             $table->string('name');

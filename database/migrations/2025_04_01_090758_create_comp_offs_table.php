@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comp_offs', function (Blueprint $table) {
+        if (! Schema::hasTable('comp_offs')) Schema::create('comp_offs', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });

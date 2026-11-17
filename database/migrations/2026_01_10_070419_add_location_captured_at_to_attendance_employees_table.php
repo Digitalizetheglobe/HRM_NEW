@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendance_employees', function (Blueprint $table) {
-            $table->timestamp('clock_in_location_captured_at')->nullable()->after('clock_in_accuracy');
-            $table->timestamp('clock_out_location_captured_at')->nullable()->after('clock_out_accuracy');
+            if (! Schema::hasColumn('attendance_employees', 'clock_in_location_captured_at')) { $table->timestamp('clock_in_location_captured_at')->nullable()->after('clock_in_accuracy'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_out_location_captured_at')) { $table->timestamp('clock_out_location_captured_at')->nullable()->after('clock_out_accuracy'); }
         });
     }
 

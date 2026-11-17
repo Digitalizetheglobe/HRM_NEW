@@ -13,7 +13,7 @@ class NocCertificate extends Migration
      */
     public function up()
     {
-        Schema::create('noc_certificates', function (Blueprint $table) {
+        if (! Schema::hasTable('noc_certificates')) Schema::create('noc_certificates', function (Blueprint $table) {
             $table->id();
             $table->string('lang', 255);
             $table->longtext('content');

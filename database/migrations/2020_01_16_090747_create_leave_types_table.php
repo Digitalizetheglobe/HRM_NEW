@@ -13,7 +13,7 @@ class CreateLeaveTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('leave_types', function (Blueprint $table) {
+        if (! Schema::hasTable('leave_types')) Schema::create('leave_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
             $table->integer('days');

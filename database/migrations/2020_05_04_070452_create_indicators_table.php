@@ -13,8 +13,7 @@ class CreateIndicatorsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'indicators', function (Blueprint $table){
+        if (! Schema::hasTable('indicators')) Schema::create('indicators', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('branch')->default(0);
             $table->integer('department')->default(0);

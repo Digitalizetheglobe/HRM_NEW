@@ -13,8 +13,7 @@ class CreateTransferBalancesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'transfer_balances', function (Blueprint $table){
+        if (! Schema::hasTable('transfer_balances')) Schema::create('transfer_balances', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('from_account_id');
             $table->integer('to_account_id');

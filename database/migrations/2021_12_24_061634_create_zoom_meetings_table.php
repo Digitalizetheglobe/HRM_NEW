@@ -14,7 +14,7 @@ class CreateZoomMeetingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('zoom_meetings', function (Blueprint $table) 
+        if (! Schema::hasTable('zoom_meetings')) Schema::create('zoom_meetings', function (Blueprint $table) 
         {
             $table->id();
             $table->string('title')->nullable();

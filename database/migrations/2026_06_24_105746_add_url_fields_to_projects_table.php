@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->boolean('has_urls')->default(false)->after('status');
-            $table->string('website_url')->nullable()->after('has_urls');
-            $table->string('dashboard_url')->nullable()->after('website_url');
+            if (! Schema::hasColumn('projects', 'has_urls')) { $table->boolean('has_urls')->default(false)->after('status'); }
+            if (! Schema::hasColumn('projects', 'website_url')) { $table->string('website_url')->nullable()->after('has_urls'); }
+            if (! Schema::hasColumn('projects', 'dashboard_url')) { $table->string('dashboard_url')->nullable()->after('website_url'); }
         });
     }
 

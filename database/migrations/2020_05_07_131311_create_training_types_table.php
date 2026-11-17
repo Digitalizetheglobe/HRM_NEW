@@ -13,8 +13,7 @@ class CreateTrainingTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'training_types', function (Blueprint $table){
+        if (! Schema::hasTable('training_types')) Schema::create('training_types', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('created_by');

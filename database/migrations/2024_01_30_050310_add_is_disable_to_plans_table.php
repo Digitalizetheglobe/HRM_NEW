@@ -14,7 +14,7 @@ return new class extends Migration
         if (!Schema::hasColumn('plans', 'is_disable')) {
 
             Schema::table('plans', function (Blueprint $table) {
-                $table->integer('is_disable')->default(1)->after('trial_days');     
+                if (! Schema::hasColumn('plans', 'is_disable')) { $table->integer('is_disable')->default(1)->after('trial_days'); }     
                 $table->decimal('price', 30, 2)->nullable()->default(0.0)->change();                       
             });
         }

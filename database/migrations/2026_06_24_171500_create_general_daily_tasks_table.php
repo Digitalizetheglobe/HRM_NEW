@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('general_daily_tasks', function (Blueprint $table) {
+        if (! Schema::hasTable('general_daily_tasks')) Schema::create('general_daily_tasks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employee_id')->index();
             $table->string('project_name')->nullable();

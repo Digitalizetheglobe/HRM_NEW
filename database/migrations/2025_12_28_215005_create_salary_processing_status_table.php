@@ -13,7 +13,7 @@ class CreateSalaryProcessingStatusTable extends Migration
      */
     public function up()
     {
-        Schema::create('salary_processing_status', function (Blueprint $table) {
+        if (! Schema::hasTable('salary_processing_status')) Schema::create('salary_processing_status', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->string('year');

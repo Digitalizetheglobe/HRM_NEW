@@ -13,8 +13,7 @@ class CreateJobApplicationNotesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'job_application_notes', function (Blueprint $table){
+        if (! Schema::hasTable('job_application_notes')) Schema::create('job_application_notes', function (Blueprint $table){
             $table->id();
             $table->integer('application_id')->default(0);
             $table->integer('note_created')->default(0);

@@ -13,7 +13,7 @@ class CreateContractAttechmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contract_attechments', function (Blueprint $table) {
+        if (! Schema::hasTable('contract_attechments')) Schema::create('contract_attechments', function (Blueprint $table) {
             
             $table->bigIncrements('id');
             $table->unsignedBigInteger('contract_id');

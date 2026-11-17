@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendance_employees', function (Blueprint $table) {
-            $table->decimal('clock_in_latitude', 10, 8)->nullable()->after('clock_in');
-            $table->decimal('clock_in_longitude', 11, 8)->nullable()->after('clock_in_latitude');
-            $table->text('clock_in_location')->nullable()->after('clock_in_longitude');
-            $table->decimal('clock_in_accuracy', 10, 2)->nullable()->after('clock_in_location');
+            if (! Schema::hasColumn('attendance_employees', 'clock_in_latitude')) { $table->decimal('clock_in_latitude', 10, 8)->nullable()->after('clock_in'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_in_longitude')) { $table->decimal('clock_in_longitude', 11, 8)->nullable()->after('clock_in_latitude'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_in_location')) { $table->text('clock_in_location')->nullable()->after('clock_in_longitude'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_in_accuracy')) { $table->decimal('clock_in_accuracy', 10, 2)->nullable()->after('clock_in_location'); }
             
-            $table->decimal('clock_out_latitude', 10, 8)->nullable()->after('clock_out');
-            $table->decimal('clock_out_longitude', 11, 8)->nullable()->after('clock_out_latitude');
-            $table->text('clock_out_location')->nullable()->after('clock_out_longitude');
-            $table->decimal('clock_out_accuracy', 10, 2)->nullable()->after('clock_out_location');
+            if (! Schema::hasColumn('attendance_employees', 'clock_out_latitude')) { $table->decimal('clock_out_latitude', 10, 8)->nullable()->after('clock_out'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_out_longitude')) { $table->decimal('clock_out_longitude', 11, 8)->nullable()->after('clock_out_latitude'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_out_location')) { $table->text('clock_out_location')->nullable()->after('clock_out_longitude'); }
+            if (! Schema::hasColumn('attendance_employees', 'clock_out_accuracy')) { $table->decimal('clock_out_accuracy', 10, 2)->nullable()->after('clock_out_location'); }
         });
     }
 

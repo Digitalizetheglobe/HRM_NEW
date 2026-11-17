@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('notification_template_langs', function (Blueprint $table) {
+        if (! Schema::hasTable('notification_template_langs')) Schema::create('notification_template_langs', function (Blueprint $table) {
             $table->id();
             $table->integer('parent_id');
             $table->string('lang', 100);

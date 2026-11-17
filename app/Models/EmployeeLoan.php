@@ -19,8 +19,8 @@ class EmployeeLoan extends Model
         'extended_months',
     ];
 
-    protected $dates = [
-        'start_month'
+    protected $casts = [
+        'start_month' => 'datetime',
     ];
 
     public function employee()

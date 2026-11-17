@@ -14,8 +14,8 @@ class PetrolAllowance extends Model
         'created_by',
     ];
 
-    protected $dates = [
-        'month',
+    protected $casts = [
+        'month' => 'datetime',
     ];
 
     public function employee()

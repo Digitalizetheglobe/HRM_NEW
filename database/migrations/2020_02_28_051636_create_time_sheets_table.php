@@ -13,8 +13,7 @@ class CreateTimeSheetsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'time_sheets', function (Blueprint $table){
+        if (! Schema::hasTable('time_sheets')) Schema::create('time_sheets', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('employee_id')->default(0);
             $table->date('date');

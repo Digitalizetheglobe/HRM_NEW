@@ -72,7 +72,7 @@ class MarkFullMonthPresent extends Command
         }
 
         $totalUpserts = 0;
-        $daysInMonth = $startDate->diffInDays($endDate) + 1;
+        $daysInMonth = (int) $startDate->diffInDays($endDate, true) + 1;
 
         foreach ($employees as $emp) {
             $createdBy = !empty($emp->created_by) ? (int) $emp->created_by : 1;

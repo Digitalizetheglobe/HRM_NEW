@@ -13,7 +13,7 @@ class CreateDeductionOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('deduction_options', function (Blueprint $table) {
+        if (! Schema::hasTable('deduction_options')) Schema::create('deduction_options', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('created_by');

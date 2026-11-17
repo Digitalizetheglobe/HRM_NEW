@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('salary_arrears', function (Blueprint $table) {
+        if (! Schema::hasTable('salary_arrears')) Schema::create('salary_arrears', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('arrears_month'); // The month for which salary was pending

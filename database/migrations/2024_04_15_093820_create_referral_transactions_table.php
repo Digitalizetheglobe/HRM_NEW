@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('referral_transactions', function (Blueprint $table) {
+        if (! Schema::hasTable('referral_transactions')) Schema::create('referral_transactions', function (Blueprint $table) {
             $table->id();
             $table->integer('company_id');
             $table->integer('plan_id');

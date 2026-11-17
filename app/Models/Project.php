@@ -149,7 +149,7 @@ class Project extends Model
             return 'Delayed';
         }
         
-        $daysRemaining = $now->startOfDay()->diffInDays($endDate->startOfDay(), false);
+        $daysRemaining = (int) $now->startOfDay()->diffInDays($endDate->startOfDay(), false);
         $progressRemaining = 100 - $this->project_progress;
         
         if ($daysRemaining < 7 && $progressRemaining > 20) {

@@ -13,7 +13,7 @@ class CreateCompetenciesTable extends Migration
      */
     public function up()
     {
-        Schema::create('competencies', function (Blueprint $table) {
+        if (! Schema::hasTable('competencies')) Schema::create('competencies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('type');

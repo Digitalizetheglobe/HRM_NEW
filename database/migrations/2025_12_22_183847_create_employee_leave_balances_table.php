@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('employee_leave_balances')) {
-            Schema::create('employee_leave_balances', function (Blueprint $table) {
+            if (! Schema::hasTable('employee_leave_balances')) Schema::create('employee_leave_balances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('leave_type_id');

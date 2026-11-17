@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('employees', function (Blueprint $table) {
             if (!Schema::hasColumn('employees', 'blood_group')) {
-                $table->string('blood_group')->nullable()->after('dob');
+                if (! Schema::hasColumn('employees', 'blood_group')) { $table->string('blood_group')->nullable()->after('dob'); }
             }
         });
     }

@@ -13,7 +13,7 @@ class CreateGenratePayslipOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('genrate_payslip_options', function (Blueprint $table) {
+        if (! Schema::hasTable('genrate_payslip_options')) Schema::create('genrate_payslip_options', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
         });

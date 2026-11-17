@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('referral_settings', function (Blueprint $table) {
+        if (! Schema::hasTable('referral_settings')) Schema::create('referral_settings', function (Blueprint $table) {
             $table->id();
             $table->integer('percentage');
             $table->integer('minimum_threshold_amount');

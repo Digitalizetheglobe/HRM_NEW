@@ -13,7 +13,7 @@ class CreateOvertimesTable extends Migration
      */
     public function up()
     {
-        Schema::create('overtimes', function (Blueprint $table) {
+        if (! Schema::hasTable('overtimes')) Schema::create('overtimes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->string('title');

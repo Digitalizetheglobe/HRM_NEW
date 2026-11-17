@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         if(!Schema::hasTable('join_us')){
-            Schema::create('join_us', function (Blueprint $table) {
+            if (! Schema::hasTable('join_us')) Schema::create('join_us', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('email')->unique();
                 $table->timestamps();

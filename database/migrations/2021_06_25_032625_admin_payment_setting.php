@@ -13,7 +13,7 @@ class AdminPaymentSetting extends Migration
      */
     public function up()
     {
-        Schema::create('admin_payment_settings', function (Blueprint $table) {
+        if (! Schema::hasTable('admin_payment_settings')) Schema::create('admin_payment_settings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('value');

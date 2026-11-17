@@ -13,13 +13,13 @@ return new class extends Migration
     {
         if (Schema::hasTable('jobs') && !Schema::hasColumn('jobs', 'terms_and_conditions')) {
             Schema::table('jobs', function (Blueprint $table) {
-                $table->text('terms_and_conditions')->nullable()->after('requirement');
+                if (! Schema::hasColumn('jobs', 'terms_and_conditions')) { $table->text('terms_and_conditions')->nullable()->after('requirement'); }
             });
         }
 
         if (Schema::hasTable('job_applications') && !Schema::hasColumn('job_applications', 'terms_condition_check')) {
             Schema::table('job_applications', function (Blueprint $table) {
-                $table->string('terms_condition_check')->nullable()->after('custom_question');
+                if (! Schema::hasColumn('job_applications', 'terms_condition_check')) { $table->string('terms_condition_check')->nullable()->after('custom_question'); }
             });
         }
     }

@@ -13,7 +13,7 @@ class CreatePayslipTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('payslip_types', function (Blueprint $table) {
+        if (! Schema::hasTable('payslip_types')) Schema::create('payslip_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('created_by');

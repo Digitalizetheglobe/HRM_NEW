@@ -14,7 +14,7 @@ return new class extends Migration
         if (!Schema::hasColumn('orders', 'is_refund')) {
 
             Schema::table('orders', function (Blueprint $table) {
-                $table->integer('is_refund')->default(0)->after('user_id');
+                if (! Schema::hasColumn('orders', 'is_refund')) { $table->integer('is_refund')->default(0)->after('user_id'); }
             });
         }
     }

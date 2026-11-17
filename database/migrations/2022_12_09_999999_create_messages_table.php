@@ -13,7 +13,7 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('ch_messages', function (Blueprint $table) {
+        if (! Schema::hasTable('ch_messages')) Schema::create('ch_messages', function (Blueprint $table) {
             $table->bigInteger('id');
             $table->string('type');
             $table->bigInteger('from_id');

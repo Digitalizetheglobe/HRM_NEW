@@ -13,7 +13,7 @@ class CreateTransfersTable extends Migration
      */
     public function up()
     {
-        Schema::create('transfers', function (Blueprint $table) {
+        if (! Schema::hasTable('transfers')) Schema::create('transfers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->integer('branch_id');

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance_regularisations', function (Blueprint $table) {
+        if (! Schema::hasTable('attendance_regularisations')) Schema::create('attendance_regularisations', function (Blueprint $table) {
             $table->id();
             $table->integer('employee_id');
             $table->date('missed_attendance_date');

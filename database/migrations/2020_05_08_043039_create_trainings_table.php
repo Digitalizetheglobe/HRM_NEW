@@ -13,8 +13,7 @@ class CreateTrainingsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'trainings', function (Blueprint $table){
+        if (! Schema::hasTable('trainings')) Schema::create('trainings', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->integer('trainer_option');

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('template', function (Blueprint $table) {
+        if (! Schema::hasTable('template')) Schema::create('template', function (Blueprint $table) {
             $table->id();
             $table->string('template_name');
             $table->text('prompt');

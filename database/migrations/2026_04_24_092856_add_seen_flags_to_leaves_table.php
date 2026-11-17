@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('leaves', function (Blueprint $table) {
             if (!Schema::hasColumn('leaves', 'seen_by_manager')) {
-                $table->boolean('seen_by_manager')->default(0);
+                if (! Schema::hasColumn('leaves', 'seen_by_manager')) { $table->boolean('seen_by_manager')->default(0); }
             }
             if (!Schema::hasColumn('leaves', 'seen_by_director')) {
-                $table->boolean('seen_by_director')->default(0);
+                if (! Schema::hasColumn('leaves', 'seen_by_director')) { $table->boolean('seen_by_director')->default(0); }
             }
         });
     }

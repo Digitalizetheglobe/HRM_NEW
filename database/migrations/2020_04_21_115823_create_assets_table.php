@@ -13,8 +13,7 @@ class CreateAssetsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'assets', function (Blueprint $table){
+        if (! Schema::hasTable('assets')) Schema::create('assets', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->string('employee_id');
             $table->string('name');

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('petrol_allowances', function (Blueprint $table) {
+        if (! Schema::hasTable('petrol_allowances')) Schema::create('petrol_allowances', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('month'); // The month for which petrol allowance is applicable

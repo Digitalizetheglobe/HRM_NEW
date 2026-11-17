@@ -13,7 +13,7 @@ class CreateLeavesTable extends Migration
      */
     public function up()
     {
-        Schema::create('leaves', function (Blueprint $table) {
+        if (! Schema::hasTable('leaves')) Schema::create('leaves', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->integer('leave_type_id');

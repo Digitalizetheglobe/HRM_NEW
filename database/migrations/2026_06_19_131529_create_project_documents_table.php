@@ -8,7 +8,7 @@ class CreateProjectDocumentsTable extends Migration
 {
     public function up()
     {
-        Schema::create('project_documents', function (Blueprint $table) {
+        if (! Schema::hasTable('project_documents')) Schema::create('project_documents', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->string('file_name');

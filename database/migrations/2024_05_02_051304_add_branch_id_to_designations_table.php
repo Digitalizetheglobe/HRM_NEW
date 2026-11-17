@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('designations') && !Schema::hasColumn('designations', 'branch_id')) {
             Schema::table('designations', function (Blueprint $table) {
-                $table->integer('branch_id')->nullable()->after('id');
+                if (! Schema::hasColumn('designations', 'branch_id')) { $table->integer('branch_id')->nullable()->after('id'); }
             });
         }
     }

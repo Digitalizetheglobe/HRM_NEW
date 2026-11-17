@@ -13,7 +13,7 @@ class CreateAttendanceEmployeesTable extends Migration
      */
     public function up()
     {
-        Schema::create('attendance_employees', function (Blueprint $table) {
+        if (! Schema::hasTable('attendance_employees')) Schema::create('attendance_employees', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('date');

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('other_deductions', function (Blueprint $table) {
+        if (! Schema::hasTable('other_deductions')) Schema::create('other_deductions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('month'); // The month for which deduction applies

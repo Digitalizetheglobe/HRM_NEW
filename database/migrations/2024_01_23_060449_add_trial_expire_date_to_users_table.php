@@ -13,8 +13,8 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('users', 'trial_expire_date')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->date('trial_expire_date')->nullable()->after('requested_plan');
-                $table->integer('trial_plan')->default(0)->after('trial_expire_date');
+                if (! Schema::hasColumn('users', 'trial_expire_date')) { $table->date('trial_expire_date')->nullable()->after('requested_plan'); }
+                if (! Schema::hasColumn('users', 'trial_plan')) { $table->integer('trial_plan')->default(0)->after('trial_expire_date'); }
             });
         }
     }

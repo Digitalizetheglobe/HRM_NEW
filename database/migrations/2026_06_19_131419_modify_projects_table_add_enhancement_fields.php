@@ -14,13 +14,13 @@ class ModifyProjectsTableAddEnhancementFields extends Migration
     public function up()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->string('project_priority')->default('Medium');
-            $table->decimal('estimated_hours', 10, 2)->default(0);
-            $table->decimal('actual_hours', 10, 2)->default(0);
-            $table->integer('project_progress')->default(0);
-            $table->string('share_token')->nullable()->unique();
-            $table->boolean('share_link_enabled')->default(false);
-            $table->string('share_password')->nullable();
+            if (! Schema::hasColumn('projects', 'project_priority')) { $table->string('project_priority')->default('Medium'); }
+            if (! Schema::hasColumn('projects', 'estimated_hours')) { $table->decimal('estimated_hours', 10, 2)->default(0); }
+            if (! Schema::hasColumn('projects', 'actual_hours')) { $table->decimal('actual_hours', 10, 2)->default(0); }
+            if (! Schema::hasColumn('projects', 'project_progress')) { $table->integer('project_progress')->default(0); }
+            if (! Schema::hasColumn('projects', 'share_token')) { $table->string('share_token')->nullable()->unique(); }
+            if (! Schema::hasColumn('projects', 'share_link_enabled')) { $table->boolean('share_link_enabled')->default(false); }
+            if (! Schema::hasColumn('projects', 'share_password')) { $table->string('share_password')->nullable(); }
         });
     }
 

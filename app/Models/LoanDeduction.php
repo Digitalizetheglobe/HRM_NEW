@@ -19,8 +19,8 @@ class LoanDeduction extends Model
 
     ];
 
-    protected $dates = [
-        'month'
+    protected $casts = [
+        'month' => 'datetime',
     ];
 
     public function loan()

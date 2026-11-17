@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('comp_off_leave_logs')) {
-            Schema::create('comp_off_leave_logs', function (Blueprint $table) {
+            if (! Schema::hasTable('comp_off_leave_logs')) Schema::create('comp_off_leave_logs', function (Blueprint $table) {
                 $table->id();
                 $table->timestamps();
             });

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('languages', function (Blueprint $table) {
+        if (! Schema::hasTable('languages')) Schema::create('languages', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
             $table->string('fullName')->nullable();

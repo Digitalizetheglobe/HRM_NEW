@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('leaves', function (Blueprint $table) {
             if (!Schema::hasColumn('leaves', 'leave_duration_type')) {
-                $table->enum('leave_duration_type', ['full_day', 'half_day'])->default('full_day')->after('total_leave_days');
+                if (! Schema::hasColumn('leaves', 'leave_duration_type')) { $table->enum('leave_duration_type', ['full_day', 'half_day'])->default('full_day')->after('total_leave_days'); }
             }
         });
     }

@@ -13,7 +13,7 @@ class CreatePayersTable extends Migration
      */
     public function up()
     {
-        Schema::create('payers', function (Blueprint $table) {
+        if (! Schema::hasTable('payers')) Schema::create('payers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('payer_name');
             $table->string('contact_number');

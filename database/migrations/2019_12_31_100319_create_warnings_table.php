@@ -13,7 +13,7 @@ class CreateWarningsTable extends Migration
      */
     public function up()
     {
-        Schema::create('warnings', function (Blueprint $table) {
+        if (! Schema::hasTable('warnings')) Schema::create('warnings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('warning_to');
             $table->integer('warning_by');

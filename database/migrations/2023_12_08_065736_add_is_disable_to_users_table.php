@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('is_disable')->default('1')->after('active_status');
+            if (! Schema::hasColumn('users', 'is_disable')) { $table->integer('is_disable')->default('1')->after('active_status'); }
         });
     }
 

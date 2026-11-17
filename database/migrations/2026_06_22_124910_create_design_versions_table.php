@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('design_versions', function (Blueprint $table) {
+        if (! Schema::hasTable('design_versions')) Schema::create('design_versions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('design_id');
             $table->string('version');

@@ -781,7 +781,7 @@ class PaySlipController extends Controller
         }
 
         // Calculate total days in the period
-        $totalDays = $startDate->diffInDays($endDate) + 1;
+        $totalDays = (int) $startDate->diffInDays($endDate, true) + 1;
 
         // Get attendance records for the month
         $attendances = AttendanceEmployee::where('employee_id', $employeeId)
@@ -1353,7 +1353,7 @@ class PaySlipController extends Controller
                 $endDate = Carbon::parse($resignation->resignation_date);
             }
 
-            $monthlyDays = $startDate->diffInDays($endDate) + 1;
+            $monthlyDays = (int) $startDate->diffInDays($endDate, true) + 1;
 
             // Calculate Payable Days
             $payableDays = $this->calculatePayableDaysFromStatusCodes($employee->id, $year, $month);

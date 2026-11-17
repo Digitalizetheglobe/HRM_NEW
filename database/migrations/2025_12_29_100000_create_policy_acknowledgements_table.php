@@ -14,7 +14,7 @@ class CreatePolicyAcknowledgementsTable extends Migration
     public function up()
     {
         if (!Schema::hasTable('policy_acknowledgements')) {
-            Schema::create('policy_acknowledgements', function (Blueprint $table) {
+            if (! Schema::hasTable('policy_acknowledgements')) Schema::create('policy_acknowledgements', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('company_policy_id');
                 $table->unsignedBigInteger('employee_id');

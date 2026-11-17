@@ -8,7 +8,7 @@ class CreateProjectModulesTable extends Migration
 {
     public function up()
     {
-        Schema::create('project_modules', function (Blueprint $table) {
+        if (! Schema::hasTable('project_modules')) Schema::create('project_modules', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->string('module_name');

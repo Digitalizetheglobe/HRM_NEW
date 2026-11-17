@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('design_feedback_attachments', function (Blueprint $table) {
+        if (! Schema::hasTable('design_feedback_attachments')) Schema::create('design_feedback_attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('feedback_id');
             $table->string('file_name');

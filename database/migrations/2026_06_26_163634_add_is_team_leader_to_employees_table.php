@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employees', function (Blueprint $table) {
-            $table->boolean('is_team_leader')->default(false)->after('approval_status');
+            if (! Schema::hasColumn('employees', 'is_team_leader')) { $table->boolean('is_team_leader')->default(false)->after('approval_status'); }
         });
     }
 

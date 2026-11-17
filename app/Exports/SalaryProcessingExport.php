@@ -110,7 +110,7 @@ class SalaryProcessingExport implements FromCollection, WithHeadings, WithStyles
                 $endDate = Carbon::parse($resignation->resignation_date);
             }
 
-            $monthlyDays = $startDate->diffInDays($endDate) + 1;
+            $monthlyDays = (int) $startDate->diffInDays($endDate, true) + 1;
 
             // Calculate Payable Days
             $payableDays = $this->paySlipController->calculatePayableDaysFromStatusCodes($employee->id, $this->year, $this->month);

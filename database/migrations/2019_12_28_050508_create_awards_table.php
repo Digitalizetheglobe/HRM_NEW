@@ -13,7 +13,7 @@ class CreateAwardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('awards', function (Blueprint $table) {
+        if (! Schema::hasTable('awards')) Schema::create('awards', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->string('award_type');

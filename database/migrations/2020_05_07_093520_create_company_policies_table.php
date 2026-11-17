@@ -13,8 +13,7 @@ class CreateCompanyPoliciesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'company_policies', function (Blueprint $table){
+        if (! Schema::hasTable('company_policies')) Schema::create('company_policies', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->string('title');

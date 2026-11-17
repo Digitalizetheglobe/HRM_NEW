@@ -13,7 +13,7 @@ class CreateSaturationDeductionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('saturation_deductions', function (Blueprint $table) {
+        if (! Schema::hasTable('saturation_deductions')) Schema::create('saturation_deductions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->integer('deduction_option');

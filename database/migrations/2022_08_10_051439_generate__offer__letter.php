@@ -13,7 +13,7 @@ class GenerateOfferLetter extends Migration
      */
     public function up()
     {
-        Schema::create('generate_offer_letters', function (Blueprint $table) {
+        if (! Schema::hasTable('generate_offer_letters')) Schema::create('generate_offer_letters', function (Blueprint $table) {
             $table->id();
             $table->string('lang', 100);
             $table->text('content');

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('leaves', 'half_day_session')) {
             Schema::table('leaves', function (Blueprint $table) {
-                $table->enum('half_day_session', ['first_half', 'second_half'])->nullable()->after('leave_duration_type');
+                if (! Schema::hasColumn('leaves', 'half_day_session')) { $table->enum('half_day_session', ['first_half', 'second_half'])->nullable()->after('leave_duration_type'); }
             });
         }
     }

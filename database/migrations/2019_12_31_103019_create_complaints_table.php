@@ -13,7 +13,7 @@ class CreateComplaintsTable extends Migration
      */
     public function up()
     {
-        Schema::create('complaints', function (Blueprint $table) {
+        if (! Schema::hasTable('complaints')) Schema::create('complaints', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('complaint_from');
             $table->integer('complaint_against');

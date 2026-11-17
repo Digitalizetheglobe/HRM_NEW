@@ -13,8 +13,7 @@ class UserEmailTemplatesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'user_email_templates', function (Blueprint $table){
+        if (! Schema::hasTable('user_email_templates')) Schema::create('user_email_templates', function (Blueprint $table){
             $table->id();
             $table->integer('template_id');
             $table->integer('user_id');

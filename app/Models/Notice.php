@@ -19,7 +19,10 @@ class Notice extends Model
         'created_by',
     ];
 
-    protected $dates = ['notice_startdate', 'notice_enddate'];
+    protected $casts = [
+        'notice_startdate' => 'datetime',
+        'notice_enddate' => 'datetime',
+    ];
 
     public function user()
     {

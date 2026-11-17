@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->string('location')->nullable();
-            $table->json('assigned_data')->nullable();
-            $table->json('site_heads')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->string('technology')->nullable();
-            $table->text('delay_reason')->nullable();
+            if (! Schema::hasColumn('projects', 'location')) { $table->string('location')->nullable(); }
+            if (! Schema::hasColumn('projects', 'assigned_data')) { $table->json('assigned_data')->nullable(); }
+            if (! Schema::hasColumn('projects', 'site_heads')) { $table->json('site_heads')->nullable(); }
+            if (! Schema::hasColumn('projects', 'created_by')) { $table->unsignedBigInteger('created_by')->nullable(); }
+            if (! Schema::hasColumn('projects', 'technology')) { $table->string('technology')->nullable(); }
+            if (! Schema::hasColumn('projects', 'delay_reason')) { $table->text('delay_reason')->nullable(); }
         });
     }
 

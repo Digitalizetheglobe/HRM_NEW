@@ -13,7 +13,7 @@ class CreateContractCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contract_comments', function (Blueprint $table) {
+        if (! Schema::hasTable('contract_comments')) Schema::create('contract_comments', function (Blueprint $table) {
 
             $table->bigIncrements('id');
             $table->unsignedBigInteger('contract_id');

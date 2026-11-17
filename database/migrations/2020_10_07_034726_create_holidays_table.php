@@ -13,8 +13,7 @@ class CreateHolidaysTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'holidays', function (Blueprint $table){
+        if (! Schema::hasTable('holidays')) Schema::create('holidays', function (Blueprint $table){
             $table->id();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

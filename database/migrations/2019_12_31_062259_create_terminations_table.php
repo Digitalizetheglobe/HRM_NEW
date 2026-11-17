@@ -13,7 +13,7 @@ class CreateTerminationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('terminations', function (Blueprint $table) {
+        if (! Schema::hasTable('terminations')) Schema::create('terminations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('notice_date');

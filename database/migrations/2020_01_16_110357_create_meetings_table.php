@@ -13,8 +13,7 @@ class CreateMeetingsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'meetings', function (Blueprint $table){
+        if (! Schema::hasTable('meetings')) Schema::create('meetings', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('branch_id');
             $table->longText('department_id');

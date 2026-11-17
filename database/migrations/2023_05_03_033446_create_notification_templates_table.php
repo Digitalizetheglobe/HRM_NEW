@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('notification_templates', function (Blueprint $table) {
+        if (! Schema::hasTable('notification_templates')) Schema::create('notification_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->nullable();

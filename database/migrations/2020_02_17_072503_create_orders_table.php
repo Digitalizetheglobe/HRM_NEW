@@ -13,8 +13,7 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'orders', function (Blueprint $table){
+        if (! Schema::hasTable('orders')) Schema::create('orders', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->string('order_id', 100)->unique();
             $table->string('name', 100)->nullable();

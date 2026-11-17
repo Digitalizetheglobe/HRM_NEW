@@ -13,7 +13,7 @@ class CreatePerformanceTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('performance__types', function (Blueprint $table) {
+        if (! Schema::hasTable('performance__types')) Schema::create('performance__types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('created_by');

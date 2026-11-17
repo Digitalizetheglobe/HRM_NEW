@@ -13,7 +13,7 @@ class CreateEmployeeDocumentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('employee_documents', function (Blueprint $table) {
+        if (! Schema::hasTable('employee_documents')) Schema::create('employee_documents', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->integer('document_id');

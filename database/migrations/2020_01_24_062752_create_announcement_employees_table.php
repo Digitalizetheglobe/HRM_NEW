@@ -13,7 +13,7 @@ class CreateAnnouncementEmployeesTable extends Migration
      */
     public function up()
     {
-        Schema::create('announcement_employees', function (Blueprint $table) {
+        if (! Schema::hasTable('announcement_employees')) Schema::create('announcement_employees', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('announcement_id');
             $table->integer('employee_id');

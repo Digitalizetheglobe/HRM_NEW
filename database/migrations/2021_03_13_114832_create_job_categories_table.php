@@ -13,8 +13,7 @@ class CreateJobCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'job_categories', function (Blueprint $table){
+        if (! Schema::hasTable('job_categories')) Schema::create('job_categories', function (Blueprint $table){
             $table->id();
             $table->string('title');
             $table->integer('created_by');

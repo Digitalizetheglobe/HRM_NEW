@@ -13,8 +13,7 @@ class CreatePaySlipsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'pay_slips', function (Blueprint $table){
+        if (! Schema::hasTable('pay_slips')) Schema::create('pay_slips', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->float('net_payble', 15,2);

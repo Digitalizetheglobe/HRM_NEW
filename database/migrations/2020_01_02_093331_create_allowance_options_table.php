@@ -13,7 +13,7 @@ class CreateAllowanceOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('allowance_options', function (Blueprint $table) {
+        if (! Schema::hasTable('allowance_options')) Schema::create('allowance_options', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('created_by');

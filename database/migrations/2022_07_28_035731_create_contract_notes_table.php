@@ -13,7 +13,7 @@ class CreateContractNotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('contract_notes', function (Blueprint $table) {
+        if (! Schema::hasTable('contract_notes')) Schema::create('contract_notes', function (Blueprint $table) {
             $table->id();
             $table->integer('contract_id');
             $table->integer('user_id');

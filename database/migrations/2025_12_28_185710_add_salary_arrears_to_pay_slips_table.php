@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pay_slips', function (Blueprint $table) {
-            $table->float('salary_arrears', 15, 2)->default(0)->after('overtime');
+            if (! Schema::hasColumn('pay_slips', 'salary_arrears')) { $table->float('salary_arrears', 15, 2)->default(0)->after('overtime'); }
         });
     }
 

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('leaves', 'company_approved')) {
             Schema::table('leaves', function (Blueprint $table) {
-                $table->unsignedBigInteger('forwarded_to_director_id')->nullable()->after('status');
-                $table->unsignedBigInteger('forwarded_by_company_id')->nullable()->after('forwarded_to_director_id');
-                $table->timestamp('forwarded_at')->nullable()->after('forwarded_by_company_id');
-                $table->boolean('company_approved')->default(false)->after('forwarded_at');
-                $table->boolean('director_approved')->default(false)->after('company_approved');
+                if (! Schema::hasColumn('leaves', 'forwarded_to_director_id')) { $table->unsignedBigInteger('forwarded_to_director_id')->nullable()->after('status'); }
+                if (! Schema::hasColumn('leaves', 'forwarded_by_company_id')) { $table->unsignedBigInteger('forwarded_by_company_id')->nullable()->after('forwarded_to_director_id'); }
+                if (! Schema::hasColumn('leaves', 'forwarded_at')) { $table->timestamp('forwarded_at')->nullable()->after('forwarded_by_company_id'); }
+                if (! Schema::hasColumn('leaves', 'company_approved')) { $table->boolean('company_approved')->default(false)->after('forwarded_at'); }
+                if (! Schema::hasColumn('leaves', 'director_approved')) { $table->boolean('director_approved')->default(false)->after('company_approved'); }
             });
         }
     }

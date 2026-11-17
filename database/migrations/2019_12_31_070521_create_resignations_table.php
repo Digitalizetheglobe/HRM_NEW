@@ -13,7 +13,7 @@ class CreateResignationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('resignations', function (Blueprint $table) {
+        if (! Schema::hasTable('resignations')) Schema::create('resignations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->date('notice_date');

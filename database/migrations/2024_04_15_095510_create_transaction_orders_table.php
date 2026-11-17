@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction_orders', function (Blueprint $table) {
+        if (! Schema::hasTable('transaction_orders')) Schema::create('transaction_orders', function (Blueprint $table) {
             $table->id();
             $table->decimal('req_amount',15,2)->default(0.0);
             $table->integer('req_user_id');

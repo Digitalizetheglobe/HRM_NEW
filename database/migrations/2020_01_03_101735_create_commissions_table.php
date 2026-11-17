@@ -13,7 +13,7 @@ class CreateCommissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('commissions', function (Blueprint $table) {
+        if (! Schema::hasTable('commissions')) Schema::create('commissions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->string('title');

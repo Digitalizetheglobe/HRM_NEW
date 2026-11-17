@@ -13,8 +13,7 @@ class CreateJobsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'jobs', function (Blueprint $table){
+        if (! Schema::hasTable('jobs')) Schema::create('jobs', function (Blueprint $table){
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();

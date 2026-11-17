@@ -13,7 +13,7 @@ class CreateLandingPageSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('landing_page_sections', function (Blueprint $table) {
+        if (! Schema::hasTable('landing_page_sections')) Schema::create('landing_page_sections', function (Blueprint $table) {
         $table->id();
         $table->string('section_name');
         $table->integer('section_order')->default(0);

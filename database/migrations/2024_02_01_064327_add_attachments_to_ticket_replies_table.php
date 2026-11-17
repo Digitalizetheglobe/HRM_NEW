@@ -14,7 +14,7 @@ return new class extends Migration
         if (!Schema::hasColumn('ticket_replies', 'attachment')) {
             Schema::table('ticket_replies', function (Blueprint $table) {
                 $table->text('description')->nullable()->change();
-                $table->string('attachment')->nullable()->after('description');
+                if (! Schema::hasColumn('ticket_replies', 'attachment')) { $table->string('attachment')->nullable()->after('description'); }
             });
         }
     }

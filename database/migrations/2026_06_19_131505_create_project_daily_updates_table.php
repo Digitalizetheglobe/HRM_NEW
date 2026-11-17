@@ -8,7 +8,7 @@ class CreateProjectDailyUpdatesTable extends Migration
 {
     public function up()
     {
-        Schema::create('project_daily_updates', function (Blueprint $table) {
+        if (! Schema::hasTable('project_daily_updates')) Schema::create('project_daily_updates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('employee_id');

@@ -13,8 +13,7 @@ class CreateTicketRepliesTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'ticket_replies', function (Blueprint $table){
+        if (! Schema::hasTable('ticket_replies')) Schema::create('ticket_replies', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('ticket_id');
             $table->integer('employee_id');

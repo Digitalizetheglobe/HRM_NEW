@@ -14,13 +14,13 @@ return new class extends Migration
         if (Schema::hasTable('employees')) {
             Schema::table('employees', function (Blueprint $table) {
                 if (!Schema::hasColumn('employees', 'first_name')) {
-                    $table->string('first_name')->nullable()->after('name');
+                    if (! Schema::hasColumn('employees', 'first_name')) { $table->string('first_name')->nullable()->after('name'); }
                 }
                 if (!Schema::hasColumn('employees', 'middle_name')) {
-                    $table->string('middle_name')->nullable()->after('first_name');
+                    if (! Schema::hasColumn('employees', 'middle_name')) { $table->string('middle_name')->nullable()->after('first_name'); }
                 }
                 if (!Schema::hasColumn('employees', 'last_name')) {
-                    $table->string('last_name')->nullable()->after('middle_name');
+                    if (! Schema::hasColumn('employees', 'last_name')) { $table->string('last_name')->nullable()->after('middle_name'); }
                 }
             });
         }

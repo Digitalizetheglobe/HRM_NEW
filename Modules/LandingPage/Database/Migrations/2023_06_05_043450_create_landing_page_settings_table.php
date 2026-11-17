@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         if(!Schema::hasTable('landing_page_settings')){
-            Schema::create('landing_page_settings', function (Blueprint $table) {
+            if (! Schema::hasTable('landing_page_settings')) Schema::create('landing_page_settings', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('name')->unique();
                 $table->longtext('value')->nullable();

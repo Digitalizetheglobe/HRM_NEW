@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('webhooks', function (Blueprint $table) {
+        if (! Schema::hasTable('webhooks')) Schema::create('webhooks', function (Blueprint $table) {
             $table->id();
             $table->text('module');
             $table->text('url');

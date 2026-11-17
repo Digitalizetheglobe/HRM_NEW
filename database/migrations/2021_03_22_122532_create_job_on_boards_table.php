@@ -13,8 +13,7 @@ class CreateJobOnBoardsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'job_on_boards',
+        if (! Schema::hasTable('job_on_boards')) Schema::create('job_on_boards',
             function (Blueprint $table) {
                 $table->id();
                 $table->integer('application');

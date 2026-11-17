@@ -14,9 +14,9 @@ class SalaryArrears extends Model
         'created_by',
     ];
 
-    protected $dates = [
-        'arrears_month',
-        'payment_month',
+    protected $casts = [
+        'arrears_month' => 'datetime',
+        'payment_month' => 'datetime',
     ];
 
     public function employee()

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('users', 'is_login_enable')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->integer('is_login_enable')->default(1)->after('trial_plan');
+                if (! Schema::hasColumn('users', 'is_login_enable')) { $table->integer('is_login_enable')->default(1)->after('trial_plan'); }
             });
         }
     }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('projects', 'ui_ux_required')) {
             Schema::table('projects', function (Blueprint $table) {
-                $table->boolean('ui_ux_required')->default(false)->after('delay_reason');
+                if (! Schema::hasColumn('projects', 'ui_ux_required')) { $table->boolean('ui_ux_required')->default(false)->after('delay_reason'); }
             });
         }
     }

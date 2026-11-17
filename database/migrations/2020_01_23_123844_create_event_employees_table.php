@@ -13,7 +13,7 @@ class CreateEventEmployeesTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_employees', function (Blueprint $table) {
+        if (! Schema::hasTable('event_employees')) Schema::create('event_employees', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('event_id');
             $table->integer('employee_id');

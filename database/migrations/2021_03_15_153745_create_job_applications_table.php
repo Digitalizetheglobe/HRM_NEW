@@ -13,8 +13,7 @@ class CreateJobApplicationsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'job_applications', function (Blueprint $table){
+        if (! Schema::hasTable('job_applications')) Schema::create('job_applications', function (Blueprint $table){
             $table->id();
             $table->integer('job');
             $table->string('name')->nullable();

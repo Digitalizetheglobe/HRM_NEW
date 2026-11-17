@@ -13,7 +13,7 @@ class CreatePayeesTable extends Migration
      */
     public function up()
     {
-        Schema::create('payees', function (Blueprint $table) {
+        if (! Schema::hasTable('payees')) Schema::create('payees', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('payee_name');
             $table->string('contact_number');

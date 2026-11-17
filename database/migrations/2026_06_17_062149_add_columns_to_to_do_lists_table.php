@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('to_do_lists', function (Blueprint $table) {
-            $table->date('start_date')->nullable()->after('task');
-            $table->date('end_date')->nullable()->after('start_date');
-            $table->text('description')->nullable()->after('end_date');
+            if (! Schema::hasColumn('to_do_lists', 'start_date')) { $table->date('start_date')->nullable()->after('task'); }
+            if (! Schema::hasColumn('to_do_lists', 'end_date')) { $table->date('end_date')->nullable()->after('start_date'); }
+            if (! Schema::hasColumn('to_do_lists', 'description')) { $table->text('description')->nullable()->after('end_date'); }
         });
     }
 

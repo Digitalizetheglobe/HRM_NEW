@@ -15,9 +15,9 @@ return new class extends Migration
         if (!Schema::hasColumn('users', 'referral_code')) {
 
             Schema::table('users', function (Blueprint $table) {
-                $table->integer('referral_code')->default(0)->after('is_active');
-                $table->integer('used_referral_code')->default(0)->after('referral_code');
-                $table->integer('commission_amount')->default(0)->after('used_referral_code');
+                if (! Schema::hasColumn('users', 'referral_code')) { $table->integer('referral_code')->default(0)->after('is_active'); }
+                if (! Schema::hasColumn('users', 'used_referral_code')) { $table->integer('used_referral_code')->default(0)->after('referral_code'); }
+                if (! Schema::hasColumn('users', 'commission_amount')) { $table->integer('commission_amount')->default(0)->after('used_referral_code'); }
             });
         }
         if (Schema::hasColumn('users', 'referral_code')) {

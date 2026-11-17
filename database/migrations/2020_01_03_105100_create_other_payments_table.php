@@ -13,7 +13,7 @@ class CreateOtherPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('other_payments', function (Blueprint $table) {
+        if (! Schema::hasTable('other_payments')) Schema::create('other_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('employee_id');
             $table->string('title');

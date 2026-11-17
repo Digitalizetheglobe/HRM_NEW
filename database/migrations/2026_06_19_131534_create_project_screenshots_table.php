@@ -8,7 +8,7 @@ class CreateProjectScreenshotsTable extends Migration
 {
     public function up()
     {
-        Schema::create('project_screenshots', function (Blueprint $table) {
+        if (! Schema::hasTable('project_screenshots')) Schema::create('project_screenshots', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->string('image');

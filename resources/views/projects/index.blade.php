@@ -164,7 +164,7 @@
         
         $endDate = \Carbon\Carbon::parse($p->project_enddate)->endOfDay();
         $now = \Carbon\Carbon::now();
-        $daysRemaining = $now->startOfDay()->diffInDays($endDate->startOfDay(), false);
+        $daysRemaining = (int) $now->startOfDay()->diffInDays($endDate->startOfDay(), false);
         
         return $daysRemaining <= 5;
     })->count();

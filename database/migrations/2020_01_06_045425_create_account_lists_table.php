@@ -13,7 +13,7 @@ class CreateAccountListsTable extends Migration
      */
     public function up()
     {
-        Schema::create('account_lists', function (Blueprint $table) {
+        if (! Schema::hasTable('account_lists')) Schema::create('account_lists', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('account_name');
             $table->float('initial_balance',20,2)->default(0.00);

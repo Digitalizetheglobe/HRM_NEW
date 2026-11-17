@@ -13,7 +13,7 @@ class CreateSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('settings', function (Blueprint $table) {
+        if (! Schema::hasTable('settings')) Schema::create('settings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->longText('value');

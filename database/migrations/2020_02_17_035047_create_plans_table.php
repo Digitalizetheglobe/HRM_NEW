@@ -13,8 +13,7 @@ class CreatePlansTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'plans', function (Blueprint $table){
+        if (! Schema::hasTable('plans')) Schema::create('plans', function (Blueprint $table){
                 $table->bigIncrements('id');
                 $table->string('name', 100)->unique();
                 $table->float('price', 15,2)->default(0);

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('design_feedbacks', function (Blueprint $table) {
+        if (! Schema::hasTable('design_feedbacks')) Schema::create('design_feedbacks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('design_version_id');
             $table->string('title');

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'device_token')) {
-                $table->string('device_token')->nullable()->after('password');
+                if (! Schema::hasColumn('users', 'device_token')) { $table->string('device_token')->nullable()->after('password'); }
             }
         });
     }

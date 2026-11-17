@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('time_sheets', 'follow_up_date')) {
             Schema::table('time_sheets', function (Blueprint $table) {
-                $table->date('follow_up_date')->nullable();
+                if (! Schema::hasColumn('time_sheets', 'follow_up_date')) { $table->date('follow_up_date')->nullable(); }
             });
         }
     }

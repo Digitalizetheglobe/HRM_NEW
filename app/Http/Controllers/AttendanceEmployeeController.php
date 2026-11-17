@@ -854,7 +854,7 @@ namespace App\Http\Controllers;
                 if ($endTime->lt($startTime)) {
                     $endTime->addDay();
                 }
-                $shiftSeconds = $endTime->diffInSeconds($startTime);
+                $shiftSeconds = (int) $endTime->diffInSeconds($startTime, true);
                 $overtimeStartSeconds = $shiftSeconds + (30 * 60);
 
                 $totalOvertimeSeconds = $workedSeconds - $overtimeStartSeconds;
@@ -1745,7 +1745,7 @@ namespace App\Http\Controllers;
                 $end->addDay();
             }
             
-            $workedSeconds = $end->diffInSeconds($start);
+            $workedSeconds = (int) $end->diffInSeconds($start, true);
             $workedHours = $workedSeconds / 3600;
             
             return $workedHours;
@@ -1767,7 +1767,7 @@ namespace App\Http\Controllers;
             // Calculate total worked time
             $start = \Carbon\Carbon::parse($date . ' ' . $clockIn);
             $end = \Carbon\Carbon::parse($date . ' ' . $clockOut);
-            $totalMinutes = $end->diffInMinutes($start);
+            $totalMinutes = (int) $end->diffInMinutes($start, true);
             
             // Determine status based on worked hours
             if ($totalMinutes >= 480) { // 8 hours = 480 minutes
@@ -1804,7 +1804,7 @@ namespace App\Http\Controllers;
             $graceTime = $startTime->copy()->addMinutes(10);
 
             if ($clockInTime->gt($graceTime)) {
-                $lateSeconds = $clockInTime->diffInSeconds($startTime);
+                $lateSeconds = (int) $clockInTime->diffInSeconds($startTime, true);
                 return gmdate('H:i:s', $lateSeconds);
             }
 
@@ -1836,7 +1836,7 @@ namespace App\Http\Controllers;
             $toleranceTime = $endTime->copy()->subMinutes(10);
 
             if ($clockOutTime->lt($toleranceTime)) {
-                $earlySeconds = $endTime->diffInSeconds($clockOutTime);
+                $earlySeconds = (int) $endTime->diffInSeconds($clockOutTime, true);
                 return gmdate('H:i:s', $earlySeconds);
             }
 
@@ -1868,7 +1868,7 @@ namespace App\Http\Controllers;
             $toleranceTime = $startTime->copy()->subMinutes(10);
 
             if ($clockInTime->lt($toleranceTime)) {
-                $earlySeconds = $startTime->diffInSeconds($clockInTime);
+                $earlySeconds = (int) $startTime->diffInSeconds($clockInTime, true);
                 return gmdate('H:i:s', $earlySeconds);
             }
 
@@ -1936,7 +1936,7 @@ namespace App\Http\Controllers;
                     $actualClockIn = \Carbon\Carbon::parse($date . ' ' . $clockInTime);
                     
                     // Rule 1: Punch in time >= 5 hours after shift start = Half Day
-                    if ($actualClockIn->diffInMinutes($startTime) >= 300 && $actualClockIn->gt($startTime)) {
+                    if ((int) $actualClockIn->diffInMinutes($startTime, true) >= 300 && $actualClockIn->gt($startTime)) {
                         return ['status' => AttendanceEmployee::STATUS_HALF_DAY, 'reason' => 'Punch-In after 5 Hours'];
                     }
                 }
@@ -2107,7 +2107,7 @@ namespace App\Http\Controllers;
                         }
                         
                         if ($clockOutTime) {
-                            $totalSeconds = $clockInTime->diffInSeconds($clockOutTime);
+                            $totalSeconds = (int) $clockInTime->diffInSeconds($clockOutTime, true);
                             $hoursCompleted = $totalSeconds / 3600;
                             
                             $h = (int)floor($totalSeconds / 3600);
@@ -2241,7 +2241,7 @@ namespace App\Http\Controllers;
                         }
                         
                         if ($clockOutTime) {
-                            $totalSeconds = $clockInTime->diffInSeconds($clockOutTime);
+                            $totalSeconds = (int) $clockInTime->diffInSeconds($clockOutTime, true);
                             $totalPeriodSeconds += $totalSeconds;
                             
                             $h = floor($totalSeconds / 3600);
@@ -2305,7 +2305,7 @@ namespace App\Http\Controllers;
                         if ($clockOutTime->lt($clockInTime)) {
                             $clockOutTime->addDay();
                         }
-                        $todayHours = $clockInTime->diffInMinutes($clockOutTime) / 60;
+                        $todayHours = (int) $clockInTime->diffInMinutes($clockOutTime, true) / 60;
                     }
                 }
                 
@@ -2400,7 +2400,7 @@ namespace App\Http\Controllers;
                         }
                         
                         if ($clockOutTime) {
-                            $totalSeconds = $clockInTime->diffInSeconds($clockOutTime);
+                            $totalSeconds = (int) $clockInTime->diffInSeconds($clockOutTime, true);
                             $totalPeriodSeconds += $totalSeconds;
                             
                             $h = floor($totalSeconds / 3600);
@@ -2464,7 +2464,7 @@ namespace App\Http\Controllers;
                         if ($clockOutTime->lt($clockInTime)) {
                             $clockOutTime->addDay();
                         }
-                        $todayHours = $clockInTime->diffInMinutes($clockOutTime) / 60;
+                        $todayHours = (int) $clockInTime->diffInMinutes($clockOutTime, true) / 60;
                     }
                 }
                 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('employees') && !Schema::hasColumn('employees', 'biometric_emp_id')) {
             Schema::table('employees', function (Blueprint $table) {
-                $table->integer('biometric_emp_id')->nullable()->after('employee_id');
+                if (! Schema::hasColumn('employees', 'biometric_emp_id')) { $table->integer('biometric_emp_id')->nullable()->after('employee_id'); }
             });
         }
     }

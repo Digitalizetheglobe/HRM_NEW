@@ -227,7 +227,7 @@
                                                     $outTime->addDay();
                                                 }
                                                 
-                                                $totalMinutes = $outTime->diffInMinutes($inTime);
+                                                $totalMinutes = (int) $outTime->diffInMinutes($inTime, true);
                                                 
                                                 $dayOfWeek = \Carbon\Carbon::parse($date)->dayOfWeek;
                                                 $standardMinutes = ($dayOfWeek == \Carbon\Carbon::SATURDAY) ? 240 : 480;

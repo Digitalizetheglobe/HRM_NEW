@@ -8,7 +8,7 @@ class CreateToDoListsTable extends Migration
 {
     public function up()
     {
-        Schema::create('to_do_lists', function (Blueprint $table) {
+        if (! Schema::hasTable('to_do_lists')) Schema::create('to_do_lists', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('task');

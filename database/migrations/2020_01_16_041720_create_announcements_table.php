@@ -13,7 +13,7 @@ class CreateAnnouncementsTable extends Migration
      */
     public function up()
     {
-        Schema::create('announcements', function (Blueprint $table) {
+        if (! Schema::hasTable('announcements')) Schema::create('announcements', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
             $table->date('start_date');
