@@ -16,7 +16,7 @@ class TimeSheetExport implements FromCollection, WithHeadings, ShouldAutoSize
         $this->timeSheets = $timeSheets;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         return $this->timeSheets->map(function ($timesheet) {
             return [
@@ -39,4 +39,4 @@ class TimeSheetExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Remark',
         ];
     }
-}
+}

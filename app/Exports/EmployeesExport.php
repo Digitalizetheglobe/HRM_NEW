@@ -15,7 +15,7 @@ class EmployeesExport implements FromCollection, WithHeadings
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $employees = Employee::where('created_by', \Auth::user()->creatorId())->get();
         $data = [];

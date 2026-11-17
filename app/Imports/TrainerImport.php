@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\Importable;
 class TrainerImport implements ToModel
 {
     use Importable;
-    public function model(array $row)
+    public function model(array $row): \Illuminate\Database\Eloquent\Model|array|null
     {
       
     }

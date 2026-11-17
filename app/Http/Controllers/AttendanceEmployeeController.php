@@ -1647,7 +1647,7 @@ namespace App\Http\Controllers;
                         ]);
                     }
 
-                    public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet)
+                    public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet): ?array
                     {
                         // Apply borders to all cells
                         // Main table columns (dates + 1 for label column)
@@ -1666,6 +1666,8 @@ namespace App\Http\Controllers;
                         $sheet->getStyle('A1:' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($lastColumn) . $lastRow)
                             ->getAlignment()
                             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                        return null;
                     }
                 }, $fileName);
             } else {

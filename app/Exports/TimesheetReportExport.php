@@ -12,7 +12,7 @@ class TimesheetReportExport implements FromCollection, WithHeadings
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $data=TimeSheet::where('created_by', \Auth::user()->creatorId())->get();
 

@@ -13,7 +13,7 @@ class AttendanceImport implements ToModel
     * @return \Illuminate\Database\Eloquent\Model|null
     */
     use Importable;
-    public function model(array $row)
+    public function model(array $row): \Illuminate\Database\Eloquent\Model|array|null
     {
         
     }

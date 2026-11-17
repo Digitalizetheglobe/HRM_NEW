@@ -24,7 +24,7 @@ class PayrollExport implements FromCollection, WithHeadings
         $this->department = $data['department'];
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         // $data = PaySlip::select('pay_slips.*', 'employees.name')->leftjoin('employees', 'pay_slips.employee_id', '=', 'employees.id')->where('pay_slips.created_by', \Auth::user()->creatorId())->get();
 

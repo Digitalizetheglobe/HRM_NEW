@@ -12,7 +12,7 @@ class ExpenseExport implements FromCollection,WithHeadings
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $data=Expense::where('created_by', \Auth::user()->creatorId())->get();
         foreach($data as $k=>$expense)

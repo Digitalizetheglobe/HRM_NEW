@@ -14,7 +14,7 @@ class LeaveReportExport implements FromCollection, WithHeadings
      * @return \Illuminate\Support\Collection
      */
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $data    = Leave::where('created_by',\Auth::user()->creatorId())->get();
         $employees = Employee::where('created_by', \Auth::user()->creatorId())->get();

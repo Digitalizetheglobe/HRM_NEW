@@ -35,7 +35,7 @@ public function prepareForValidation(array $row): array
     }, $row);
 }
 
-public function model(array $row)
+public function model(array $row): \Illuminate\Database\Eloquent\Model|array|null
 {
     // Normalize all keys to lowercase with underscores
     $normalizedRow = [];

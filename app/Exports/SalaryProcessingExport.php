@@ -39,7 +39,7 @@ class SalaryProcessingExport implements FromCollection, WithHeadings, WithStyles
         $this->paySlipController = $paySlipController;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $employees = Employee::where('created_by', \Auth::user()->creatorId())
             ->whereHas('user', function($query) {
@@ -260,7 +260,7 @@ class SalaryProcessingExport implements FromCollection, WithHeadings, WithStyles
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         $lastRow = $sheet->getHighestRow();
         $lastColumn = $sheet->getHighestColumn();

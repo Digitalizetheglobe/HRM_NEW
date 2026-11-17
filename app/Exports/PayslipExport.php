@@ -19,7 +19,7 @@ class PayslipExport implements FromCollection, WithHeadings
         $this->data = $data;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $request=$this->data;
 

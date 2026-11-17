@@ -11,7 +11,7 @@ class EventImport implements ToModel
 {
     use Importable;
 
-    public function model(array $row)
+    public function model(array $row): \Illuminate\Database\Eloquent\Model|array|null
     {
         
         
