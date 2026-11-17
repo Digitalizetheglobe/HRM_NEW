@@ -38,7 +38,7 @@
         "midtrans/midtrans-php": ">=2.6.2",
         "milon/barcode": ">=13.6",
         "mollie/mollie-api-php": ">=4.1",
-        "munafio/chatify": ">=2",
+        "munafio/chatify": "1.6.4",
         "nwidart/laravel-modules": ">=13.3",
         "obydul/laraskrill": ">=1.2",
         "orhanerday/open-ai": ">=6.3.1",
