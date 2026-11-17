@@ -183,7 +183,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Srmklive\PayPal\Providers\PayPalServiceProvider::class,
         \Chatify\ChatifyServiceProvider::class,
-        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
         /*
          * Package Service Providers...
@@ -200,7 +199,6 @@ return [
 
         /* Setup Wizard */
 
-        RachidLaasri\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Obydul\LaraSkrill\LaraSkrillServiceProvider::class,
         /* End */

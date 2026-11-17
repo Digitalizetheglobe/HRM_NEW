@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 
 class XSS
 {
-    use \RachidLaasri\LaravelInstaller\Helpers\MigrationsHelper;
+    use \App\Traits\MigrationsHelper;
 
     /**
      * Handle an incoming request.

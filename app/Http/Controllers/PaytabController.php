@@ -8,11 +8,15 @@ use App\Models\Plan;
 use App\Models\UserCoupon;
 use App\Models\Utility;
 use Illuminate\Http\Request;
-use Paytabscom\Laravel_paytabs\Facades\paypage;
+use Paytabs\Laravel\Facades\Paytabs;
+use Paytabs\Sdk\Enums\TranClass;
+use Paytabs\Sdk\Enums\TranType;
+use Paytabs\Sdk\Request\Payload\PayloadsFactory;
+use Paytabs\Sdk\Request\RequestsFactory;
+use Paytabs\Sdk\Request\Payload\Parts\CustomerDetails;
 
 class PaytabController extends Controller
 {
-
     public $paytab_profile_id, $paytab_server_key, $paytab_region, $is_enabled;
 
     public function paymentConfig()
@@ -22,8 +26,8 @@ class PaytabController extends Controller
             config([
                 'paytabs.profile_id' => isset($payment_setting['paytab_profile_id']) ? $payment_setting['paytab_profile_id'] : '',
                 'paytabs.server_key' => isset($payment_setting['paytab_server_key']) ? $payment_setting['paytab_server_key'] : '',
-                'paytabs.region' => isset($payment_setting['paytab_region']) ? $payment_setting['paytab_region'] : '',
-                'paytabs.currency' => !empty($payment_setting['currency']) ? $payment_setting['currency'] : 'USD',
+                'paytabs.endpoint'   => !empty($payment_setting['paytab_region']) ? $payment_setting['paytab_region'] : 'ARE',
+                'paytabs.currency'   => !empty($payment_setting['currency']) ? $payment_setting['currency'] : 'USD',
             ]);
         }
     }
@@ -33,7 +37,7 @@ class PaytabController extends Controller
         try {
             $planID = \Illuminate\Support\Facades\Crypt::decrypt($request->plan_id);
             $plan = Plan::find($planID);
-            $this->paymentconfig();
+            $this->paymentConfig();
             $user = \Auth::user();
             if ($plan) {
                 $get_amount = $plan->price;
@@ -95,19 +99,32 @@ class PaytabController extends Controller
                     }
                 }
                 $coupon = (empty($request->coupon)) ? "0" : $request->coupon;
-                $pay = paypage::sendPaymentCode('all')
-                    ->sendTransaction('sale')
-                    ->sendCart(1, $get_amount, 'plan payment')
-                    ->sendCustomerDetails(isset($user->name) ? $user->name : "", isset($user->email) ? $user->email : '', '', '', '', '', '', '', '')
-                    ->sendURLs(
-                        route('plan.paytab.success', ['success' => 1, 'data' => $request->all(), 'plan_id' => $plan->id, 'amount' => $get_amount, 'coupon' => $coupon]),
-                        route('plan.paytab.success', ['success' => 0, 'data' => $request->all(), 'plan_id' => $plan->id, 'amount' => $get_amount, 'coupon' => $coupon])
-                    )
-                    ->sendLanguage('en')
-                    ->sendFramed($on = false)
-                    ->create_pay_page();
 
-                return $pay;
+                $urlReturn = route('plan.paytab.success', ['success' => 1, 'data' => $request->all(), 'plan_id' => $plan->id, 'amount' => $get_amount, 'coupon' => $coupon]);
+                $urlCallback = route('plan.paytab.success', ['success' => 0, 'data' => $request->all(), 'plan_id' => $plan->id, 'amount' => $get_amount, 'coupon' => $coupon]);
+
+                $holder = PayloadsFactory::createHostedPage();
+                $holder
+                    ->buildCart((string) $plan->id, config('paytabs.currency', 'USD'), (float) $get_amount, 'Plan payment - ' . $plan->name)
+                    ->buildTransaction(TranType::Sale, TranClass::Ecom)
+                    ->buildCustomerDetails(
+                        CustomerDetails::init(isset($user->name) ? $user->name : 'Customer', '0000000000', isset($user->email) ? $user->email : 'customer@example.com')
+                    )
+                    ->buildHideShipping(true)
+                    ->buildURLs($urlReturn, $urlCallback);
+
+                $payRequest = RequestsFactory::createPaymentRequest($holder);
+                $response = Paytabs::submitRequest($payRequest);
+
+                if ($response->isRedirect()) {
+                    return redirect($response->getRedirect()->redirectUrl);
+                }
+
+                if ($response->isFailure()) {
+                    return redirect()->back()->with('error', $response->getFailure()->message ?? __('Payment initiation failed'));
+                }
+
+                return redirect()->back()->with('error', __('Unable to process PayTabs payment.'));
             } else {
                 return redirect()->route('plans.index')->with('error', __('Plan is deleted.'));
             }
@@ -134,7 +151,7 @@ class PaytabController extends Controller
         $orderID = strtoupper(str_replace('.', '', uniqid('', true)));
 
         try {
-            if ($request->respMessage == "Authorised" || $request->success == 1) {
+            if ($request->respMessage == "Authorised" || $request->success == 1 || $request->status == 'A') {
                 Utility::referralTransaction($plan);
 
                 $order = new Order();
