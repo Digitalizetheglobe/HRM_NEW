@@ -539,7 +539,7 @@ try {
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             <td style="width: 25%; border-right: 2px solid #000; text-align: center; vertical-align: middle;">
-                                <img src="{{ asset('/storage/uploads/logo/logo-main.webp') }}" style="max-width: 120px; max-height: 80px; object-fit: contain;" alt="Company Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <img src="{{ asset('/storage/uploads/logo/Guv-logo.webp') }}" style="max-width: 120px; max-height: 80px; object-fit: contain;" alt="Company Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                 <div style="width: 100px; height: 100px; border: 1px solid #ccc; display: none; margin: 0 auto;"></div>
                             </td>
                             <td style="padding: 15px; text-align: center;">

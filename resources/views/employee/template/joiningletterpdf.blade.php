@@ -42,10 +42,7 @@
                     </ul>
 
                     <p><strong>Salary: {{ !empty($employees->salary) ? \Auth::user()->priceFormat($employees->salary) : '25000' }}/- per month</strong></p>
-                    <ul>
-                        <li>₹14,000 per month for the first 6 months</li>
-                        <li>From the 7th to the 12th month, your salary will be revised to ₹16,000 or ₹17,000, based on your overall performance and contribution.</li>
-                    </ul>
+                 
 
                     <p>We believe your skills and experience make you an ideal fit for our team. Our company offers a dynamic work environment, opportunities for growth, and a chance to work on exciting projects.</p>
 

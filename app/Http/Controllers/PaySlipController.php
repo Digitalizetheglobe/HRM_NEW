@@ -1720,16 +1720,16 @@ class PaySlipController extends Controller
             $logoBase64 = null;
             try {
                 $logo = Utility::get_file('uploads/logo/');
-                $company_logo = Utility::getValByName('company_logo');
-                if (empty($company_logo)) {
-                    $company_logo = 'logo-dark.png';
-                }
+                $company_logo = 'Guv-logo.webp';
                 
                 $settings = Utility::settings();
                 $storageSetting = $settings['storage_setting'] ?? 'local';
                 
                 if ($storageSetting == 'local') {
-                    $fullPath = storage_path('app/public/uploads/logo/' . $company_logo);
+                    $fullPath = storage_path('uploads/logo/' . $company_logo);
+                    if (!file_exists($fullPath)) {
+                        $fullPath = storage_path('app/public/uploads/logo/' . $company_logo);
+                    }
                     if (file_exists($fullPath)) {
                         $imageData = file_get_contents($fullPath);
                         $imageType = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));

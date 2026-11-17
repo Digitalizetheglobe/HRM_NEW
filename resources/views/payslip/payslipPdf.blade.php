@@ -24,7 +24,7 @@ $company_logo = Utility::get_company_logo();
                             <div class="invoice-title">
                                 <h4>{{ __('Payslip') }}</h4>
                                 <div class="invoice-number">
-                                <img src="{{ asset('/storage/uploads/logo/logo-dark.png') }}"
+                                <img src="{{ asset('/storage/uploads/logo/Guv-logo.webp') }}"
                                         alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg">
                                 </div>
                             </div>
