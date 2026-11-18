@@ -104,16 +104,56 @@
     <header class="dash-header" style="background: linear-gradient(to right, #0a3772, #008ecc);">
 @endif
 
+<style>
+    /* Sidebar Open/Close Toggle Styles */
+    #menu-toggle-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #1e293b !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+    }
+    #menu-toggle-btn:hover {
+        background: #edf2f7 !important;
+        color: #0f172a !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    }
+    .dash-sidebar {
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .dash-header {
+        transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .dash-container {
+        transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    @media (min-width: 1025px) {
+        body.sidebar-collapsed .dash-sidebar {
+            transform: translateX(-100%) !important;
+            box-shadow: none !important;
+        }
+        body.sidebar-collapsed .dash-header {
+            left: 0 !important;
+        }
+        body.sidebar-collapsed .dash-container {
+            margin-left: 0 !important;
+        }
+    }
+</style>
+
 <div class="header-wrapper" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
     <div class="me-auto dash-mob-drp">
         <ul class="list-unstyled" style="display: flex; align-items: center;">
-            <li class="dash-h-item mob-hamburger">
-                <a href="#!" class="dash-head-link" id="mobile-collapse">
-                    <div class="hamburger hamburger--arrowturn">
-                        <div class="hamburger-box">
-                            <div class="hamburger-inner"></div>
-                        </div>
-                    </div>
+            <li class="dash-h-item" style="margin-right: 12px;">
+                <a href="#!" class="dash-head-link" id="menu-toggle-btn" title="Toggle Menu">
+                    <i class="ti ti-menu-2" style="font-size: 20px;"></i>
                 </a>
             </li>
             <li class="dropdown dash-h-item drp-company">
@@ -803,6 +843,48 @@
                 .catch(error => console.error('Error registering device token:', error));
             }
             @endauth
+            // Sidebar Open/Close Toggle
+            var menuToggle = document.getElementById('menu-toggle-btn');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.innerWidth > 1024) {
+                        document.body.classList.toggle('sidebar-collapsed');
+                        var isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                        try {
+                            localStorage.setItem('hrm_sidebar_collapsed', isCollapsed ? '1' : '0');
+                        } catch (err) {}
+                    } else {
+                        var sidebar = document.querySelector('.dash-sidebar');
+                        if (sidebar) {
+                            sidebar.classList.toggle('mob-sidebar-active');
+                            var existingOverlay = document.querySelector('.dash-menu-overlay');
+                            if (sidebar.classList.contains('mob-sidebar-active')) {
+                                if (!existingOverlay) {
+                                    var overlay = document.createElement('div');
+                                    overlay.className = 'dash-menu-overlay';
+                                    document.body.appendChild(overlay);
+                                    overlay.addEventListener('click', function() {
+                                        sidebar.classList.remove('mob-sidebar-active');
+                                        overlay.remove();
+                                    });
+                                }
+                            } else if (existingOverlay) {
+                                existingOverlay.remove();
+                            }
+                        }
+                    }
+                });
+
+                // Restore saved collapsed state
+                if (window.innerWidth > 1024) {
+                    try {
+                        if (localStorage.getItem('hrm_sidebar_collapsed') === '1') {
+                            document.body.classList.add('sidebar-collapsed');
+                        }
+                    } catch (err) {}
+                }
+            }
         });
     </script>
 @endpush
