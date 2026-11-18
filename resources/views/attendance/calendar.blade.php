@@ -68,10 +68,10 @@
 
                     <div class="filter-actions d-flex gap-2 flex-shrink-0">
                         <button type="submit" class="btn btn-primary btn-filter" data-bs-toggle="tooltip" title="{{ __('Apply Filter') }}">
-                            <i class="ti ti-search"></i><span class="d-none d-sm-inline ms-1">{{ __('Apply') }}</span>
+                            <i class="ti ti-search"></i>
                         </button>
                         <a href="{{ route('attendance.calendar') }}" class="btn btn-outline-secondary btn-filter" data-bs-toggle="tooltip" title="{{ __('Reset') }}">
-                            <i class="ti ti-refresh"></i><span class="d-none d-sm-inline ms-1">{{ __('Reset') }}</span>
+                            <i class="ti ti-refresh"></i>
                         </a>
                     </div>
                 </div>
@@ -98,12 +98,12 @@
                     </div>
                     <div class="d-flex gap-2 flex-shrink-0">
                         <a href="{{ route('attendance.calendar', ['employee_id' => $selectedEmployee->id, 'month' => $previousMonth, 'year' => $previousYear]) }}"
-                           class="btn btn-sm btn-nav-month">
-                            <i class="ti ti-chevron-left"></i><span class="d-none d-sm-inline ms-1">{{ __('Prev') }}</span>
+                           class="btn btn-sm btn-nav-month" data-bs-toggle="tooltip" title="{{ __('Previous Month') }}">
+                            <i class="ti ti-chevron-left"></i>
                         </a>
                         <a href="{{ route('attendance.calendar', ['employee_id' => $selectedEmployee->id, 'month' => $nextMonth, 'year' => $nextYear]) }}"
-                           class="btn btn-sm btn-nav-month">
-                            <span class="d-none d-sm-inline me-1">{{ __('Next') }}</span><i class="ti ti-chevron-right"></i>
+                           class="btn btn-sm btn-nav-month" data-bs-toggle="tooltip" title="{{ __('Next Month') }}">
+                            <i class="ti ti-chevron-right"></i>
                         </a>
                     </div>
                 </div>
@@ -495,14 +495,19 @@
 }
 .btn-filter {
     height: 38px;
-    padding: 0 18px;
-    font-size: 0.85rem;
+    width: 38px;
+    padding: 0;
+    font-size: 1.1rem;
     font-weight: 600;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
     white-space: nowrap;
+}
+.btn-filter i {
+    font-size: 1.15rem;
+    line-height: 1;
 }
 
 /* ── Calendar card ── */
@@ -552,17 +557,23 @@
     margin-top: 4px;
 }
 .btn-nav-month {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.18);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff !important;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 0.82rem;
-    padding: 6px 14px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
     transition: background 0.2s, transform 0.15s;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     backdrop-filter: blur(4px);
+}
+.btn-nav-month i {
+    font-size: 1.1rem;
+    line-height: 1;
 }
 .btn-nav-month:hover {
     background: rgba(255,255,255,0.28);
