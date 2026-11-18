@@ -840,3 +840,184 @@ a > i.ti-plus{
 .color-wrp .color-picker-wrp{
     width: 70px;
 }
+
+/* ============================================================
+   Consistent Modern Calendar-Style Buttons Across All Pages
+============================================================ */
+
+/* Icon-only Action & Filter Buttons */
+.action-btn,
+.btn-filter,
+.btn-nav-month,
+.page-header .btn.btn-sm,
+.filter-actions .btn,
+.btn-box a.btn-sm,
+.btn-box button.btn-sm,
+.d-flex.gap-2 > a.btn-sm,
+.d-flex.gap-2 > button.btn-sm,
+.d-flex > a.btn-sm,
+.d-flex > button.btn-sm,
+.col-xl-auto .btn.btn-sm,
+.btn.btn-sm.btn-icon-only,
+a.btn.btn-sm:has(i),
+button.btn.btn-sm:has(i),
+a.btn.btn-sm:has(.btn-inner--icon),
+button.btn.btn-sm:has(.btn-inner--icon) {
+    height: 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    flex-shrink: 0 !important;
+}
+
+/* Hover effects */
+.action-btn:hover,
+.btn-filter:hover,
+.page-header .btn.btn-sm:hover,
+.filter-actions .btn:hover,
+.btn-box a.btn-sm:hover,
+.btn-box button.btn-sm:hover,
+.d-flex.gap-2 > a.btn-sm:hover,
+.d-flex.gap-2 > button.btn-sm:hover,
+.d-flex > a.btn-sm:hover,
+.d-flex > button.btn-sm:hover,
+.col-xl-auto .btn.btn-sm:hover,
+a.btn.btn-sm:has(i):hover,
+button.btn.btn-sm:has(i):hover,
+a.btn.btn-sm:has(.btn-inner--icon):hover,
+button.btn.btn-sm:has(.btn-inner--icon):hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Centered icon inside */
+.action-btn i,
+.btn-filter i,
+.page-header .btn.btn-sm i,
+.filter-actions .btn i,
+.btn-box a.btn-sm i,
+.btn-box button.btn-sm i,
+.d-flex.gap-2 > a.btn-sm i,
+.d-flex.gap-2 > button.btn-sm i,
+.d-flex > a.btn-sm i,
+.d-flex > button.btn-sm i,
+.col-xl-auto .btn.btn-sm i,
+.btn.btn-sm i,
+.btn-inner--icon,
+.btn-inner--icon i {
+    font-size: 1.15rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Primary Buttons (Search / Apply / Export / Create) */
+.btn-primary.btn-sm,
+.btn-primary.btn-filter,
+.btn-primary.action-btn,
+.bg-primary.action-btn {
+    background: #0284c7 !important; /* Crisp Modern Blue like Calendar */
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+}
+.btn-primary.btn-sm:hover,
+.btn-primary.btn-filter:hover,
+.btn-primary.action-btn:hover {
+    background: #0369a1 !important;
+    border-color: #0369a1 !important;
+    color: #ffffff !important;
+}
+
+/* Danger / Reset Buttons (Clean Modern Rose / Red) */
+.btn-danger.btn-sm,
+.btn-danger.btn-filter,
+.btn-danger.action-btn,
+.bg-danger.action-btn {
+    background: #f43f5e !important; /* Clean Modern Rose / Red */
+    border-color: #f43f5e !important;
+    color: #ffffff !important;
+}
+.btn-danger.btn-sm:hover,
+.btn-danger.btn-filter:hover,
+.btn-danger.action-btn:hover {
+    background: #e11d48 !important;
+    border-color: #e11d48 !important;
+    color: #ffffff !important;
+}
+
+/* Outline Secondary (like Calendar's Reset button) */
+.btn-outline-secondary.btn-filter,
+.btn-outline-secondary.btn-sm,
+.btn-outline-secondary.action-btn {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    color: #4b5563 !important;
+}
+.btn-outline-secondary.btn-filter:hover,
+.btn-outline-secondary.btn-sm:hover,
+.btn-outline-secondary.action-btn:hover {
+    background: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #1f2937 !important;
+}
+
+/* Info Buttons */
+.btn-info.btn-sm,
+.btn-info.action-btn,
+.bg-info.action-btn {
+    background: #0ea5e9 !important;
+    border-color: #0ea5e9 !important;
+    color: #ffffff !important;
+}
+.btn-info.btn-sm:hover,
+.btn-info.action-btn:hover {
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+}
+
+/* Warning Buttons */
+.btn-warning.btn-sm,
+.btn-warning.action-btn,
+.bg-warning.action-btn {
+    background: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: #ffffff !important;
+}
+.btn-warning.btn-sm:hover,
+.btn-warning.action-btn:hover {
+    background: #d97706 !important;
+    border-color: #d97706 !important;
+}
+
+/* General Action Buttons (e.g., Update submit button in Bulk Attendance) */
+input[type="submit"].btn-primary,
+button[type="submit"].btn-primary:not(.btn-sm) {
+    border-radius: 10px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
+    transition: all 0.2s ease !important;
+}
+input[type="submit"].btn-primary:hover,
+button[type="submit"].btn-primary:not(.btn-sm):hover {
+    background: #0369a1 !important;
+    border-color: #0369a1 !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
+    transform: translateY(-1px);
+}
