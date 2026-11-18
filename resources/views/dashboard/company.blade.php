@@ -1,60 +1,544 @@
 @extends('layouts.admin')
 
-
-
 @php
     $setting = App\Models\Utility::settings();
 @endphp
 
 @section('content')
 <style>
+    /* =========================================================
+       MODERN SAAS DASHBOARD STYLES (HRM)
+       ========================================================= */
+    :root {
+        --dash-primary: #018ac8;
+        --dash-primary-dark: #006b9d;
+        --dash-primary-light: #e6f4fa;
+        --dash-dark: #0f172a;
+        --dash-slate: #334155;
+        --dash-muted: #64748b;
+        --dash-border: #edf2f7;
+        --dash-bg: #f8fafc;
+        --dash-card-bg: #ffffff;
+        --dash-radius: 18px;
+        --dash-radius-sm: 12px;
+        --dash-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -2px rgba(15, 23, 42, 0.02);
+        --dash-shadow-hover: 0 16px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+    }
 
-    /* ===== Events Card ===== */
-    .events-card {
-        border: none;
-        border-radius: 14px !important;
-        box-shadow: 0 4px 24px rgba(102,126,234,0.14) !important;
+    /* Overall Layout Polish */
+    .dashboard-container {
+        padding-bottom: 30px;
+    }
+
+    /* Modern Hero Greeting Header */
+    .modern-welcome-hero {
+        background: #ffffff;
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        padding: 22px 26px;
+        margin-bottom: 24px;
+        box-shadow: var(--dash-shadow);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: relative;
         overflow: hidden;
     }
-    .events-scroll-body::-webkit-scrollbar { width: 4px; }
-    .events-scroll-body::-webkit-scrollbar-track { background: #f1f3f9; }
-    .events-scroll-body::-webkit-scrollbar-thumb { background: #c5c8e8; border-radius: 10px; }
+    .modern-welcome-hero::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 180px;
+        background: radial-gradient(circle at top right, rgba(1, 138, 200, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+    .welcome-pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(1, 138, 200, 0.08);
+        color: var(--dash-primary);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 6px;
+    }
+    .welcome-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--dash-dark);
+        letter-spacing: -0.4px;
+        margin: 0;
+        line-height: 1.25;
+    }
+    .welcome-subtitle {
+        font-size: 13px;
+        color: var(--dash-muted);
+        margin: 4px 0 0 0;
+        font-weight: 500;
+    }
 
-    /* Each event row */
+    /* Filter Controls */
+    .filter-controls-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    .live-date-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--dash-radius-sm);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dash-slate);
+    }
+    .live-date-pill i {
+        color: var(--dash-primary);
+        font-size: 14px;
+    }
+    .btn-modern-filter {
+        background: linear-gradient(135deg, #018ac8 0%, #026b9a 100%) !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        padding: 8px 16px !important;
+        border-radius: var(--dash-radius-sm) !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(1, 138, 200, 0.28) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        transition: all 0.25s ease !important;
+    }
+    .btn-modern-filter:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(1, 138, 200, 0.38) !important;
+    }
+    .modern-dropdown-menu {
+        border-radius: 14px !important;
+        border: 1px solid #edf2f7 !important;
+        box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.1) !important;
+        padding: 8px !important;
+        min-width: 160px;
+    }
+    .modern-dropdown-menu .dropdown-item {
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: var(--dash-slate) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        transition: all 0.15s ease !important;
+    }
+    .modern-dropdown-menu .dropdown-item:hover {
+        background: #f1f5f9 !important;
+        color: var(--dash-dark) !important;
+    }
+    #customDatePicker {
+        height: 38px !important;
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: var(--dash-radius-sm) !important;
+        background-color: #ffffff !important;
+        color: var(--dash-slate) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    /* =========================================================
+       STAT CARDS (KPIs)
+       ========================================================= */
+    .stat-card-col {
+        margin-bottom: 20px;
+    }
+    .modern-stat-card {
+        background: #ffffff;
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius) !important;
+        padding: 22px 22px;
+        box-shadow: var(--dash-shadow);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .modern-stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .modern-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--dash-shadow-hover);
+        border-color: #e2e8f0;
+    }
+    .modern-stat-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Themes for Cards */
+    .card-theme-purple::before { background: linear-gradient(90deg, #9333ea, #c084fc); }
+    .card-theme-blue::before { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+    .card-theme-green::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .card-theme-indigo::before { background: linear-gradient(90deg, #6366f1, #818cf8); }
+    .card-theme-orange::before { background: linear-gradient(90deg, #f97316, #fb923c); }
+    .card-theme-pink::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+    .stat-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 22px;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modern-stat-card:hover .stat-icon-wrapper {
+        transform: scale(1.08) rotate(3deg);
+    }
+
+    .icon-purple { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); box-shadow: 0 6px 16px rgba(168, 85, 247, 0.3); }
+    .icon-blue   { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3); }
+    .icon-green  { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3); }
+    .icon-indigo { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3); }
+    .icon-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3); }
+    .icon-pink   { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); box-shadow: 0 6px 16px rgba(236, 72, 153, 0.3); }
+
+    .stat-arrow-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 13px;
+        transition: all 0.25s ease;
+    }
+    .modern-stat-card:hover .stat-arrow-btn {
+        background: var(--dash-dark);
+        color: #ffffff;
+        border-color: var(--dash-dark);
+        transform: translate(2px, -2px);
+    }
+
+    .stat-card-mid {
+        margin-bottom: 12px;
+    }
+    .stat-val-text {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--dash-dark);
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+        margin: 0 0 4px 0;
+    }
+    .stat-label-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dash-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+    .stat-card-bottom {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #94a3b8;
+        padding-top: 10px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* =========================================================
+       BOX CARDS & SECTION HEADERS
+       ========================================================= */
+    .modern-box-card {
+        background: #ffffff;
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius) !important;
+        box-shadow: var(--dash-shadow);
+        overflow: hidden;
+        margin-bottom: 24px;
+        transition: box-shadow 0.25s ease;
+    }
+    .modern-box-card:hover {
+        box-shadow: var(--dash-shadow-hover);
+    }
+    .modern-box-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: var(--dash-radius) var(--dash-radius) 0 0 !important;
+    }
+    .modern-box-header .header-left-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 0.2px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+    .modern-box-header .header-left-title i {
+        font-size: 18px;
+        color: #38bdf8;
+    }
+    .modern-box-header .header-count-pill {
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        line-height: 1.5;
+    }
+    .modern-box-header .btn-header-add {
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    .modern-box-header .btn-header-add:hover {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Custom Modern Table */
+    .modern-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 12px 18px;
+        border: none;
+        border-bottom: 1px solid #edf2f7;
+        white-space: nowrap;
+    }
+    .modern-table tbody td {
+        padding: 13px 18px;
+        font-size: 13px;
+        color: var(--dash-dark);
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        font-weight: 500;
+    }
+    .modern-table tbody tr {
+        transition: background 0.15s ease;
+    }
+    .modern-table tbody tr:hover {
+        background: #f8fafc;
+    }
+    .modern-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Status Pills */
+    .pill-absent {
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        font-weight: 600;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .pill-absent::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ef4444;
+    }
+    .time-badge {
+        font-weight: 600;
+        color: #0f172a;
+        background: #f1f5f9;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        display: inline-block;
+    }
+
+    /* List Groups (Projects, Notices) */
+    .modern-list-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 18px;
+        border-bottom: 1px solid #f1f5f9;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+    .modern-list-item:last-child {
+        border-bottom: none;
+    }
+    .modern-list-item:hover {
+        background: #f8fafc;
+        padding-left: 22px;
+    }
+    .modern-list-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--dash-primary);
+        flex-shrink: 0;
+        margin-right: 14px;
+        transition: transform 0.2s ease;
+    }
+    .modern-list-item:hover .modern-list-icon {
+        transform: scale(1.08);
+        background: rgba(1, 138, 200, 0.1);
+    }
+    .modern-list-chevron {
+        color: #cbd5e1;
+        font-size: 16px;
+        transition: transform 0.2s, color 0.2s;
+        flex-shrink: 0;
+    }
+    .modern-list-item:hover .modern-list-chevron {
+        color: var(--dash-primary);
+        transform: translateX(3px);
+    }
+
+    /* Status Badges */
+    .badge-modern-success {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-modern-warning {
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-modern-primary {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    /* =========================================================
+       RIGHT SIDEBAR (EVENTS & CALENDAR)
+       ========================================================= */
+    .events-card {
+        border: none;
+        border-radius: var(--dash-radius) !important;
+        box-shadow: var(--dash-shadow) !important;
+        overflow: hidden;
+        background: #ffffff;
+    }
+    .events-scroll-body::-webkit-scrollbar { width: 4px; }
+    .events-scroll-body::-webkit-scrollbar-track { background: #f8fafc; }
+    .events-scroll-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
     .ev-row {
         display: flex;
         align-items: center;
-        gap: 11px;
-        padding: 10px 14px;
-        border-bottom: 1px solid #f0f2fa;
+        gap: 12px;
+        padding: 11px 16px;
+        border-bottom: 1px solid #f1f5f9;
         cursor: pointer;
         transition: background 0.15s ease;
     }
     .ev-row:last-child { border-bottom: none; }
-    .ev-row:hover { background: #f6f7ff; }
+    .ev-row:hover { background: #f8fafc; }
     .ev-row:hover .ev-icon { transform: scale(1.08); box-shadow: 0 5px 16px rgba(0,0,0,0.18) !important; }
-    .ev-row:hover .ev-arrow { transform: translateX(3px); color: #667eea !important; }
+    .ev-row:hover .ev-arrow { transform: translateX(3px); color: var(--dash-primary) !important; }
 
-    /* Icon */
     .ev-icon {
         width: 38px;
         height: 38px;
         min-width: 38px;
-        border-radius: 10px;
+        border-radius: 11px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.13);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .ev-icon i { color: #fff; font-size: 17px; }
 
-    /* Text block */
     .ev-info { flex: 1; overflow: hidden; min-width: 0; }
     .ev-title {
         font-size: 13px;
         font-weight: 600;
-        color: #1a1f36;
+        color: var(--dash-dark);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -65,7 +549,7 @@
     .ev-today-badge {
         font-size: 9px;
         font-weight: 700;
-        background: linear-gradient(135deg,#f6d365,#fda085);
+        background: linear-gradient(135deg, #f6d365, #fda085);
         color: #fff;
         padding: 1px 6px;
         border-radius: 20px;
@@ -80,35 +564,31 @@
         border-radius: 20px;
         white-space: nowrap;
     }
-    .ev-date { font-size: 10px; color: #9faabb; white-space: nowrap; }
+    .ev-date { font-size: 10px; color: #94a3b8; white-space: nowrap; }
+    .ev-arrow { color: #cbd5e1; font-size: 13px; flex-shrink: 0; transition: transform 0.18s, color 0.18s; }
 
-    /* Chevron */
-    .ev-arrow { color: #d0d7e8; font-size: 13px; flex-shrink: 0; transition: transform 0.18s, color 0.18s; }
-
-    /* Empty state */
     .ev-empty {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 30px 16px;
+        padding: 34px 16px;
         gap: 10px;
     }
     .ev-empty-icon {
         width: 52px; height: 52px;
-        background: linear-gradient(135deg,#e0e7ff,#c7d2fe);
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
         border-radius: 14px;
         display: flex; align-items: center; justify-content: center;
     }
-    .ev-empty-icon i { font-size: 26px; color: #818cf8; }
-    .ev-empty p { color: #9ca3af; font-size: 12px; font-weight: 500; margin: 0; }
+    .ev-empty-icon i { font-size: 26px; color: #0284c7; }
+    .ev-empty p { color: #94a3b8; font-size: 12px; font-weight: 600; margin: 0; }
 
-    /* Avatar with ring */
     .ev-avatar-wrap {
         position: relative;
-        width: 42px;
-        height: 42px;
-        min-width: 42px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
         border-radius: 50%;
         padding: 2px;
         flex-shrink: 0;
@@ -131,7 +611,7 @@
         height: 17px;
         border-radius: 50%;
         background: #fff;
-        border: 1.5px solid #e8e8f0;
+        border: 1.5px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -139,879 +619,758 @@
     }
     .ev-avatar-badge i { font-size: 9px; color: #555; }
 
-    /* Custom hover card */
-    .hover-employee-card .hover-department-card .hover-leave-card .hover-holiday-card .hover-ticket-card .hover-project-card {
-        transition: background-color 0.3s ease;
-    }
-    .hover-employee-card:hover {
-        background-color: #ead9ecff !important;
-    }
-
-    .hover-department-card:hover {
-        background-color: #d1e6edff !important;
-    }
-
-    .hover-leave-card:hover {
-        background-color: #ceefd5ff !important;
-    }
-
-    .hover-holiday-card:hover {
-        background-color: #d0cdedff !important;
-    }
-
-    .hover-ticket-card:hover {
-        background-color: #f1d1e0ff !important;
-    }  
-    
-    .hover-project-card:hover {
-        background-color: #f4e0d7ff !important;
-    }
-
+    /* Calendar Styling */
     .fc-prev-button, .fc-next-button {
-        padding: 6px 10px !important;
-        font-size: 14px !important;
-        background-color: #007bff !important;
-        border-radius: 6px !important;
-        border: none !important;
-        color: white !important;
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        font-size: 13px !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 50% !important;
+        color: var(--dash-slate) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+        transition: all 0.2s ease !important;
     }
-
     .fc-prev-button:hover, .fc-next-button:hover {
-        background-color: #0056b3 !important;
-        transform: scale(1.05);
+        background: var(--dash-primary) !important;
+        color: #ffffff !important;
+        border-color: var(--dash-primary) !important;
+        transform: scale(1.06);
     }
-
-    /* FullCalendar Responsive Header */
     .fc .fc-toolbar {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        justify-content: center !important;
-        gap: 15px !important;
-        margin-bottom: 1.5em !important;
+        justify-content: space-between !important;
+        padding: 14px 16px 10px !important;
+        margin-bottom: 0.5em !important;
     }
-
     .fc .fc-toolbar-title {
-        font-size: 1.2rem !important;
+        font-size: 14px !important;
         margin: 0 !important;
-        font-weight: 700 !important;
-        color: #333 !important;
+        font-weight: 800 !important;
+        color: var(--dash-dark) !important;
         text-transform: uppercase !important;
-        letter-spacing: 1px !important;
+        letter-spacing: 0.5px !important;
+    }
+    .fc .fc-col-header-cell {
+        background: #f8fafc !important;
+        padding: 6px 0 !important;
+        border-color: #f1f5f9 !important;
+    }
+    .fc .fc-col-header-cell-cushion {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+    }
+    .fc-daygrid-day-number {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: var(--dash-slate) !important;
+        padding: 6px !important;
+    }
+    .fc-day-today {
+        background: rgba(1, 138, 200, 0.06) !important;
+    }
+    .fc-day-today .fc-daygrid-day-number {
+        background: var(--dash-primary) !important;
+        color: #ffffff !important;
+        border-radius: 50% !important;
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2px;
     }
 
-    .fc .fc-button-group {
-        display: flex !important;
-        gap: 5px !important;
-    }
-
-    /* Calendar Grid Responsiveness */
-    @media (max-width: 576px) {
-        .fc .fc-toolbar-title {
-            font-size: 1rem !important;
-        }
-        .fc .fc-col-header-cell-cushion,
-        .fc .fc-daygrid-day-number {
-            font-size: 0.8rem !important;
-            padding: 4px !important;
-        }
-        .fc .fc-daygrid-day-top {
-            justify-content: center !important;
-        }
-    }
-
-    #calendar {
-        margin-bottom: 10px;
-    }
-
+    /* Loading Overlay */
     .loading {
         position: relative;
         pointer-events: none;
         opacity: 0.7;
     }
-
     .loading:after {
         content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(255, 255, 255, 0.7) url('{{ asset("assets/img/loading.gif") }}') no-repeat center;
-        background-size: 50px 50px;
+        background-size: 44px 44px;
         z-index: 1000;
+        border-radius: var(--dash-radius);
     }
 
-    /* Dash content padding reduction for mobile */
-
-    /* Tablet responsive (up to 1024px) */
-    @media (max-width: 1024px) {
-        .dash-content {
-            padding-top: 10px !important;
-        }
-    }
-
-    /* Mobile responsive (up to 768px) */
-    @media (max-width: 768px) {
-        .dash-content {
-            padding-top: 8px !important;
-        }
-        .dashboard-header {
-            margin-bottom: 15px !important;
-        }
-        .dashboard-header h3 {
-            font-size: 20px;
-        }
-    }
-
-    /* Small mobile responsive (up to 576px) */
-    @media (max-width: 576px) {
-        .dash-content {
-            padding-top: 5px !important;
-            padding-left: 15px !important;
-            padding-right: 15px !important;
-        }
-        .dashboard-header {
-            margin-bottom: 10px !important;
-            gap: 8px !important;
-        }
-        .dashboard-header h3 {
-            font-size: 18px;
-        }
-        #customDatePicker {
-            max-width: 130px !important;
-            min-width: 110px !important;
-            font-size: 12px !important;
-            padding: 4px 6px !important;
-        }
-        #dateFilterButton {
-            font-size: 12px !important;
-            padding: 5px 10px !important;
-        }
-        .dropdown-menu {
-            min-width: auto;
-        }
-        /* Cards responsive spacing */
-        .card {
-            margin-bottom: 10px !important;
-        }
-        .card-body {
-            padding: 15px !important;
-        }
-    }
-
-    @media (max-width: 400px) {
-        .dashboard-header h3 {
-            font-size: 16px;
-        }
-        #customDatePicker {
-            max-width: 120px !important;
-            min-width: 100px !important;
-        }
-    }
-
-    #customDatePicker {
-        height: 31.5px !important;
-        padding: 6px 12px !important;
-        font-size: 13px !important;
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        background-color: #fff;
-    }
-
-    .dashboard-header h3 {
-        transition: all 0.3s ease;
-    }
-
-    .dashboard-header.compact h3 {
-        font-size: 1.1rem !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px; /* Limit width to ensure picker has room */
-    }
-
-    /* Mobile Stat Card Optimizations */
-    @media (max-width: 576px) {
-        .stat-card-body {
-            padding: 12px !important;
-        }
-        .stat-icon-circle {
-            width: 40px !important;
-            height: 40px !important;
-        }
-        .stat-icon-circle i {
-            font-size: 18px !important;
-        }
-        .stat-label h6 {
-            font-size: 10px !important;
-        }
-        .stat-label h4 {
-            font-size: 11px !important;
-            font-weight: 700 !important;
-        }
-        .stat-count h4 {
-            font-size: 20px !important;
-            margin-top: 2px !important;
-        }
-        .br-mobile {
-            display: none !important;
-        }
-        /* Optional: align items horizontally on mobile if they feel too tall */
-        .stat-inner-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .stat-data-section {
-            display: flex;
+    /* Responsive */
+    @media (max-width: 991px) {
+        .modern-welcome-hero {
             flex-direction: column;
-            justify-content: center;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .filter-controls-group {
+            width: 100%;
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
     }
-
     @media (max-width: 576px) {
-        .dashboard-header.compact h3 {
-            font-size: 0.9rem !important;
-            max-width: 100px;
-        }
+        .stat-val-text { font-size: 26px; }
+        .modern-welcome-hero { padding: 16px 18px; }
+        .welcome-title { font-size: 20px; }
     }
 </style>
-<div>
+
+<div class="dashboard-container">
     <div class="row">
         @if (session('status'))
-            <div class="alert alert-success" role="alert">
-                {{ session('status') }}
+            <div class="col-12">
+                <div class="alert alert-success border-0 shadow-sm" style="border-radius: 12px;" role="alert">
+                    <i class="ti ti-check me-2"></i> {{ session('status') }}
+                </div>
             </div>
         @endif
 
-    @if (Auth::user()->type == 'company' || Auth::user()->type == 'hr' || Auth::user()->type == 'Director')
+        @if (Auth::user()->type == 'company' || Auth::user()->type == 'hr' || Auth::user()->type == 'Director')
 
-    <div class="row" style="padding-right: 0px;">
-            <div class="d-flex justify-content-between align-items-center w-100 gap-2 dashboard-header" id="dashboardHeader" style="margin-bottom: 30px; flex-wrap: nowrap;">
-                <div class="mb-0">
-                    <h3 class="mb-0" id="dashboardGreeting">
+        {{-- =========================================================
+             MODERN HERO GREETING & FILTER BAR
+             ========================================================= --}}
+        <div class="col-12">
+            <div class="modern-welcome-hero" id="dashboardHeader">
+                <div>
+                    <div class="welcome-pill-badge">
+                        <i class="ti ti-shield-check"></i> HRM Company Dashboard
+                    </div>
+                    <h2 class="welcome-title" id="dashboardGreeting">
                         @if(Auth::user()->type == 'employee')
-                            {{ __('Welcome') }}, {{ Auth::user()->name }}
+                            {{ __('Welcome') }}, {{ Auth::user()->name }} 👋
                         @else
-                            {{ __('Welcome Admin') }}
+                            {{ __('Welcome Admin') }} 👋
                         @endif
-                    </h3>
+                    </h2>
+                    <p class="welcome-subtitle">
+                        Here is the live real-time pulse of your workforce, projects and operations today.
+                    </p>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-end gap-2" style="flex-shrink: 0;">
+                <div class="filter-controls-group">
+                    <div class="live-date-pill d-none d-md-flex">
+                        <i class="ti ti-calendar"></i>
+                        <span>{{ date('l, d M Y') }}</span>
+                    </div>
+
                     <div class="btn-group" style="z-index: 1;">
-                        <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="dateFilterButton" style="white-space: nowrap; font-size: 13px; padding: 6px 12px;">
-                            Today
+                        <button type="button" class="btn btn-modern-filter dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="dateFilterButton">
+                            <i class="ti ti-filter"></i> <span>Today</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#" data-value="today">Today</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="yesterday">Yesterday</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="custom">Select Date</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end modern-dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-value="today"><i class="ti ti-calendar text-primary"></i> Today</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="yesterday"><i class="ti ti-history text-muted"></i> Yesterday</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-item" href="#" data-value="custom"><i class="ti ti-calendar-plus text-info"></i> Select Date</a></li>
                         </ul>
                     </div>
+
                     <div class="position-relative" id="customDatePickerWrapper" style="display: none;">
-                        <input type="date" class="form-control form-control-sm" id="customDatePicker" >
+                        <input type="date" class="form-control" id="customDatePicker">
                     </div>
                 </div>
             </div>
-    </div>  
-            <!-- Employee specific content -->
-        
+        </div>
 
-
-            <div class="col-xxl-9">
-                <div class="row">
-                    <!-- Left Side Cards -->
-                    <div class="col-xl-12">
-
-            
-                       <div class="row">
-                            <div class="col-xxl-12">
-                                <div class="col-xl-12">
-                                        <div class="row">
-                                            <!-- first Card - Employees -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-employee-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='employee'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #B55CC4; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-user-tie" style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color:#555657 !important; font-weight: 800; margin: 0;">Employees</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #0569a6;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color : #000 !important; "> {{ $countEmployee }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- second Card - Department -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-department-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='{{ url('department') }}'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #299dc6; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-sitemap"  style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color: #555657 !important; font-weight: 800; margin: 0;">Department</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #0569a6;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color : #000 !important; "> {{ $totalDepartment }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Third Card - Leaves -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-leave-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='leave'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #28a745; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-calendar" style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color: #555657 !important; font-weight: 800; margin: 0;">Leaves</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #6c757d;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color:#000 !important; " id="totalLeavesCount"> {{ $totalleaves }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Fourth Card - Holidays -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-holiday-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='holiday'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #4c39c9; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-calendar-days" style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color: #555657 !important; font-weight: 800; margin: 0;">Holidays</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #0569a6;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color : #000 !important; "> {{ $totalHolidays }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        
-                                            <!-- fifth Card - Projects -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-project-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='projects'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #F26522; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-diagram-project" style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color: #555657 !important; font-weight: 800; margin: 0;">Projects</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #6c757d;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color:#000 !important; "> {{ $totalProjects }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Six Card - Ticket -->
-                                            <div class="col-6 col-lg-4 col-md-4">
-                                                <div class="card hover-ticket-card" style="border-radius: 10px; border: 3px solid #E7E7E7;  background-color: #fff; cursor: pointer;" onclick="window.location.href='ticket'">
-                                                    <div class="card-body" style="padding: 20px;">
-                                                        <div class="align-items-center">
-                                                            <div class="col-auto">
-                                                                <div style="background-color: #FD3995; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                                                                    <i class="fa-solid fa-ticket" style="font-size: 25px; color: #fff;"></i>
-                                                                </div>
-                                                            </div><br>
-                                                            <div class="col-auto" style="display: flex; align-items: center; gap: 5px;">
-                                                                <h6 style="font-size: 14px; color: #515356; margin: 0;">Total</h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 15px; color: #555657 !important; font-weight: 800; margin: 0;">Ticket</h4>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                <h6 style="font-size: 14px; color: #6c757d;"> </h6>
-                                                                <h4 class="m-0 text-primary" style="font-size: 30px; color:#000 !important; "> {{ $countTicket }}  </h4>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+        {{-- =========================================================
+             MAIN CONTENT: 9 COLS LEFT, 3 COLS RIGHT
+             ========================================================= --}}
+        <div class="col-xxl-9">
+            <div class="row">
+                <!-- 6 KPI Stat Cards -->
+                <div class="col-12">
+                    <div class="row">
+                        <!-- 1. Total Employees -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-purple" onclick="window.location.href='employee'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-purple">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                    </div>
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text">{{ $countEmployee }}</h3>
+                                    <p class="stat-label-text">Total Employees</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-circle-check text-success"></i>
+                                    <span>Active company staff</span>
                                 </div>
                             </div>
                         </div>
 
-
-                        <!-- Today's Attendance & Yet To Arrive Cards in One Line -->
-                        <div class="row">
-                            <div class="col-12 col-md-8 mb-4">
-                                <div class="card">
-                                    <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-users" style="color:#fff;font-size:20px;"></i>
-                                            <span id="attendanceFilterTitle" style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __("Today's Attendance") }}</span>
-                                        </div>
-                                        <span id="attendanceCount" style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($presentEmployeesWithClockIn) }}</span>
+                        <!-- 2. Total Department -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-blue" onclick="window.location.href='{{ url('department') }}'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-blue">
+                                        <i class="fa-solid fa-sitemap"></i>
                                     </div>
-                                    <div class="card-body" style="height: 300px; overflow: auto; padding: ; padding-top:25px;">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered text-left" id="attendanceTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ __('Employee Name') }}</th>
-                                                        <th>{{ __('Punch-In Time') }}</th>
-                                                        <th>{{ __('Punch-Out Time') }}</th>
-                                                        <th>{{ __('Total Working Hours') }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @forelse ($presentEmployeesWithClockIn as $data)
-                                                        @php
-                                                            $timeline = '--:--';
-                                                            if (!empty($data['clock_in']) && $data['clock_in'] !== '--:--') {
-                                                                try {
-                                                                    $clockIn = \Carbon\Carbon::parse($data['clock_in']);
-                                                                    if (!empty($data['clock_out']) && $data['clock_out'] !== '--:--') {
-                                                                        $clockOut = \Carbon\Carbon::parse($data['clock_out']);
-                                                                        $diff = $clockIn->diff($clockOut);
-                                                                    } else {
-                                                                        $diff = $clockIn->diff(\Carbon\Carbon::now());
-                                                                    }
-                                                                    $timeline = $diff->h . ' hours ' . $diff->i . ' minutes';
-                                                                } catch (\Exception $e) {
-                                                                    $timeline = '--:--';
-                                                                }
-                                                            }
-                                                        @endphp
-                                                        <tr>
-                                                            <td>{{ $data['employee']->name ?? 'N/A' }}</td>
-                                                            <td>{{ $data['clock_in'] ?? '--:--' }}</td>
-                                                            <td>{{ $data['clock_out'] ?? '--:--' }}</td>
-                                                            <td>{{ $timeline }}</td>
-                                                        </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="4">{{ __('No attendance records found for today.') }}</td>
-                                                        </tr>
-                                                    @endforelse
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Yet To Arrive Card -->
-                            <div class="col-12 col-md-4 mb-4">
-                                <div class="card">
-                                    <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-user-x" style="color:#fff;font-size:20px;"></i>
-                                            <span id="notClockInFilterTitle" style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Yet To Arrive') }}</span>
-                                        </div>
-                                        <span id="notClockInCount" style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($notClockIns) }}</span>
-                                    </div>
-                                    <div class="card-body" style="height: 300px; overflow: auto; padding: ; padding-top:25px;">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered text-left" id="notClockInTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ __('Employee Name') }}</th>
-                                                        <th>{{ __('Status') }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($notClockIns as $employee)
-                                                        <tr>
-                                                            <td>{{ $employee->full_name ?? 'N/A' }}</td>
-                                                            <td style="color: red;">Absent</td>
-                                                        </tr>
-                                                    @endforeach
-                                                    @if(count($notClockIns) == 0)
-                                                        <tr>
-                                                            <td colspan="2">All employees are present </td>
-                                                        </tr>
-                                                    @endif
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text">{{ $totalDepartment }}</h3>
+                                    <p class="stat-label-text">Total Department</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-building text-info"></i>
+                                    <span>Organizational units</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-xl-12">
-                            <div class="card">
-                                    <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-briefcase" style="color:#fff;font-size:20px;"></i>
-                                            <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Project Details') }}</span>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <a href="#" data-url="{{ route('projects.create') }}" data-ajax-popup="true" data-title="{{ __('Create Project') }}" data-size="lg" class="btn btn-sm d-flex align-items-center" style="background:rgba(255,255,255,0.2); color:#fff; border-radius: 6px; padding: 4px 12px; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                                <i class="ti ti-plus me-1" style="font-size: 14px;"></i><span style="font-weight: 600;">{{ __('Add') }}</span>
-                                            </a>
-                                            <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($projects) }}</span>
-                                        </div>
+                        <!-- 3. Total Leaves -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-green" onclick="window.location.href='leave'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-green">
+                                        <i class="fa-solid fa-calendar-check"></i>
                                     </div>
-                                <div class="card-body p-0" style="height: 325px; overflow-y: auto; overflow-x: hidden;">
-                                    <div class="list-group list-group-flush">
-                                        @forelse ($projects as $project)
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text" id="totalLeavesCount">{{ $totalleaves }}</h3>
+                                    <p class="stat-label-text">Total Leaves</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-clock-check text-success"></i>
+                                    <span>Applications recorded</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Total Holidays -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-indigo" onclick="window.location.href='holiday'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-indigo">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text">{{ $totalHolidays }}</h3>
+                                    <p class="stat-label-text">Total Holidays</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-confetti text-primary"></i>
+                                    <span>Scheduled year holidays</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Total Projects -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-orange" onclick="window.location.href='projects'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-orange">
+                                        <i class="fa-solid fa-diagram-project"></i>
+                                    </div>
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text">{{ $totalProjects }}</h3>
+                                    <p class="stat-label-text">Total Projects</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-rocket text-warning"></i>
+                                    <span>Pipeline & ongoing</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Total Ticket -->
+                        <div class="col-6 col-lg-4 col-md-4 stat-card-col">
+                            <div class="modern-stat-card card-theme-pink" onclick="window.location.href='ticket'">
+                                <div class="stat-card-top">
+                                    <div class="stat-icon-wrapper icon-pink">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </div>
+                                    <div class="stat-arrow-btn">
+                                        <i class="ti ti-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-card-mid">
+                                    <h3 class="stat-val-text">{{ $countTicket }}</h3>
+                                    <p class="stat-label-text">Total Ticket</p>
+                                </div>
+                                <div class="stat-card-bottom">
+                                    <i class="ti ti-headphones text-danger"></i>
+                                    <span>Support & inquiries</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Attendance & Yet To Arrive -->
+                <div class="col-12 col-md-8 mb-4">
+                    <div class="modern-box-card">
+                        <div class="modern-box-header">
+                            <div class="header-left-title">
+                                <i class="ti ti-clock-play"></i>
+                                <span id="attendanceFilterTitle">{{ __("Today's Attendance") }}</span>
+                            </div>
+                            <span class="header-count-pill" id="attendanceCount">{{ count($presentEmployeesWithClockIn) }}</span>
+                        </div>
+                        <div class="card-body p-0" style="height: 310px; overflow-y: auto;">
+                            <div class="table-responsive">
+                                <table class="table modern-table" id="attendanceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('Employee Name') }}</th>
+                                            <th>{{ __('Punch-In') }}</th>
+                                            <th>{{ __('Punch-Out') }}</th>
+                                            <th>{{ __('Total Working Hours') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($presentEmployeesWithClockIn as $data)
                                             @php
-                                                if($project->status == 'completed') {
-                                                    $statusClass = 'bg-success';
-                                                    $statusText = 'Completed';
-                                                } elseif($project->status == 'on_hold') {
-                                                    $statusClass = 'bg-warning text-dark';
-                                                    $statusText = 'On Hold';
-                                                } else {
-                                                    $statusClass = 'bg-primary';
-                                                    $statusText = 'In Progress';
-                                                }
-
-                                                $assignedNames = [];
-                                                if(is_array($project->assigned_data)) {
-                                                    foreach($project->assigned_data as $assignment) {
-                                                        foreach($assignment['employee_ids'] ?? [] as $employeeId) {
-                                                            if(isset($employees[$employeeId])) {
-                                                                $assignedNames[] = $employees[$employeeId]->user->name ?? __('Unknown');
-                                                            }
+                                                $timeline = '--:--';
+                                                if (!empty($data['clock_in']) && $data['clock_in'] !== '--:--') {
+                                                    try {
+                                                        $clockIn = \Carbon\Carbon::parse($data['clock_in']);
+                                                        if (!empty($data['clock_out']) && $data['clock_out'] !== '--:--') {
+                                                            $clockOut = \Carbon\Carbon::parse($data['clock_out']);
+                                                            $diff = $clockIn->diff($clockOut);
+                                                        } else {
+                                                            $diff = $clockIn->diff(\Carbon\Carbon::now());
                                                         }
+                                                        $timeline = $diff->h . 'h ' . $diff->i . 'm';
+                                                    } catch (\Exception $e) {
+                                                        $timeline = '--:--';
                                                     }
                                                 }
-                                                $assignedText = count($assignedNames) > 0 ? implode(', ', $assignedNames) : __('Unassigned');
                                             @endphp
-                                            <a href="{{ route('projects.show', $project->id) }}" 
-                                               class="list-group-item list-group-item-action d-flex align-items-center p-3 border-bottom text-decoration-none"
-                                               style="border-left: 3px solid transparent; transition: all 0.2s ease-in-out;"
-                                               onmouseover="this.style.borderLeftColor='#393970ff'; this.style.backgroundColor='#f8f9fa';"
-                                               onmouseout="this.style.borderLeftColor='transparent'; this.style.backgroundColor='transparent';">
-                                                
-                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background-color: rgba(57, 57, 112, 0.1);">
-                                                    <i class="ti ti-briefcase" style="color: #393970ff; font-size: 20px;"></i>
-                                                </div>
-                                                <div class="flex-grow-1 overflow-hidden pe-3">
-                                                    <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $project->project_name }}</h6>
-                                                    <p class="text-muted mb-0 text-truncate" style="font-size: 12px; margin-bottom:0;">
-                                                        <span class="badge {{ $statusClass }} me-1" style="font-size: 10px; padding: 2px 6px;">{{ $statusText }}</span>
-                                                        <i class="ti ti-calendar ms-1 me-1"></i> {{ \Carbon\Carbon::parse($project->project_startdate)->format('d M') }} - {{ \Carbon\Carbon::parse($project->project_enddate)->format('d M Y') }}
-                                                        @if(Auth::user()->type != 'employee')
-                                                            <span class="ms-2"><i class="ti ti-users me-1"></i> {{ $assignedText }}</span>
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                                <div class="flex-shrink-0">
-                                                    <i class="ti ti-chevron-right text-muted" style="opacity: 0.5;"></i>
-                                                </div>
-                                            </a>
+                                            <tr>
+                                                <td class="fw-bold">{{ $data['employee']->name ?? 'N/A' }}</td>
+                                                <td><span class="time-badge text-success">{{ $data['clock_in'] ?? '--:--' }}</span></td>
+                                                <td><span class="time-badge">{{ $data['clock_out'] ?? '--:--' }}</span></td>
+                                                <td><span class="badge rounded-pill bg-light text-dark fw-bold px-3 py-1">{{ $timeline }}</span></td>
+                                            </tr>
                                         @empty
-                                            <div class="p-5 text-center text-muted d-flex flex-column align-items-center justify-content-center h-100">
-                                                <i class="ti ti-briefcase mb-3" style="font-size: 48px; opacity: 0.3;"></i>
-                                                <p class="mb-0 fw-semibold">{{ __('No projects assigned') }}</p>
-                                            </div>
+                                            <tr>
+                                                <td colspan="4" class="text-center py-5 text-muted">
+                                                    <i class="ti ti-calendar-off d-block fs-2 mb-2 opacity-50"></i>
+                                                    {{ __('No attendance records found for today.') }}
+                                                </td>
+                                            </tr>
                                         @endforelse
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-xl-12">
-                            <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px;">
-                                <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="ti ti-calendar-time" style="color:#fff;font-size:20px;"></i>
-                                        <span id="scheduleFilterTitle" style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Today\'s Schedules') }}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <button type="button" class="btn btn-sm d-flex align-items-center" style="background:rgba(255,255,255,0.2); color:#fff; border-radius: 6px; padding: 4px 12px; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" data-bs-toggle="modal" data-bs-target="#addScheduleModal" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                            <i class="ti ti-plus me-1" style="font-size: 14px;"></i><span style="font-weight: 600;">{{ __('Add') }}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body" style="padding: 20px 20px 20px 20px;">
-                                    <div id="schedulesContainer">
-                                        @include('dashboard.schedules_list')
-                                    </div>
-                                </div>
+                <!-- Yet To Arrive Card -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="modern-box-card">
+                        <div class="modern-box-header">
+                            <div class="header-left-title">
+                                <i class="ti ti-user-x"></i>
+                                <span id="notClockInFilterTitle">{{ __('Yet To Arrive') }}</span>
+                            </div>
+                            <span class="header-count-pill" id="notClockInCount">{{ count($notClockIns) }}</span>
+                        </div>
+                        <div class="card-body p-0" style="height: 310px; overflow-y: auto;">
+                            <div class="table-responsive">
+                                <table class="table modern-table" id="notClockInTable">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('Employee Name') }}</th>
+                                            <th>{{ __('Status') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($notClockIns as $employee)
+                                            <tr>
+                                                <td class="fw-semibold">{{ $employee->full_name ?? 'N/A' }}</td>
+                                                <td><span class="pill-absent">Absent</span></td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="text-center py-5 text-success">
+                                                    <i class="ti ti-check-circle fs-2 d-block mb-2"></i>
+                                                    All employees are present!
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-xl-12">
-                            <div class="card">
-                                    <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-bell" style="color:#fff;font-size:20px;"></i>
-                                            <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Notices') }}</span>
+                <!-- Project Details -->
+                <div class="col-12 mb-4">
+                    <div class="modern-box-card">
+                        <div class="modern-box-header">
+                            <div class="header-left-title">
+                                <i class="ti ti-briefcase"></i>
+                                <span>{{ __('Project Details') }}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="#" data-url="{{ route('projects.create') }}" data-ajax-popup="true" data-title="{{ __('Create Project') }}" data-size="lg" class="btn-header-add">
+                                    <i class="ti ti-plus"></i> <span>{{ __('Add') }}</span>
+                                </a>
+                                <span class="header-count-pill">{{ count($projects) }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0" style="height: 325px; overflow-y: auto;">
+                            <div class="list-group list-group-flush">
+                                @forelse ($projects as $project)
+                                    @php
+                                        if($project->status == 'completed') {
+                                            $statusBadge = 'badge-modern-success';
+                                            $statusText = 'Completed';
+                                        } elseif($project->status == 'on_hold') {
+                                            $statusBadge = 'badge-modern-warning';
+                                            $statusText = 'On Hold';
+                                        } else {
+                                            $statusBadge = 'badge-modern-primary';
+                                            $statusText = 'In Progress';
+                                        }
+
+                                        $assignedNames = [];
+                                        if(is_array($project->assigned_data)) {
+                                            foreach($project->assigned_data as $assignment) {
+                                                foreach($assignment['employee_ids'] ?? [] as $employeeId) {
+                                                    if(isset($employees[$employeeId])) {
+                                                        $assignedNames[] = $employees[$employeeId]->user->name ?? __('Unknown');
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        $assignedText = count($assignedNames) > 0 ? implode(', ', $assignedNames) : __('Unassigned');
+                                    @endphp
+                                    <a href="{{ route('projects.show', $project->id) }}" class="modern-list-item">
+                                        <div class="modern-list-icon">
+                                            <i class="ti ti-folders"></i>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($notices) }}</span>
-                                            @if(\Auth::user()->type == 'company' || \Auth::user()->type == 'hr')
-                                            <a href="#" data-url="{{ route('notices.create') }}" data-ajax-popup="true" data-size="lg" data-title="{{ __('Create New Notice') }}" class="btn btn-sm d-flex align-items-center" style="background:rgba(255,255,255,0.2); color:#fff; border-radius: 6px; padding: 4px 12px; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s; text-decoration: none;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                                <i class="ti ti-plus me-1" style="font-size: 14px;"></i><span style="font-weight: 600;">{{ __('Add') }}</span>
-                                            </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="card-body p-0" style="height: 300px; overflow-y: auto; overflow-x: hidden;">
-                                        <div class="list-group list-group-flush">
-                                            @forelse($notices as $notice)
-                                            <a href="#" 
-                                               class="list-group-item list-group-item-action d-flex align-items-center p-3 border-bottom text-decoration-none"
-                                               data-url="{{ route('notices.show', $notice->id) }}" 
-                                               data-ajax-popup="true" 
-                                               data-size="lg" 
-                                               data-title="{{ __('Notice Details') }}"
-                                               style="border-left: 3px solid transparent; transition: all 0.2s ease-in-out;"
-                                               onmouseover="this.style.borderLeftColor='#393970ff'; this.style.backgroundColor='#f8f9fa';"
-                                               onmouseout="this.style.borderLeftColor='transparent'; this.style.backgroundColor='transparent';">
-                                                
-                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background-color: rgba(57, 57, 112, 0.1);">
-                                                    <i class="ti ti-bell" style="color: #393970ff; font-size: 20px;"></i>
-                                                </div>
-                                                <div class="flex-grow-1 overflow-hidden pe-3">
-                                                    <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $notice->title }}</h6>
-                                                    <p class="text-muted mb-0 text-truncate" style="font-size: 12px; margin-bottom:0;">{{ strip_tags($notice->description) }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0">
-                                                    <i class="ti ti-chevron-right text-muted" style="opacity: 0.5;"></i>
-                                                </div>
-                                            </a>
-                                            @empty
-                                            <div class="p-5 text-center text-muted d-flex flex-column align-items-center justify-content-center h-100">
-                                                <i class="ti ti-bell-z mb-3" style="font-size: 48px; opacity: 0.3;"></i>
-                                                <p class="mb-0 fw-semibold">{{ __('No recent notices.') }}</p>
+                                        <div class="flex-grow-1 overflow-hidden pe-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <h6 class="mb-0 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $project->project_name }}</h6>
+                                                <span class="{{ $statusBadge }}">{{ $statusText }}</span>
                                             </div>
-                                            @endforelse
+                                            <p class="text-muted mb-0 text-truncate" style="font-size: 12px;">
+                                                <i class="ti ti-users me-1 text-primary"></i>{{ $assignedText }}
+                                            </p>
+                                        </div>
+                                        <i class="ti ti-chevron-right modern-list-chevron"></i>
+                                    </a>
+                                @empty
+                                    <div class="p-5 text-center text-muted d-flex flex-column align-items-center justify-content-center h-100">
+                                        <i class="ti ti-folder-off mb-2" style="font-size: 40px; opacity: 0.4;"></i>
+                                        <p class="mb-0 fw-semibold">{{ __('No projects found.') }}</p>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedules -->
+                <div class="col-12 mb-4">
+                    <div class="modern-box-card">
+                        <div class="modern-box-header">
+                            <div class="header-left-title">
+                                <i class="ti ti-calendar-time"></i>
+                                <span id="scheduleFilterTitle">{{ __('Today\'s Schedules') }}</span>
+                            </div>
+                            <button type="button" class="btn-header-add" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                                <i class="ti ti-plus"></i> <span>{{ __('Add') }}</span>
+                            </button>
+                        </div>
+                        <div class="card-body p-3">
+                            <div id="schedulesContainer">
+                                @include('dashboard.schedules_list')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notices -->
+                <div class="col-12 mb-4">
+                    <div class="modern-box-card">
+                        <div class="modern-box-header">
+                            <div class="header-left-title">
+                                <i class="ti ti-bell"></i>
+                                <span>{{ __('Notices') }}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="header-count-pill">{{ count($notices) }}</span>
+                                @if(\Auth::user()->type == 'company' || \Auth::user()->type == 'hr')
+                                <a href="#" data-url="{{ route('notices.create') }}" data-ajax-popup="true" data-size="lg" data-title="{{ __('Create New Notice') }}" class="btn-header-add">
+                                    <i class="ti ti-plus"></i> <span>{{ __('Add') }}</span>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="card-body p-0" style="height: 290px; overflow-y: auto;">
+                            <div class="list-group list-group-flush">
+                                @forelse($notices as $notice)
+                                <a href="#" class="modern-list-item"
+                                   data-url="{{ route('notices.show', $notice->id) }}" 
+                                   data-ajax-popup="true" 
+                                   data-size="lg" 
+                                   data-title="{{ __('Notice Details') }}">
+                                    <div class="modern-list-icon">
+                                        <i class="ti ti-speakerphone"></i>
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden pe-3">
+                                        <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $notice->title }}</h6>
+                                        <p class="text-muted mb-0 text-truncate" style="font-size: 12px;">{{ strip_tags($notice->description) }}</p>
+                                    </div>
+                                    <i class="ti ti-chevron-right modern-list-chevron"></i>
+                                </a>
+                                @empty
+                                <div class="p-5 text-center text-muted d-flex flex-column align-items-center justify-content-center h-100">
+                                    <i class="ti ti-bell-off mb-2" style="font-size: 40px; opacity: 0.4;"></i>
+                                    <p class="mb-0 fw-semibold">{{ __('No recent notices.') }}</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- =========================================================
+             RIGHT SIDEBAR: UPCOMING EVENTS & CALENDAR
+             ========================================================= --}}
+        <div class="col-xxl-3" style="z-index: 0;">
+            <div class="d-flex flex-column gap-3 sticky-top" style="top: 20px;">
+                <!-- Upcoming Events Card -->
+                <div class="modern-box-card mb-0">
+                    <div class="modern-box-header">
+                        <div class="header-left-title">
+                            <i class="ti ti-calendar-event"></i>
+                            <span>{{ __("Upcoming Events") }}</span>
+                        </div>
+                        @if(count($allEvents) > 0)
+                        <span class="header-count-pill">{{ count($allEvents) }}</span>
+                        @endif
+                    </div>
+                    <div style="max-height: 260px; overflow-y: auto; overflow-x: hidden;" class="events-scroll-body">
+                        @if(count($allEvents) > 0)
+                            @foreach($allEvents as $event)
+                                @php
+                                    $isToday = $event['is_today'];
+                                    $type = $event['type'];
+                                    $empName = $event['employee']->name ?? 'Employee';
+                                    $empAvatar = $event['employee']->user->avatar ?? 'avatar.png';
+                                    $avatarPath = !empty($empAvatar) && $empAvatar != 'avatar.png'
+                                        ? asset('storage/uploads/avatar/' . $empAvatar)
+                                        : asset('storage/uploads/avatar/avatar.png');
+
+                                    if ($type === 'birthday') {
+                                        $iconGrad = 'linear-gradient(135deg, #f093fb, #f5576c)';
+                                        $badgeBg  = '#fff0f3'; $badgeColor = '#e11d48'; $tagLabel = 'Birthday';
+                                        $badgeIcon = 'ti-cake';
+                                    } elseif ($type === 'work_anniversary') {
+                                        $iconGrad = 'linear-gradient(135deg, #4facfe, #00f2fe)';
+                                        $badgeBg  = '#f0fdf4'; $badgeColor = '#16a34a'; $tagLabel = $event['years_completed'].' Yr Anniversary';
+                                        $badgeIcon = 'ti-award';
+                                    } else {
+                                        $iconGrad = 'linear-gradient(135deg, #43e97b, #38f9d7)';
+                                        $badgeBg  = '#f0fdfa'; $badgeColor = '#0d9488'; $tagLabel = 'Event';
+                                        $badgeIcon = 'ti-calendar';
+                                    }
+                                @endphp
+                                <div class="ev-row"
+                                     onclick="openEventModal('{{ $type }}', '{{ addslashes($empName) }}', '{{ $event['date'] }}', {{ $isToday ? 'true' : 'false' }}, '{{ $event['years_completed'] ?? 0 }}', '{{ $event['employee_id'] ?? '' }}')">
+                                    <div class="ev-avatar-wrap" style="background: {{ $iconGrad }};">
+                                        <img src="{{ $avatarPath }}" class="ev-avatar-img" alt="{{ $empName }}" onerror="this.src='{{ asset('storage/uploads/avatar/avatar.png') }}'">
+                                        <div class="ev-avatar-badge"><i class="ti {{ $badgeIcon }}"></i></div>
+                                    </div>
+                                    <div class="ev-info">
+                                        <div class="ev-title">
+                                            <span>{{ $empName }}</span>
+                                            @if($isToday)<span class="ev-today-badge">TODAY</span>@endif
+                                        </div>
+                                        <div class="ev-meta">
+                                            <span class="ev-tag" style="background:{{ $badgeBg }};color:{{ $badgeColor }};">{{ $tagLabel }}</span>
+                                            <span class="ev-date">{{ $event['date'] }}</span>
                                         </div>
                                     </div>
+                                    <i class="ti ti-chevron-right ev-arrow"></i>
                                 </div>
-                        </div>
+                            @endforeach
+                        @else
+                            <div class="ev-empty">
+                                <div class="ev-empty-icon"><i class="ti ti-calendar-off"></i></div>
+                                <p>No upcoming events this month</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
+                <!-- Calendar Card -->
+                <div class="modern-box-card mb-0">
+                    <div class="modern-box-header">
+                        <div class="header-left-title">
+                            <i class="ti ti-calendar"></i>
+                            <span>{{ __('Calendar') }}</span>
+                            <input type="hidden" id="path_admin" value="{{ url('/') }}">
+                        </div>
+                        <div>
+                            @if (isset($setting['is_enabled']) && $setting['is_enabled'] == 'on')
+                                <select class="form-control" name="calender_type" id="calender_type"
+                                    style="float: right; width: 1px;" onchange="get_data()">
+                                    <option value="local_calender" selected="true">{{ __('Local Calendar') }}</option>
+                                </select>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="card-body p-2" style="background: #ffffff;">
+                        <div id='calendar' class='calendar'></div>
                     </div>
                 </div>
             </div>
-
-              <!-- Right Side Calendar -->
-
-                <div class="col-xxl-3" style="z-index: 0;">
-                    <div class="d-flex flex-column gap-1 sticky-top" style="">
-                        <div class="card events-card" style="height:180px;">
-                            {{-- Header --}}
-                            <div class="events-card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="ti ti-calendar-event" style="color:#fff;font-size:20px;"></i>
-                                    <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __("Upcoming Events") }}</span>
-                                </div>
-                                @if(count($allEvents) > 0)
-                                <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($allEvents) }}</span>
-                                @endif
-                            </div>
-
-                            {{-- Body --}}
-                            <div style="max-height:300px;overflow-y:auto;overflow-x:hidden; height:100%;" class="events-scroll-body">
-                                @if(count($allEvents) > 0)
-                                    @foreach($allEvents as $event)
-                                        @php
-                                            $empName    = $event['employee_name'] ?? '';
-                                            $empId      = $event['employee_id'] ?? '';
-                                            $eventType  = $event['type'] ?? 'event';
-                                            $eventDate  = $event['start'] ?? '';
-                                            $years      = $event['years'] ?? null;
-                                            $title      = $event['title'] ?? '';
-                                            $avatar     = $event['employee_avatar'] ?? null;
-                                            $isToday    = \Carbon\Carbon::parse($eventDate)->isToday();
-                                            $parsedDate = \Carbon\Carbon::parse($eventDate);
-
-                                            if ($eventType === 'birthday') {
-                                                $icon   = 'fa-solid fa-cake-candles';
-                                                $iconBg = '#f093fb,#f5576c';
-                                                $ring   = 'linear-gradient(135deg,#f093fb,#f5576c)';
-                                                $tag    = ['label'=>'Birthday','color'=>'#f5576c','bg'=>'rgba(245,87,108,0.1)'];
-                                            } elseif ($eventType === 'anniversary') {
-                                                $icon   = 'fa-solid fa-medal';
-                                                $iconBg = '#4facfe,#00f2fe';
-                                                $ring   = 'linear-gradient(135deg,#4facfe,#00f2fe)';
-                                                $tag    = ['label'=>'Anniversary','color'=>'#4facfe','bg'=>'rgba(79,172,254,0.1)'];
-                                            } else {
-                                                $icon   = 'fa-solid fa-calendar-day';
-                                                $iconBg = '#43e97b,#38f9d7';
-                                                $ring   = 'linear-gradient(135deg,#43e97b,#38f9d7)';
-                                                $tag    = ['label'=>'Event','color'=>'#1db954','bg'=>'rgba(29,185,84,0.1)'];
-                                            }
-                                        @endphp
-                                        <div class="ev-row event-popup-trigger"
-                                            data-title="{{ $title }}"
-                                            data-type="{{ $eventType }}"
-                                            data-name="{{ $empName }}"
-                                            data-id="{{ $empId }}"
-                                            data-date="{{ $eventDate }}"
-                                            data-years="{{ $years }}">
-
-                                            {{-- Event Icon --}}
-                                            <div class="ev-icon" style="background:linear-gradient(135deg,{{ $iconBg }});">
-                                                <i class="{{ $icon }}"></i>
-                                            </div>
-
-                                            {{-- Text --}}
-                                            <div class="ev-info">
-                                                <div class="ev-title" title="{{ $title }}">
-                                                    {{ Str::limit($title, 22) }}
-                                                    @if($isToday)
-                                                        <span class="ev-today-badge">Today</span>
-                                                    @endif
-                                                </div>
-                                                <div class="ev-meta">
-                                                    <span class="ev-tag" style="color:{{ $tag['color'] }};background:{{ $tag['bg'] }};">{{ $tag['label'] }}</span>
-                                                    <span class="ev-date"><i class="ti ti-clock" style="font-size:9px;margin-right:2px;"></i>{{ $parsedDate->format('D, M d') }}</span>
-                                                </div>
-                                            </div>
-
-                                            {{-- Chevron --}}
-                                            <i class="ti ti-chevron-right ev-arrow"></i>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="ev-empty">
-                                        <div class="ev-empty-icon"><i class="ti ti-calendar-off"></i></div>
-                                        <p>No upcoming events this month</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="card flex-grow-1">
-                            <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="ti ti-calendar" style="color:#fff;font-size:20px;"></i>
-                                    <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Calendar') }}</span>
-                                    <input type="hidden" id="path_admin" value="{{ url('/') }}">
-                                </div>
-                                    <div class="col-lg-6">
-                                        @if (isset($setting['is_enabled']) && $setting['is_enabled'] == 'on')
-                                            <select class="form-control" name="calender_type" id="calender_type"
-                                                style="float: right; width: 1px;" onchange="get_data()">
-                                                <option value="local_calender" selected="true">{{ __('Local Calendar') }}</option>
-                                            </select>
-                                        @endif
-                                    </div>
-                                </div>
-                            <div class="card-body " style="padding-top:0px;">
-                                <div id='calendar'  class='calendar'></div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+        </div>
 
         @endif
     </div>
 </div>
-    {{-- Modern Event Detail Popup Modal --}}
-    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px; width: 92%; margin: 1.75rem auto;">
-            <div class="modal-content" style="border:none; border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
-                {{-- Gradient Header --}}
-                <div id="eventModalHeader" style="padding: 32px 28px 22px; text-align:center; position:relative;">
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="position:absolute; top:14px; right:18px; opacity:0.5;"></button>
-                    <div id="eventModalEmoji" style="font-size:52px; line-height:1; margin-bottom:10px;"></div>
-                    <div id="eventModalBadge" style="display:inline-block; padding:4px 16px; border-radius:30px; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:12px;"></div>
-                    <h4 id="eventModalGreeting" style="color:#fff; font-weight:800; font-size:22px; margin:0; line-height:1.3;"></h4>
-                </div>
-                {{-- Body --}}
-                <div class="modal-body" style="padding: 24px 28px 28px; background:#fff;">
-                    <div style="display:flex; flex-direction:column; gap:14px;">
-                        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:#f8f9ff; border-radius:12px;">
-                            <div style="width:42px; height:42px; border-radius:50%; background:var(--bs-primary, #018ac8); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                <i class="ti ti-user" style="color:#fff; font-size:18px;"></i>
-                            </div>
-                            <div>
-                                <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Employee</div>
-                                <div id="eventModalName" style="font-size:16px; font-weight:700; color:#222;"></div>
-                            </div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:#f8f9ff; border-radius:12px;">
-                            <div style="width:42px; height:42px; border-radius:50%; background:var(--bs-primary, #018ac8); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                <i class="ti ti-calendar" style="color:#fff; font-size:18px;"></i>
-                            </div>
-                            <div>
-                                <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Date</div>
-                                <div id="eventModalDate" style="font-size:16px; font-weight:700; color:#222;"></div>
-                            </div>
-                        </div>
-                        <div id="eventModalYearsRow" style="display:none; align-items:center; gap:14px; padding:14px 16px; background:#f8f9ff; border-radius:12px;">
-                            <div style="width:42px; height:42px; border-radius:50%; background:var(--bs-primary, #018ac8); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                <i class="ti ti-award" style="color:#fff; font-size:18px;"></i>
-                            </div>
-                            <div>
-                                <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Years Completed</div>
-                                <div id="eventModalYears" style="font-size:16px; font-weight:700; color:#222;"></div>
-                            </div>
-                        </div>
-                        
-                        {{-- Action Buttons (Only shown for today's birthdays/anniversaries) --}}
-                        <div id="wishesActionContainer" style="display:none; gap:10px; margin-top:10px; flex-direction:column;">
-                            <button type="button" class="btn w-100" id="btnSendAutoWishes" style="background:var(--bs-primary, #018ac8); color:#fff; border-radius:10px; padding:10px; font-weight:600;" onclick="sendWishes('auto')">
-                                <i class="ti ti-send me-2"></i> Send Wishes
-                            </button>
-                            <button type="button" class="btn w-100 btn-outline-primary" id="btnOpenCustomWishes" style="border-radius:10px; padding:10px; font-weight:600;" onclick="openCustomWishes()">
-                                <i class="ti ti-edit me-2"></i> Send Custom Wishes
-                            </button>
-                        </div>
 
-                        {{-- Custom Message Form --}}
-                        <div id="customWishesForm" style="display:none; margin-top:10px; flex-direction:column;">
-                            <label style="font-size:12px; font-weight:600; color:#555; margin-bottom:6px;">Your Custom Message:</label>
-                            <textarea id="customWishesMessage" class="form-control" rows="3" placeholder="Write your personalized wishes here..." style="border-radius:10px; resize:none; margin-bottom:12px; box-shadow:none; border:1px solid #ddd;"></textarea>
-                            <div style="display:flex; gap:10px;">
-                                <button type="button" class="btn w-50 btn-light" style="border-radius:10px; font-weight:600;" onclick="closeCustomWishes()">Cancel</button>
-                                <button type="button" class="btn w-50" id="btnSendCustomWishes" style="background:var(--bs-primary, #018ac8); color:#fff; border-radius:10px; font-weight:600;" onclick="sendWishes('custom')">
-                                    <i class="ti ti-send me-2"></i> Send
-                                </button>
-                            </div>
+{{-- Modern Event Detail Popup Modal --}}
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px; width: 92%; margin: 1.75rem auto;">
+        <div class="modal-content" style="border:none; border-radius:22px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.2);">
+            {{-- Gradient Header --}}
+            <div id="eventModalHeader" style="padding: 32px 28px 22px; text-align:center; position:relative;">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="position:absolute; top:14px; right:18px; opacity:0.6;"></button>
+                <div id="eventModalEmoji" style="font-size:52px; line-height:1; margin-bottom:10px;"></div>
+                <div id="eventModalBadge" style="display:inline-block; padding:4px 16px; border-radius:30px; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:12px;"></div>
+                <h4 id="eventModalGreeting" style="color:#fff; font-weight:800; font-size:22px; margin:0; line-height:1.3;"></h4>
+            </div>
+            {{-- Body --}}
+            <div class="modal-body" style="padding: 24px 28px 28px; background:#fff;">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:#f8fafc; border: 1px solid #edf2f7; border-radius:14px;">
+                        <div style="width:42px; height:42px; border-radius:50%; background:var(--dash-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="ti ti-user" style="color:#fff; font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Employee</div>
+                            <div id="eventModalName" style="font-size:16px; font-weight:700; color:#222;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; background:#f8fafc; border: 1px solid #edf2f7; border-radius:14px;">
+                        <div style="width:42px; height:42px; border-radius:50%; background:var(--dash-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="ti ti-calendar" style="color:#fff; font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Date</div>
+                            <div id="eventModalDate" style="font-size:16px; font-weight:700; color:#222;"></div>
+                        </div>
+                    </div>
+                    <div id="eventModalYearsRow" style="display:none; align-items:center; gap:14px; padding:14px 16px; background:#f8fafc; border: 1px solid #edf2f7; border-radius:14px;">
+                        <div style="width:42px; height:42px; border-radius:50%; background:var(--dash-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="ti ti-award" style="color:#fff; font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Years Completed</div>
+                            <div id="eventModalYears" style="font-size:16px; font-weight:700; color:#222;"></div>
+                        </div>
+                    </div>
+                    
+                    {{-- Action Buttons --}}
+                    <div id="wishesActionContainer" style="display:none; gap:10px; margin-top:10px; flex-direction:column;">
+                        <button type="button" class="btn w-100" id="btnSendAutoWishes" style="background:var(--dash-primary); color:#fff; border-radius:12px; padding:11px; font-weight:600; border:none;" onclick="sendWishes('auto')">
+                            <i class="ti ti-send me-2"></i> Send Wishes
+                        </button>
+                        <button type="button" class="btn w-100 btn-outline-primary" id="btnOpenCustomWishes" style="border-radius:12px; padding:11px; font-weight:600;" onclick="openCustomWishes()">
+                            <i class="ti ti-edit me-2"></i> Send Custom Wishes
+                        </button>
+                    </div>
+
+                    {{-- Custom Message Form --}}
+                    <div id="customWishesForm" style="display:none; margin-top:10px; flex-direction:column;">
+                        <label style="font-size:12px; font-weight:600; color:#555; margin-bottom:6px;">Your Custom Message:</label>
+                        <textarea id="customWishesMessage" class="form-control" rows="3" placeholder="Write your personalized wishes here..." style="border-radius:12px; resize:none; margin-bottom:12px; box-shadow:none; border:1px solid #cbd5e1;"></textarea>
+                        <div style="display:flex; gap:10px;">
+                            <button type="button" class="btn w-50 btn-light" style="border-radius:12px; font-weight:600;" onclick="closeCustomWishes()">Cancel</button>
+                            <button type="button" class="btn w-50" id="btnSendCustomWishes" style="background:var(--dash-primary); color:#fff; border-radius:12px; font-weight:600; border:none;" onclick="sendWishes('custom')">
+                                <i class="ti ti-send me-2"></i> Send
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
 </div>
+
+<!-- Modal Add Schedule -->
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 18px; border:none; overflow:hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 16px 20px;">
+                <h5 class="modal-title text-white d-flex align-items-center" id="addScheduleModalLabel" style="font-size: 15px; font-weight:700;">
+                    <i class="ti ti-calendar-plus me-2 text-info"></i> {{ __('Add New Schedule') }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('todolist.store') }}" method="POST" id="addScheduleForm">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="task" class="form-label fw-bold text-dark" style="font-size: 12px; text-transform:uppercase;">{{ __('Task Title') }} <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="task" name="task" required placeholder="{{ __('Enter task title...') }}" style="border-radius: 10px; border-color: #cbd5e1;">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label fw-bold text-dark" style="font-size: 12px; text-transform:uppercase;">{{ __('Start Date') }} <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="start_date" name="start_date" required style="border-radius: 10px; border-color: #cbd5e1;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label fw-bold text-dark" style="font-size: 12px; text-transform:uppercase;">{{ __('End Date') }} <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="end_date" name="end_date" required style="border-radius: 10px; border-color: #cbd5e1;">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="description" class="form-label fw-bold text-dark" style="font-size: 12px; text-transform:uppercase;">{{ __('Description') }}</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="{{ __('Enter task description (optional)...') }}" style="border-radius: 10px; border-color: #cbd5e1;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light px-4 py-3 border-top" style="border-color:#edf2f7 !important;">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4" style="background:var(--dash-primary); border:none;">{{ __('Save Schedule') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
 
 @push('script-page')
     <script src="{{ asset('assets/js/plugins/main.min.js') }}"></script>
