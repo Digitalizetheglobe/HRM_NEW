@@ -25,7 +25,7 @@
         <a href="{{ route('dashboard') }}" class="b-brand" style="width: 100%; display: flex; align-items: center; justify-content: center;">
             <!-- ========   change your logo hear   ============ -->
             <img src="{{ $logo . (isset($company_logo) && !empty($company_logo) ? $company_logo . '?' . time() : 'logo-dark.png' . '?' . time()) }}"
-                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height: 95px; max-width: 100%; min-height: 55px; width: auto; height: auto; object-fit: contain; display: block;">
+                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="width: 190px; max-width: 100%; height: auto; max-height: 95px; object-fit: contain; display: block; margin: 0 auto;">
         </a>
     </div>
     <div class="navbar-content">
