@@ -354,6 +354,24 @@ class LeaveController extends Controller
                 );
             }
 
+            // Send FCM push notification to company & director users
+            $fcmTargetIds = $companyUsers->pluck('id')
+                ->merge($directorUsers->pluck('id'))
+                ->push(\Auth::user()->creatorId())
+                ->unique()
+                ->values()
+                ->toArray();
+
+            app(\App\Services\FcmPushService::class)->sendToUsers(
+                $fcmTargetIds,
+                'New Leave Request',
+                $notificationData['message'],
+                [
+                    'type' => 'leave_created',
+                    'url'  => route('leave.index'),
+                ]
+            );
+
             // Send email to company
             $setings = Utility::settings();
             if (isset($setings['leave_status']) && $setings['leave_status'] == 1) {
@@ -773,14 +791,27 @@ class LeaveController extends Controller
         
         // Push notification for employee
         $employeeUser = User::find($employee->user_id);
+        $leaveTitle = $request->status == 'Approved' ? 'Leave Approved' : 'Leave Rejected';
+        $leaveMessage = 'Your leave request from ' . $leave->start_date . ' to ' . $leave->end_date . ' has been ' . strtolower($request->status) . '.';
+
         if ($employeeUser && $employeeUser->device_token) {
-            $title = $request->status == 'Approved' ? 'Leave Approved' : 'Leave Rejected';
-            $message = 'Your leave request from ' . $leave->start_date . ' to ' . $leave->end_date . ' has been ' . strtolower($request->status) . '.';
             \App\Helpers\OneSignalHelper::sendPushNotification(
                 $employeeUser->device_token,
-                $title,
-                $message,
+                $leaveTitle,
+                $leaveMessage,
                 ['url' => route('leave.index')]
+            );
+        }
+
+        if ($employeeUser) {
+            app(\App\Services\FcmPushService::class)->sendToUsers(
+                [$employeeUser->id],
+                $leaveTitle,
+                $leaveMessage,
+                [
+                    'type' => 'leave_status',
+                    'url'  => route('leave.index'),
+                ]
             );
         }
 

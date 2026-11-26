@@ -64,14 +64,22 @@ class FcmPushService
 
             foreach ($tokens as $token) {
                 try {
-                    // Data-only payload ensures HrmFirebaseMessagingService.onMessageReceived()
-                    // always runs (foreground, background, and killed) so the app icon & deep-link work.
+                    // Include both 'notification' (for reliable background/killed delivery across all OEMs)
+                    // and 'data' (for foreground handling + click deep-link URL).
                     $payload = [
                         'message' => [
                             'token' => $token,
+                            'notification' => [
+                                'title' => $title,
+                                'body'  => $body,
+                            ],
                             'data'  => $stringData,
                             'android' => [
                                 'priority' => 'high',
+                                'notification' => [
+                                    'channel_id' => 'hrm_channel_alerts',
+                                    'sound'      => 'default',
+                                ],
                             ],
                         ],
                     ];
