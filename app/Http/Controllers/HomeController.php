@@ -856,7 +856,9 @@ class HomeController extends Controller
 
                 return view('dashboard.company', compact('employeesOnWeekOffIds', 'allEvents', 'employeesNotWorkingToday', 'todayEnquiryCount','notices','totalHolidays', 'arrEvents', 'announcements', 'employees', 'activeJob', 'inActiveJOb', 'meetings', 'countEmployee', 'countUser', 'countTicket', 'countOpenTicket', 'countCloseTicket', 'notClockIns','onLeaveEmployees', 'accountBalance', 'totalPayee', 'totalPayer', 'users', 'plan', 'storage_limit', 'quote','attendancePercentage', 'presentEmployeesWithClockIn', 'totalEmployees', 'totalDepartment', 'totalleaves', 'projects', 'todos','chartData', 'totalProjects'));
             }
-        } 
+        } else {
+            return redirect()->route('login');
+        }
     }
 
 
