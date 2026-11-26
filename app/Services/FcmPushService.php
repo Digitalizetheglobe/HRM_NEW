@@ -54,27 +54,24 @@ class FcmPushService
             $client = new Client(['timeout' => 10]);
 
             // FCM data values must all be strings
-            $stringData = [];
+            $stringData = [
+                'title' => $title,
+                'body'  => $body,
+            ];
             foreach ($data as $k => $v) {
                 $stringData[(string) $k] = (string) $v;
             }
 
             foreach ($tokens as $token) {
                 try {
+                    // Data-only payload ensures HrmFirebaseMessagingService.onMessageReceived()
+                    // always runs (foreground, background, and killed) so the app icon & deep-link work.
                     $payload = [
                         'message' => [
                             'token' => $token,
-                            'notification' => [
-                                'title' => $title,
-                                'body'  => $body,
-                            ],
-                            'data' => $stringData,
+                            'data'  => $stringData,
                             'android' => [
                                 'priority' => 'high',
-                                'notification' => [
-                                    'channel_id' => 'hrm_channel_alerts',
-                                    'sound'      => 'default',
-                                ],
                             ],
                         ],
                     ];

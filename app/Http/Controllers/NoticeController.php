@@ -67,7 +67,7 @@ class NoticeController extends Controller
             [
                 'type' => 'notice',
                 'notice_id' => (string) $notice->id,
-                'url' => route('notices.show', $notice->id),
+                'url' => route('notices.index'),
             ]
         );
 
