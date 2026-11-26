@@ -46,13 +46,30 @@ class NoticeController extends Controller
             'notice_enddate' => 'required|date|after_or_equal:notice_startdate',
         ]);
 
-        Notice::create([
+        $notice = Notice::create([
             'title' => $request->title,
             'description' => $request->description,
             'notice_startdate' => $request->notice_startdate,
             'notice_enddate' => $request->notice_enddate,
             'created_by' => Auth::id(),
         ]);
+
+        // Send push notification to all employees of this company
+        $employeeUserIds = \App\Models\User::where('type', 'employee')
+            ->where('created_by', Auth::user()->creatorId())
+            ->pluck('id')
+            ->toArray();
+
+        app(\App\Services\FcmPushService::class)->sendToUsers(
+            $employeeUserIds,
+            'New Notice: ' . $notice->title,
+            \Illuminate\Support\Str::limit(trim(strip_tags($notice->description)), 100),
+            [
+                'type' => 'notice',
+                'notice_id' => (string) $notice->id,
+                'url' => route('notices.show', $notice->id),
+            ]
+        );
 
         return redirect()->route('notices.index')->with('success', 'Notice created successfully.');
     }

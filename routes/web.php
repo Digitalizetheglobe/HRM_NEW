@@ -308,6 +308,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Delete notice
     Route::delete('/notices/{notice}', [NoticeController::class, 'destroy'])->name('notices.destroy');
+
+    // FCM Push Notification Token routes
+    Route::post('/fcm/token', [\App\Http\Controllers\FcmTokenController::class, 'store'])->name('fcm.token.store');
+    Route::post('/fcm/token/remove', [\App\Http\Controllers\FcmTokenController::class, 'destroy'])->name('fcm.token.destroy');
     
 });
 

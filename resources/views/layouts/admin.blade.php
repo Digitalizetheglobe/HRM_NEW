@@ -1214,6 +1214,43 @@
         @include('layouts.cookie_consent')
     @endif
 
+    @auth
+    <script>
+        (function() {
+            if (window.NativeFcmBridge && typeof window.NativeFcmBridge.getFcmToken === 'function') {
+                var fcmToken = window.NativeFcmBridge.getFcmToken();
+                var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (fcmToken && csrfToken) {
+                    fetch('{{ route('fcm.token.store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ token: fcmToken, device_type: 'android' })
+                    }).catch(function() {});
+
+                    document.addEventListener('submit', function(e) {
+                        var form = e.target;
+                        if (form && form.action && form.action.indexOf('/logout') !== -1) {
+                            fetch('{{ route('fcm.token.destroy') }}', {
+                                method: 'POST',
+                                keepalive: true,
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken
+                                },
+                                body: JSON.stringify({ token: fcmToken })
+                            }).catch(function() {});
+                        }
+                    }, true);
+                }
+            }
+        })();
+    </script>
+    @endauth
+
 </body>
 
 </html>

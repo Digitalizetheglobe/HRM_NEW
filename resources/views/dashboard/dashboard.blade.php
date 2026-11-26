@@ -2,96 +2,490 @@
 
     @section('content')
     <style>
+        /* =========================================================
+           MODERN SAAS DASHBOARD STYLES (MATCHING COMPANY VIEW)
+           ========================================================= */
+        :root {
+            --dash-primary: #018ac8;
+            --dash-primary-dark: #006b9d;
+            --dash-primary-light: #e6f4fa;
+            --dash-dark: #0f172a;
+            --dash-slate: #334155;
+            --dash-muted: #64748b;
+            --dash-border: #edf2f7;
+            --dash-bg: #f8fafc;
+            --dash-card-bg: #ffffff;
+            --dash-radius: 18px;
+            --dash-radius-sm: 12px;
+            --dash-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -2px rgba(15, 23, 42, 0.02);
+            --dash-shadow-hover: 0 16px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+        }
+
+        .dashboard-container {
+            padding-bottom: 30px;
+        }
+
+        /* Modern Hero Greeting Header */
+        .modern-welcome-hero {
+            background: #ffffff;
+            border: 1px solid var(--dash-border);
+            border-radius: var(--dash-radius);
+            padding: 22px 26px;
+            margin-bottom: 24px;
+            box-shadow: var(--dash-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .modern-welcome-hero::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 180px;
+            background: radial-gradient(circle at top right, rgba(1, 138, 200, 0.08), transparent 70%);
+            pointer-events: none;
+        }
+        .welcome-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(1, 138, 200, 0.08);
+            color: var(--dash-primary);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+        }
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dash-dark);
+            letter-spacing: -0.4px;
+            margin: 0;
+            line-height: 1.25;
+        }
+        .welcome-subtitle {
+            font-size: 13px;
+            color: var(--dash-muted);
+            margin: 4px 0 0 0;
+            font-weight: 500;
+        }
+        .live-date-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--dash-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dash-slate);
+            flex-shrink: 0;
+        }
+        .live-date-pill i {
+            color: var(--dash-primary);
+            font-size: 14px;
+        }
+
+        /* Box Cards & Section Headers */
+        .modern-box-card {
+            background: #ffffff;
+            border: 1px solid var(--dash-border);
+            border-radius: var(--dash-radius) !important;
+            box-shadow: var(--dash-shadow);
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: box-shadow 0.25s ease;
+        }
+        .modern-box-card:hover {
+            box-shadow: var(--dash-shadow-hover);
+        }
+        .modern-box-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--dash-radius) var(--dash-radius) 0 0 !important;
+        }
+        .modern-box-header .header-left-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: 0;
+        }
+        .modern-box-header .header-left-title i {
+            font-size: 18px;
+            color: #38bdf8;
+        }
+        .modern-box-header .header-count-pill {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            line-height: 1.5;
+        }
+        .modern-box-header .btn-header-add {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .modern-box-header .btn-header-add:hover {
+            background: rgba(255, 255, 255, 0.28);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Employee Profile Info Rows */
+        .emp-info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .emp-info-row:last-child {
+            margin-bottom: 0;
+        }
+        .emp-info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(1, 138, 200, 0.1);
+            color: var(--dash-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .emp-info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--dash-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 2px;
+        }
+        .emp-info-value {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--dash-dark);
+            word-break: break-word;
+        }
+
+        /* Custom Modern Table */
+        .modern-table {
+            width: 100%;
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .modern-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 12px 18px;
+            border: none;
+            border-bottom: 1px solid #edf2f7;
+            white-space: nowrap;
+        }
+        .modern-table tbody td {
+            padding: 13px 18px;
+            font-size: 13px;
+            color: var(--dash-dark);
+            border: none;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+        .modern-table tbody tr {
+            transition: background 0.15s ease;
+        }
+        .modern-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Pills */
+        .pill-absent {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pill-absent::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        .badge-modern-success {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-modern-warning {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-modern-primary {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* List Groups (Projects, Notices) */
+        .modern-list-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            text-decoration: none !important;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .modern-list-item:last-child {
+            border-bottom: none;
+        }
+        .modern-list-item:hover {
+            background: #f8fafc;
+            padding-left: 22px;
+        }
+        .modern-list-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--dash-primary);
+            flex-shrink: 0;
+            margin-right: 14px;
+            transition: transform 0.2s ease;
+        }
+        .modern-list-item:hover .modern-list-icon {
+            transform: scale(1.08);
+            background: rgba(1, 138, 200, 0.1);
+        }
+        .modern-list-chevron {
+            color: #cbd5e1;
+            font-size: 16px;
+            transition: transform 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+        .modern-list-item:hover .modern-list-chevron {
+            color: var(--dash-primary);
+            transform: translateX(3px);
+        }
+
+        /* Calendar Styling (Matching Company View) */
         .fc-prev-button, .fc-next-button {
-            padding: 5px 8px !important;
-            font-size: 14px !important;
-            background-color: #007bff !important;
-            border-radius: 5px !important;
-            border: none !important;
-            color: white !important;
+            width: 32px !important;
+            height: 32px !important;
+            padding: 0 !important;
+            font-size: 13px !important;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 50% !important;
+            color: var(--dash-slate) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+            transition: all 0.2s ease !important;
         }
-
         .fc-prev-button:hover, .fc-next-button:hover {
-            background-color: #0056b3 !important;
+            background: var(--dash-primary) !important;
+            color: #ffffff !important;
+            border-color: var(--dash-primary) !important;
+            transform: scale(1.06);
         }
-
+        .fc .fc-toolbar {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 14px 16px 10px !important;
+            margin-bottom: 0.5em !important;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 14px !important;
+            margin: 0 !important;
+            font-weight: 800 !important;
+            color: var(--dash-dark) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+        .fc .fc-col-header-cell {
+            background: #f8fafc !important;
+            padding: 6px 0 !important;
+            border-color: #f1f5f9 !important;
+        }
+        .fc .fc-col-header-cell-cushion {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+        }
+        .fc-daygrid-day-number {
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            color: var(--dash-slate) !important;
+            padding: 6px !important;
+        }
+        .fc-day-today {
+            background: rgba(1, 138, 200, 0.06) !important;
+        }
+        .fc-day-today .fc-daygrid-day-number {
+            background: var(--dash-primary) !important;
+            color: #ffffff !important;
+            border-radius: 50% !important;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+        }
         #calendar {
             margin-bottom: 10px;
         }
-
         .calendar-navigation {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 10px;
         }
-
         .fc-daygrid-day.hours-complete,
         .fc-daygrid-day.hours-incomplete {
-            background-color: #d4edda !important; /* Green for present */
+            background-color: #d4edda !important;
         }
-        
         .fc-daygrid-day.hours-absent {
-            background-color: #f8d7da !important; /* Red for absent */
+            background-color: #f8d7da !important;
         }
-
         .fc-daygrid-day.hours-weekoff {
-            background-color: #e9ecef !important; /* Grey for week off */
+            background-color: #e9ecef !important;
         }
-
         .fc-daygrid-day.hours-leave {
-            background-color: #fff3cd !important; /* Yellow for leave */
+            background-color: #fff3cd !important;
         }
-
         .fc-daygrid-day.hours-holiday {
-            background-color: #cce5ff !important; /* Blue for holiday */
+            background-color: #cce5ff !important;
         }
 
-        /* Event Card General */
+        /* Responsive */
+        @media (max-width: 991px) {
+            .modern-welcome-hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+        }
+        @media (max-width: 576px) {
+            .modern-welcome-hero { padding: 16px 18px; }
+            .welcome-title { font-size: 20px; }
+        }
+
+        /* Event Card */
         .events-card {
-            border-radius: 14px !important;
-            box-shadow: 0 4px 24px rgba(102,126,234,0.14) !important;
+            border: 1px solid var(--dash-border);
+            border-radius: var(--dash-radius) !important;
+            box-shadow: var(--dash-shadow) !important;
             overflow: hidden;
+            background: #ffffff;
         }
         .events-scroll-body::-webkit-scrollbar { width: 4px; }
-        .events-scroll-body::-webkit-scrollbar-track { background: #f1f3f9; }
-        .events-scroll-body::-webkit-scrollbar-thumb { background: #c5c8e8; border-radius: 10px; }
+        .events-scroll-body::-webkit-scrollbar-track { background: #f8fafc; }
+        .events-scroll-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* Each event row */
         .ev-row {
             display: flex;
             align-items: center;
-            gap: 11px;
-            padding: 10px 14px;
-            border-bottom: 1px solid #f0f2fa;
+            gap: 12px;
+            padding: 11px 16px;
+            border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
             transition: background 0.15s ease;
         }
         .ev-row:last-child { border-bottom: none; }
-        .ev-row:hover { background: #f6f7ff; }
+        .ev-row:hover { background: #f8fafc; }
         .ev-row:hover .ev-icon { transform: scale(1.08); box-shadow: 0 5px 16px rgba(0,0,0,0.18) !important; }
-        .ev-row:hover .ev-arrow { transform: translateX(3px); color: #667eea !important; }
+        .ev-row:hover .ev-arrow { transform: translateX(3px); color: var(--dash-primary) !important; }
 
-        /* Icon */
         .ev-icon {
             width: 38px;
             height: 38px;
             min-width: 38px;
-            border-radius: 10px;
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 3px 10px rgba(0,0,0,0.13);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .ev-icon i { color: #fff; font-size: 17px; }
+        .ev-icon i { color: #fff; font-size: 16px; }
 
-        /* Text block */
         .ev-info { flex: 1; overflow: hidden; min-width: 0; }
         .ev-title {
             font-size: 13px;
             font-weight: 600;
-            color: #1a1f36;
+            color: var(--dash-dark);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -117,35 +511,31 @@
             border-radius: 20px;
             white-space: nowrap;
         }
-        .ev-date { font-size: 10px; color: #9faabb; white-space: nowrap; }
+        .ev-date { font-size: 10px; color: #94a3b8; white-space: nowrap; }
+        .ev-arrow { color: #cbd5e1; font-size: 14px; flex-shrink: 0; transition: transform 0.18s, color 0.18s; }
 
-        /* Chevron */
-        .ev-arrow { color: #d0d7e8; font-size: 13px; flex-shrink: 0; transition: transform 0.18s, color 0.18s; }
-
-        /* Empty state */
         .ev-empty {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px 16px;
+            padding: 36px 16px;
             gap: 10px;
         }
         .ev-empty-icon {
-            width: 52px; height: 52px;
-            background: linear-gradient(135deg,#e0e7ff,#c7d2fe);
+            width: 50px; height: 50px;
+            background: #f1f5f9;
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
         }
-        .ev-empty-icon i { font-size: 26px; color: #818cf8; }
-        .ev-empty p { color: #9ca3af; font-size: 12px; font-weight: 500; margin: 0; }
+        .ev-empty-icon i { font-size: 24px; color: #94a3b8; }
+        .ev-empty p { color: #94a3b8; font-size: 12px; font-weight: 500; margin: 0; }
 
-        /* Avatar with ring */
         .ev-avatar-wrap {
             position: relative;
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
             border-radius: 50%;
             padding: 2px;
             flex-shrink: 0;
@@ -177,52 +567,93 @@
         .ev-avatar-badge i { font-size: 9px; color: #555; }
     </style>
 
-    <div>
+    <div class="dashboard-container">
         <div class="row">
             @if (session('status'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('status') }}
+                <div class="col-12">
+                    <div class="alert alert-success border-0 shadow-sm" style="border-radius: 12px;" role="alert">
+                        <i class="ti ti-check me-2"></i> {{ session('status') }}
+                    </div>
                 </div>
             @endif
 
             @if (\Auth::user()->type == 'employee')
+                {{-- Modern Welcome Hero --}}
+                <div class="col-12">
+                    <div class="modern-welcome-hero">
+                        <div>
+                            <div class="welcome-pill-badge">
+                                <i class="ti ti-user-check"></i> {{ __('Employee Dashboard') }}
+                            </div>
+                            <h2 class="welcome-title">{{ __('Welcome') }}, {{ $emp->full_name ?? Auth::user()->name }} 👋</h2>
+                            <p class="welcome-subtitle">{{ __('Track your attendance, assigned projects, daily schedules and team updates.') }}</p>
+                        </div>
+                        <div class="live-date-pill d-none d-md-flex">
+                            <i class="ti ti-calendar"></i>
+                            <span>{{ \Carbon\Carbon::now()->format('l, d M Y') }}</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-xxl-9">
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="row">
                                 @if($emp)
-                                <div class="col-xl-6">
-                                    <div class="card">
-                                        <div class="card-header d-flex align-items-center" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                            <img src="{{ asset('storage/uploads/avatar/' . ($emp->user->avatar ?? 'default-avatar.png')) }}"
-                                                alt="Profile Image"
-                                                class="rounded-circle me-4"
-                                                width="60"
-                                                height="60">
-                                            <div>
-                                                <h4 class="mb-0" style="color:white;">{{ $emp->full_name }}</h4>
-                                                <small style="font-size: 12px; color:rgba(255,255,255,0.8);">{{ $emp->department->name ?? 'No Department' }} Team</small><small style="font-size:16px; color:rgba(255,255,255,0.8);"> &nbsp{{ $emp->designation->name ?? 'No Designation' }}&nbsp</small><br>
+                                <div class="col-xl-6 mb-4">
+                                    <div class="modern-box-card h-100 mb-0">
+                                        <div class="modern-box-header">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="{{ asset('storage/uploads/avatar/' . ($emp->user->avatar ?? 'default-avatar.png')) }}"
+                                                    alt="Profile Image"
+                                                    class="rounded-circle"
+                                                    style="object-fit: cover; border: 2px solid rgba(56, 189, 248, 0.7);"
+                                                    width="54"
+                                                    height="54">
+                                                <div>
+                                                    <h5 class="mb-0 text-white fw-bold" style="font-size: 16px;">{{ $emp->full_name }}</h5>
+                                                    <small style="font-size: 12px; color: rgba(255,255,255,0.75);">
+                                                        {{ $emp->department->name ?? 'No Department' }} &bull; {{ $emp->designation->name ?? 'No Designation' }}
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <p><strong>Phone Number:<br></strong> {{ $emp->phone ?? 'N/A' }}</p><br>
-                                            <p><strong>Email Address:<br></strong> {{ $emp->email ?? 'N/A' }}</p><br>
-                                            <p><strong>Joined On:<br></strong> {{ \Carbon\Carbon::parse($emp->company_doj)->format('d M Y') }}</p>
+                                        <div class="card-body" style="padding: 20px 22px;">
+                                            <div class="emp-info-row">
+                                                <div class="emp-info-icon"><i class="ti ti-phone"></i></div>
+                                                <div>
+                                                    <div class="emp-info-label">{{ __('Phone Number') }}</div>
+                                                    <div class="emp-info-value">{{ $emp->phone ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="emp-info-row">
+                                                <div class="emp-info-icon"><i class="ti ti-mail"></i></div>
+                                                <div>
+                                                    <div class="emp-info-label">{{ __('Email Address') }}</div>
+                                                    <div class="emp-info-value">{{ $emp->email ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="emp-info-row">
+                                                <div class="emp-info-icon"><i class="ti ti-calendar"></i></div>
+                                                <div>
+                                                    <div class="emp-info-label">{{ __('Joined On') }}</div>
+                                                    <div class="emp-info-value">{{ \Carbon\Carbon::parse($emp->company_doj)->format('d M Y') }}</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 @endif
 
-                                <div class="col-md-6">
-                                    <div class="card h-90">
-                                        <div class="card-header d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="ti ti-clock" style="color:#fff;font-size:20px;"></i>
-                                                <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Attendance Overview') }}</span>
-                                            </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="modern-box-card h-100 mb-0">
+                                        <div class="modern-box-header">
+                                            <h5 class="header-left-title">
+                                                <i class="ti ti-clock"></i>
+                                                <span>{{ __('Attendance Overview') }}</span>
+                                            </h5>
                                             <div class="dropdown">
-                                                <button class="btn btn-sm dropdown-toggle" type="button" id="attendanceFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background:rgba(255,255,255,0.22); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; padding:4px 12px; box-shadow:none;">
+                                                <button class="btn btn-sm dropdown-toggle" type="button" id="attendanceFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background:rgba(255,255,255,0.16); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:20px; font-size:12px; font-weight:600; padding:4px 12px; box-shadow:none;">
                                                     <span id="selectedFilterText">Today</span>
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="attendanceFilterDropdown">
@@ -243,7 +674,7 @@
                                                 <input type="month" id="attendanceMonthPicker" style="position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;" onchange="handleMonthSelect(this.value)" oninput="handleMonthSelect(this.value)">
                                             </div>
                                         </div>
-                                            <div class="card-body" style="padding: 20px 22px;">
+                                        <div class="card-body" style="padding: 20px 22px;">
 
                                             <!-- Punch In/Out Section - Premium Redesign -->
                                             <div id="punchInOutSection" class="mb-3">
@@ -366,13 +797,13 @@
                         </div>
                         <!-- Project Details -->
                         <div class="col-xl-12">
-                            <div class="card">
-                                <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="ti ti-briefcase" style="color:#fff;font-size:20px;"></i>
-                                        <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Project Details') }}</span>
-                                    </div>
-                                    <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($assignedProjects ?? []) }}</span>
+                            <div class="modern-box-card">
+                                <div class="modern-box-header">
+                                    <h5 class="header-left-title">
+                                        <i class="ti ti-briefcase"></i>
+                                        <span>{{ __('Project Details') }}</span>
+                                    </h5>
+                                    <span class="header-count-pill">{{ count($assignedProjects ?? []) }}</span>
                                 </div>
                                 <div class="card-body p-0" style="height: 325px; overflow-y: auto; overflow-x: hidden;">
                                     <div class="list-group list-group-flush">
@@ -386,35 +817,30 @@
                                                 $modulesText = count($moduleNames) > 0 ? implode(', ', $moduleNames) : __('No specific tasks assigned');
                                                 
                                                 if($project->status == 'completed') {
-                                                    $statusClass = 'bg-success';
+                                                    $statusClass = 'badge-modern-success';
                                                     $statusText = 'Completed';
                                                 } elseif($project->status == 'on_hold') {
-                                                    $statusClass = 'bg-warning text-dark';
+                                                    $statusClass = 'badge-modern-warning';
                                                     $statusText = 'On Hold';
                                                 } else {
-                                                    $statusClass = 'bg-primary';
+                                                    $statusClass = 'badge-modern-primary';
                                                     $statusText = 'In Progress';
                                                 }
                                             @endphp
-                                            <a href="{{ route('projects.show', $project->id) }}" 
-                                               class="list-group-item list-group-item-action d-flex align-items-center p-3 border-bottom text-decoration-none"
-                                               style="border-left: 3px solid transparent; transition: all 0.2s ease-in-out;"
-                                               onmouseover="this.style.borderLeftColor='#393970ff'; this.style.backgroundColor='#f8f9fa';"
-                                               onmouseout="this.style.borderLeftColor='transparent'; this.style.backgroundColor='transparent';">
-                                                
-                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background-color: rgba(57, 57, 112, 0.1);">
-                                                    <i class="ti ti-briefcase" style="color: #393970ff; font-size: 20px;"></i>
+                                            <a href="{{ route('projects.show', $project->id) }}" class="modern-list-item">
+                                                <div class="modern-list-icon">
+                                                    <i class="ti ti-briefcase"></i>
                                                 </div>
                                                 <div class="flex-grow-1 overflow-hidden pe-3">
                                                     <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $project->project_name }}</h6>
                                                     <p class="text-muted mb-0 text-truncate" style="font-size: 12px; margin-bottom:0;">
-                                                        <span class="badge {{ $statusClass }} me-1" style="font-size: 10px; padding: 2px 6px;">{{ $statusText }}</span>
+                                                        <span class="{{ $statusClass }} me-1">{{ $statusText }}</span>
                                                         <i class="ti ti-calendar ms-1 me-1"></i> {{ \Carbon\Carbon::parse($project->project_startdate)->format('d M') }} - {{ \Carbon\Carbon::parse($project->project_enddate)->format('d M Y') }}
                                                         <span class="ms-2"><i class="ti ti-list-check me-1"></i> {{ $modulesText }}</span>
                                                     </p>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <i class="ti ti-chevron-right text-muted" style="opacity: 0.5;"></i>
+                                                    <i class="ti ti-chevron-right modern-list-chevron"></i>
                                                 </div>
                                             </a>
                                         @empty
@@ -430,17 +856,17 @@
                         <div class="col-xl-12">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
+                                    <div class="modern-box-card">
+                                        <div class="modern-box-header">
+                                            <h5 class="header-left-title">
+                                                <i class="ti ti-bell"></i>
+                                                <span>{{ __('Notices') }}</span>
+                                            </h5>
                                             <div class="d-flex align-items-center gap-2">
-                                                <i class="ti ti-bell" style="color:#fff;font-size:20px;"></i>
-                                                <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Notices') }}</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($notices) }}</span>
+                                                <span class="header-count-pill">{{ count($notices) }}</span>
                                                 @if(\Auth::user()->type == 'company' || \Auth::user()->type == 'hr')
-                                                <a href="#" data-url="{{ route('notices.create') }}" data-ajax-popup="true" data-size="lg" data-title="{{ __('Create New Notice') }}" class="btn btn-sm d-flex align-items-center" style="background:rgba(255,255,255,0.2); color:#fff; border-radius: 6px; padding: 4px 12px; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s; text-decoration: none;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                                    <i class="ti ti-plus me-1" style="font-size: 14px;"></i><span style="font-weight: 600;">{{ __('Add') }}</span>
+                                                <a href="#" data-url="{{ route('notices.create') }}" data-ajax-popup="true" data-size="lg" data-title="{{ __('Create New Notice') }}" class="btn-header-add">
+                                                    <i class="ti ti-plus"></i><span>{{ __('Add') }}</span>
                                                 </a>
                                                 @endif
                                             </div>
@@ -449,24 +875,20 @@
                                             <div class="list-group list-group-flush">
                                                 @forelse($notices as $notice)
                                                 <a href="#" 
-                                                   class="list-group-item list-group-item-action d-flex align-items-center p-3 border-bottom text-decoration-none"
+                                                   class="modern-list-item"
                                                    data-url="{{ route('notices.show', $notice->id) }}" 
                                                    data-ajax-popup="true" 
                                                    data-size="lg" 
-                                                   data-title="{{ __('Notice Details') }}"
-                                                   style="border-left: 3px solid transparent; transition: all 0.2s ease-in-out;"
-                                                   onmouseover="this.style.borderLeftColor='#393970ff'; this.style.backgroundColor='#f8f9fa';"
-                                                   onmouseout="this.style.borderLeftColor='transparent'; this.style.backgroundColor='transparent';">
-                                                    
-                                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; background-color: rgba(57, 57, 112, 0.1);">
-                                                        <i class="ti ti-bell" style="color: #393970ff; font-size: 20px;"></i>
+                                                   data-title="{{ __('Notice Details') }}">
+                                                    <div class="modern-list-icon">
+                                                        <i class="ti ti-bell"></i>
                                                     </div>
                                                     <div class="flex-grow-1 overflow-hidden pe-3">
                                                         <h6 class="mb-1 text-dark fw-bold text-truncate" style="font-size: 14px;">{{ $notice->title }}</h6>
                                                         <p class="text-muted mb-0 text-truncate" style="font-size: 12px; margin-bottom:0;">{{ strip_tags($notice->description) }}</p>
                                                     </div>
                                                     <div class="flex-shrink-0">
-                                                        <i class="ti ti-chevron-right text-muted" style="opacity: 0.5;"></i>
+                                                        <i class="ti ti-chevron-right modern-list-chevron"></i>
                                                     </div>
                                                 </a>
                                                 @empty
@@ -481,15 +903,15 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px;">
-                                        <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="ti ti-calendar-time" style="color:#fff;font-size:20px;"></i>
-                                                <span id="scheduleFilterTitle" style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Today\'s Schedules') }}</span>
-                                            </div>
+                                    <div class="modern-box-card">
+                                        <div class="modern-box-header">
+                                            <h5 class="header-left-title">
+                                                <i class="ti ti-calendar-time"></i>
+                                                <span id="scheduleFilterTitle">{{ __('Today\'s Schedules') }}</span>
+                                            </h5>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="dropdown">
-                                                    <button class="btn btn-sm dropdown-toggle" type="button" id="scheduleFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background:rgba(255,255,255,0.22); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; padding:4px 12px; box-shadow:none;">
+                                                    <button class="btn btn-sm dropdown-toggle" type="button" id="scheduleFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background:rgba(255,255,255,0.16); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:20px; font-size:12px; font-weight:600; padding:4px 12px; box-shadow:none;">
                                                         <span id="selectedScheduleFilterText">Today</span>
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="scheduleFilterDropdown">
@@ -499,8 +921,8 @@
                                                     </ul>
                                                     <input type="date" id="scheduleCustomDatePicker" style="position: absolute; opacity: 0; width: 1px; height: 1px; top: 0; left: 0; border: none; padding: 0;" onchange="handleScheduleDateSelect(this.value)">
                                                 </div>
-                                                <button type="button" class="btn btn-sm d-flex align-items-center" style="background:rgba(255,255,255,0.2); color:#fff; border-radius: 6px; padding: 4px 12px; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s;" data-bs-toggle="modal" data-bs-target="#addScheduleModal" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                                                    <i class="ti ti-plus me-1" style="font-size: 14px;"></i><span style="font-weight: 600;">{{ __('Add') }}</span>
+                                                <button type="button" class="btn-header-add" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                                                    <i class="ti ti-plus"></i><span>{{ __('Add') }}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -515,73 +937,34 @@
                         </div>
 
                         <div class="col-xl-12">
-                            <div class="card">
-                                        <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="ti ti-user-off" style="color:#fff;font-size:20px;"></i>
-                                                <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Employees On Leave / WeekOff') }}</span>
-                                            </div>
-                                            <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($employeesNotWorkingToday) }}</span>
-                                        </div>
-                                        <div class="card-body" style="height: 300px; overflow: auto; padding-top:25px;">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered text-center" id="onLeaveTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{{ __('Employee Name') }}</th>
-                                                            <th>{{ __('Status') }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @forelse($employeesNotWorkingToday as $employee)
-                                                            <tr>
-                                                                <td>{{ $employee['employee_name'] }}</td>
-                                                                <td>{{ $employee['status'] }}</td>
-                                                            </tr>
-                                                        @empty
-                                                            <tr>
-                                                                <td colspan="2">All employees are working today</td>
-                                                            </tr>
-                                                        @endforelse
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-12">
-                            <div class="card">
-                                <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="ti ti-video" style="color:#fff;font-size:20px;"></i>
-                                        <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Meeting List') }}</span>
-                                    </div>
-                                    <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($meetings) }}</span>
+                            <div class="modern-box-card">
+                                <div class="modern-box-header">
+                                    <h5 class="header-left-title">
+                                        <i class="ti ti-user-off"></i>
+                                        <span>{{ __('Employees On Leave / WeekOff') }}</span>
+                                    </h5>
+                                    <span class="header-count-pill">{{ count($employeesNotWorkingToday) }}</span>
                                 </div>
-                                <div class="card-body" style="height: 324px; overflow:auto;">
+                                <div class="card-body p-0" style="height: 300px; overflow: auto;">
                                     <div class="table-responsive">
-                                        <table class="table">
+                                        <table class="table modern-table" id="onLeaveTable">
                                             <thead>
                                                 <tr>
-                                                    <th>{{ __('Meeting Title') }}</th>
-                                                    <th>{{ __('Date') }}</th>
-                                                    <th>{{ __('Time') }}</th>
+                                                    <th>{{ __('Employee Name') }}</th>
+                                                    <th>{{ __('Status') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($meetings as $meeting)
+                                                @forelse($employeesNotWorkingToday as $employee)
                                                     <tr>
-                                                        <td>{{ $meeting->title }}</td>
-                                                        <td>{{ \Auth::user()->dateFormat($meeting->date) }}</td>
-                                                        <td>{{ \Auth::user()->timeFormat($meeting->time) }}</td>
+                                                        <td class="fw-semibold">{{ $employee['employee_name'] }}</td>
+                                                        <td><span class="pill-absent">{{ $employee['status'] }}</span></td>
                                                     </tr>
-                                                @endforeach
-
-                                                @if ($meetings->isEmpty())
+                                                @empty
                                                     <tr>
-                                                        <td colspan="3" class="text-center">{{ __('No meetings found') }}</td>
+                                                        <td colspan="2" class="text-center text-muted py-4">All employees are working today</td>
                                                     </tr>
-                                                @endif
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>
@@ -594,20 +977,20 @@
                 <!-- Right Side Calendar -->
                 <div class="col-xxl-3" style="z-index: 0;">
                     <div class="d-flex flex-column gap-2 sticky-top" style="">
-                        <div class="card events-card" style="height:180px;">
+                        <div class="modern-box-card events-card">
                             {{-- Header --}}
-                            <div class="events-card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="ti ti-calendar-event" style="color:#fff;font-size:20px;"></i>
-                                    <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __("Upcoming Events") }}</span>
-                                </div>
+                            <div class="modern-box-header">
+                                <h5 class="header-left-title">
+                                    <i class="ti ti-calendar-event"></i>
+                                    <span>{{ __("Upcoming Events") }}</span>
+                                </h5>
                                 @if(count($allEvents) > 0)
-                                <span style="background:rgba(255,255,255,0.22);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;line-height:1.6;">{{ count($allEvents) }}</span>
+                                <span class="header-count-pill">{{ count($allEvents) }}</span>
                                 @endif
                             </div>
 
                             {{-- Body --}}
-                            <div style="max-height:300px;overflow-y:auto;overflow-x:hidden; height:100%;" class="events-scroll-body">
+                            <div style="max-height:300px;overflow-y:auto;overflow-x:hidden;" class="events-scroll-body">
                                 @if(count($allEvents) > 0)
                                     @foreach($allEvents as $event)
                                         @php
@@ -686,14 +1069,14 @@
                             </div>
                         </div>
 
-                        <div class="card flex-grow-1">
-                            <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-radius: 10px 10px 0 0; padding: 12px 16px;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="ti ti-calendar" style="color:#fff;font-size:20px;"></i>
-                                    <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:0.2px;">{{ __('Calendar') }}</span>
-                                </div>
+                        <div class="modern-box-card flex-grow-1">
+                            <div class="modern-box-header">
+                                <h5 class="header-left-title">
+                                    <i class="ti ti-calendar"></i>
+                                    <span>{{ __('Calendar') }}</span>
+                                </h5>
                             </div>
-                            <div class="card-body" style="padding-top:0px;">
+                            <div class="card-body" style="padding:14px;">
                                 <div id='calendar' class='calendar'></div>
                             </div>
                         </div>
@@ -701,7 +1084,7 @@
 
                     </div>
                 </div>
-            @endif
+        @endif
         </div>
     </div>
 
@@ -728,10 +1111,10 @@
     <!-- Add Schedule Modal -->
     <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
-                <div class="modal-header" style="background:linear-gradient(135deg, #0b0b39ff 0%, #393970ff 100%); border-bottom: none; padding: 20px 25px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 18px; overflow: hidden;">
+                <div class="modal-header" style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: none; padding: 20px 25px;">
                     <h5 class="modal-title text-white d-flex align-items-center" id="addScheduleModalLabel">
-                        <i class="ti ti-calendar-plus me-2" style="font-size: 22px;"></i>{{ __('Add Today\'s Task') }}
+                        <i class="ti ti-calendar-plus me-2" style="font-size: 22px; color:#38bdf8;"></i>{{ __('Add Today\'s Task') }}
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -770,7 +1153,7 @@
                 </div>
                 <div class="modal-footer bg-white border-top px-4 py-3">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 8px; font-weight: 600; padding: 8px 20px;">{{ __('Cancel') }}</button>
-                    <button type="submit" form="addScheduleForm" class="btn btn-primary" style="border-radius: 8px; background: #0b0b39ff; border-color: #0b0b39ff; font-weight: 600; padding: 8px 20px; box-shadow: 0 4px 10px rgba(11, 11, 57, 0.2);">{{ __('Save Task') }}</button>
+                    <button type="submit" form="addScheduleForm" class="btn btn-primary" style="border-radius: 10px; background: linear-gradient(135deg, #018ac8 0%, #026b9a 100%); border: none; font-weight: 600; padding: 8px 20px; box-shadow: 0 4px 12px rgba(1, 138, 200, 0.3);">{{ __('Save Task') }}</button>
                 </div>
             </div>
         </div>
@@ -1062,10 +1445,8 @@
                     btn.innerHTML = '<i class="fas fa-check"></i> Punched Out';
                 }
 
-                // Reload page after short delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                // Reload page immediately
+                window.location.reload();
 
             } catch (error) {
                 // Network or other error
@@ -1645,7 +2026,8 @@ function updateProgressBarRealTime() {
     }
     
     if (badge) {
-        badge.textContent = `${percentage.toFixed(1)}%`;
+        const displayPct = Math.min(percentage, 100);
+        badge.textContent = `${displayPct.toFixed(1)}%`;
         // Update badge color if late
         if (isLate) {
             badge.className = 'badge bg-danger';
@@ -1653,21 +2035,27 @@ function updateProgressBarRealTime() {
     }
     
     if (progressBar) {
+        const displayPct = Math.min(percentage, 100);
         // Smooth transition for progress bar width
         progressBar.style.transition = 'width 0.5s ease';
-        progressBar.style.width = `${Math.min(percentage, 100)}%`;
-        progressBar.setAttribute('aria-valuenow', hoursCompleted);
-        progressBar.textContent = `${percentage.toFixed(1)}%`;
+        progressBar.style.width = `${displayPct}%`;
+        progressBar.setAttribute('aria-valuenow', Math.min(hoursCompleted, totalHours));
+        progressBar.textContent = `${displayPct.toFixed(1)}%`;
         // Update progress bar color if late
         if (isLate) {
             progressBar.className = 'progress-bar bg-danger';
         } else {
-            progressBar.className = `progress-bar ${hoursCompleted >= totalHours ? 'bg-primary' : 'bg-primary'}`;
+            progressBar.className = 'progress-bar bg-primary';
             progressBar.style.backgroundColor = '';
-            badge.className = `badge ${hoursCompleted >= totalHours ? 'bg-primary' : 'bg-primary'}`;
+            badge.className = 'badge bg-primary';
             badge.style.backgroundColor = '';
             if (hoursCompleted >= totalHours) badge.style.color = '#fff';
         }
+    }
+
+    const overtimeContainer = contentDiv.querySelector('#overtimeContainer');
+    if (overtimeContainer) {
+        overtimeContainer.innerHTML = buildOvertimeBar(hoursCompleted, totalHours, currentFilterType === 'weekly' || currentFilterType === 'monthly');
     }
     
     // Update hours completed label to show "(Late Punch-In)" if late
@@ -1675,6 +2063,38 @@ function updateProgressBarRealTime() {
         hoursCompletedLabel.innerHTML = hoursCompletedLabel.innerHTML.replace('Hours Completed', 'Hours Completed <span class="text-danger">(Late Punch-In)</span>');
     }
 }
+
+        function buildOvertimeBar(hoursCompleted, totalHours, isWholeHours = false) {
+            if (!totalHours || hoursCompleted <= totalHours) {
+                return '';
+            }
+            const overtimeHours = hoursCompleted - totalHours;
+            const overtimePct = (overtimeHours / totalHours) * 100;
+            const otText = isWholeHours
+                ? `+${Math.round(overtimeHours)} hours`
+                : `+${Math.floor(overtimeHours)}h ${Math.round((overtimeHours - Math.floor(overtimeHours)) * 60)}m`;
+
+            return `
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-semibold" style="color: #b45309;">
+                            <i class="ti ti-clock-plus me-1"></i>Overtime (${otText})
+                        </span>
+                        <span class="badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff;">+${overtimePct.toFixed(1)}%</span>
+                    </div>
+                    <div class="progress" style="height: 30px; background-color: #fef3c7;">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             style="width: ${Math.min(overtimePct, 100)}%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-weight: 600;"
+                             aria-valuenow="${overtimeHours.toFixed(2)}"
+                             aria-valuemin="0"
+                             aria-valuemax="${totalHours}">
+                            Overtime ${otText}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         function renderAttendanceOverview(data, filterType) {
             const contentDiv = document.getElementById('attendanceOverviewContent');
@@ -1709,10 +2129,12 @@ function updateProgressBarRealTime() {
                 const totalHours = data.total_hours || 8;
                 const hoursCompleted = data.hours_completed || 0;
                 const percentage = totalHours > 0 ? (hoursCompleted / totalHours * 100) : 0;
+                const mainPct = Math.min(percentage, 100);
                 
                 const progressBarClass = isLate ? 'bg-danger' : 'bg-primary';
                 const badgeClass = isLate ? 'bg-danger' : 'bg-primary';
                 const lateText = isLate ? ' <span class="text-danger">(Late Punch-In)</span>' : '';
+                const overtimeHtml = buildOvertimeBar(hoursCompleted, totalHours, false);
                 
                 if (filterType === 'date' && !isSelectedDateToday) {
                     // For selected date (not today), show punch in and punch out times with progress bar
@@ -1722,18 +2144,19 @@ function updateProgressBarRealTime() {
                                 <h6 class="text-muted mb-2">Hours Completed${lateText}</h6>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="h5 mb-0">${Math.floor(hoursCompleted)} hours ${Math.round((hoursCompleted - Math.floor(hoursCompleted)) * 60)} minutes / ${totalHours} hours</span>
-                                    <span class="badge ${badgeClass}">${percentage.toFixed(1)}%</span>
+                                    <span class="badge ${badgeClass}">${mainPct.toFixed(1)}%</span>
                                 </div>
                                 <div class="progress" style="height: 30px;">
                                     <div class="progress-bar ${progressBarClass}" 
                                          role="progressbar" 
-                                         style="width: ${Math.min(percentage, 100)}%;" 
-                                         aria-valuenow="${hoursCompleted}" 
+                                         style="width: ${mainPct}%;" 
+                                         aria-valuenow="${Math.min(hoursCompleted, totalHours)}" 
                                          aria-valuemin="0" 
                                          aria-valuemax="${totalHours}">
-                                        ${percentage.toFixed(1)}%
+                                        ${mainPct.toFixed(1)}%
                                     </div>
                                 </div>
+                                <div id="overtimeContainer">${overtimeHtml}</div>
                             </div>
                             <div class="row mt-3">
                                 <div class="col-6 mb-3">
@@ -1755,18 +2178,19 @@ function updateProgressBarRealTime() {
                                 <h6 class="text-muted mb-2">Hours Completed${lateText}</h6>
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="h5 mb-0">${Math.floor(hoursCompleted)} hours ${Math.round((hoursCompleted - Math.floor(hoursCompleted)) * 60)} minutes / ${totalHours} hours</span>
-                                    <span class="badge ${badgeClass}">${percentage.toFixed(1)}%</span>
+                                    <span class="badge ${badgeClass}">${mainPct.toFixed(1)}%</span>
                                 </div>
                                 <div class="progress" style="height: 30px;">
                                     <div class="progress-bar ${progressBarClass}" 
                                          role="progressbar" 
-                                         style="width: ${Math.min(percentage, 100)}%;" 
-                                         aria-valuenow="${hoursCompleted}" 
+                                         style="width: ${mainPct}%;" 
+                                         aria-valuenow="${Math.min(hoursCompleted, totalHours)}" 
                                          aria-valuemin="0" 
                                          aria-valuemax="${totalHours}">
-                                        ${percentage.toFixed(1)}%
+                                        ${mainPct.toFixed(1)}%
                                     </div>
                                 </div>
+                                <div id="overtimeContainer">${overtimeHtml}</div>
                             </div>
                             ${data.clock_out ? `<div class="mb-2"><h6 class="text-muted mb-2">Punch Out Time</h6><p class="h6 mb-0">${data.clock_out}</p></div>` : ''}
                         </div>
@@ -1777,6 +2201,8 @@ function updateProgressBarRealTime() {
                 const hoursCompleted = Math.round(data.hours_completed || 0);
                 const totalHours = Math.round(data.total_hours || 0);
                 const percentage = data.percentage || 0;
+                const mainPct = Math.min(percentage, 100);
+                const overtimeHtml = buildOvertimeBar(hoursCompleted, totalHours, true);
                 
                 html = `
                     <div class="attendance-detail">
@@ -1784,18 +2210,19 @@ function updateProgressBarRealTime() {
                             <h6 class="text-muted mb-2">Hours Completed</h6>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="h5 mb-0">${hoursCompleted}/${totalHours} hours</span>
-                                <span class="badge bg-primary">${percentage.toFixed(1)}%</span>
+                                <span class="badge bg-primary">${mainPct.toFixed(1)}%</span>
                             </div>
                             <div class="progress" style="height: 30px;">
                                 <div class="progress-bar bg-primary" 
                                      role="progressbar" 
-                                     style="width: ${Math.min(percentage, 100)}%;" 
-                                     aria-valuenow="${hoursCompleted}" 
+                                     style="width: ${mainPct}%;" 
+                                     aria-valuenow="${Math.min(hoursCompleted, totalHours)}" 
                                      aria-valuemin="0" 
                                      aria-valuemax="${totalHours}">
-                                    ${percentage.toFixed(1)}%
+                                    ${mainPct.toFixed(1)}%
                                 </div>
                             </div>
+                            <div id="overtimeContainer">${overtimeHtml}</div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-6 mb-3">
@@ -1809,10 +2236,10 @@ function updateProgressBarRealTime() {
                         </div>
                         <!-- Week Navigation -->
                         <div class="d-flex justify-content-center gap-2 mt-3">
-                            <button type="button" class="btn btn-sm btn-outline-primary" id="prevWeekBtn">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="prevWeekBtn" style="width: auto !important; height: auto !important; padding: 6px 14px !important; border-radius: 10px !important; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12px; font-weight: 600;">
                                 <i class="fas fa-chevron-left"></i> Previous Week
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" id="nextWeekBtn">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="nextWeekBtn" style="width: auto !important; height: auto !important; padding: 6px 14px !important; border-radius: 10px !important; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12px; font-weight: 600;">
                                 Next Week <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
@@ -1839,6 +2266,8 @@ function updateProgressBarRealTime() {
                 const hoursCompleted = Math.round(data.hours_completed || 0);
                 const totalHours = Math.round(data.total_hours || 0);
                 const percentage = data.percentage || 0;
+                const mainPct = Math.min(percentage, 100);
+                const overtimeHtml = buildOvertimeBar(hoursCompleted, totalHours, true);
                 
                 html = `
                     <div class="attendance-detail">
@@ -1846,18 +2275,19 @@ function updateProgressBarRealTime() {
                             <h6 class="text-muted mb-2">Hours Completed</h6>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="h5 mb-0">${hoursCompleted}/${totalHours} hours</span>
-                                <span class="badge bg-primary">${percentage.toFixed(1)}%</span>
+                                <span class="badge bg-primary">${mainPct.toFixed(1)}%</span>
                             </div>
                             <div class="progress" style="height: 30px;">
                                 <div class="progress-bar bg-primary" 
                                      role="progressbar" 
-                                     style="width: ${Math.min(percentage, 100)}%;" 
-                                     aria-valuenow="${hoursCompleted}" 
+                                     style="width: ${mainPct}%;" 
+                                     aria-valuenow="${Math.min(hoursCompleted, totalHours)}" 
                                      aria-valuemin="0" 
                                      aria-valuemax="${totalHours}">
-                                    ${percentage.toFixed(1)}%
+                                    ${mainPct.toFixed(1)}%
                                 </div>
                             </div>
+                            <div id="overtimeContainer">${overtimeHtml}</div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-6 mb-3">

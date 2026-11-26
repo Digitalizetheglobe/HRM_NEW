@@ -817,6 +817,22 @@ namespace App\Http\Controllers;
 
                 $attendance->save();
 
+                // Notify company user about employee punch in
+                $companyUserIds = User::where('id', Auth::user()->creatorId())
+                    ->where('type', 'company')
+                    ->pluck('id')
+                    ->toArray();
+
+                app(\App\Services\FcmPushService::class)->sendToUsers(
+                    $companyUserIds,
+                    'Attendance: Punch In',
+                    Auth::user()->name . ' punched in at ' . date('h:i A'),
+                    [
+                        'type' => 'attendance_in',
+                        'url' => route('attendanceemployee.index'),
+                    ]
+                );
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Punch In successful.'
@@ -871,6 +887,22 @@ namespace App\Http\Controllers;
                 $attendance->status_reason = $statusData['reason'];
 
                 $attendance->save();
+
+                // Notify company user about employee punch out
+                $companyUserIds = User::where('id', Auth::user()->creatorId())
+                    ->where('type', 'company')
+                    ->pluck('id')
+                    ->toArray();
+
+                app(\App\Services\FcmPushService::class)->sendToUsers(
+                    $companyUserIds,
+                    'Attendance: Punch Out',
+                    Auth::user()->name . ' punched out at ' . date('h:i A'),
+                    [
+                        'type' => 'attendance_out',
+                        'url' => route('attendanceemployee.index'),
+                    ]
+                );
 
                 return response()->json([
                     'success' => true,

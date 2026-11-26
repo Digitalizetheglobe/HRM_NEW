@@ -16,26 +16,26 @@
             {{-- Company users can edit any employee --}}
             <a href="{{ route('employee.edit', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}"
                 data-bs-toggle="tooltip" title="{{ __('Edit') }}" class="btn btn-sm btn-primary">
-                <i class="ti ti-pencil"></i> {{ __('Edit') }}
+                <i class="ti ti-pencil"></i>
             </a>
         @elseif(\Auth::user()->type === 'employee' && \Auth::user()->id === $employee->user_id && $employee->approval_status !== 'approved')
             {{-- Employees can only edit themselves if not approved --}}
             <a href="{{ route('employee.edit', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}"
                 data-bs-toggle="tooltip" title="{{ __('Edit') }}" class="btn btn-sm btn-primary">
-                <i class="ti ti-pencil"></i> {{ __('Edit') }}
+                <i class="ti ti-pencil"></i>
             </a>
         @endif
         
         {{-- Show approval buttons for company users --}}
         @if(\Auth::user()->type !== 'employee' && ($employee->approval_status === 'pending' || empty($employee->approval_status)))
             <button type="button" class="btn btn-sm btn-success" 
-                data-bs-toggle="modal" data-bs-target="#approveModal">
-                <i class="ti ti-check"></i> {{ __('Approve') }}
+                data-bs-toggle="modal" data-bs-target="#approveModal" title="{{ __('Approve') }}">
+                <i class="ti ti-check"></i>
             </button>
             
             <button type="button" class="btn btn-sm btn-danger" 
-                data-bs-toggle="modal" data-bs-target="#rejectModal">
-                <i class="ti ti-x"></i> {{ __('Reject') }}
+                data-bs-toggle="modal" data-bs-target="#rejectModal" title="{{ __('Reject') }}">
+                <i class="ti ti-x"></i>
             </button>
         @endif
         
@@ -43,8 +43,8 @@
         @if(\Auth::user()->type === 'employee' && $employee->approval_status === 'rejected')
             <form action="{{ route('employee.request-approval', $employee->id) }}" method="POST" class="d-inline-block">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-warning">
-                    <i class="ti ti-refresh"></i> {{ __('Request Approval Again') }}
+                <button type="submit" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="{{ __('Request Approval Again') }}">
+                    <i class="ti ti-refresh"></i>
                 </button>
             </form>
         @endif
@@ -59,7 +59,7 @@
             data-bs-toggle="tooltip" 
             data-bs-placement="top" 
             title="{{ __('View Offer Letter') }}">
-            <i class="ti ti-eye"></i> {{ __('Offer Letter') }}
+            <i class="ti ti-eye"></i>
         </a>
 
     </div>
@@ -263,8 +263,8 @@
                                     <div class="d-flex align-items-center justify-content-between border p-2 rounded">
                                         <span class="fw-bold text-sm text-dark">{{ $document->name }}</span>
                                         @if(!empty($employeedoc[$document->id]))
-                                            <a href="#" data-doc-url="{{ asset($employeedoc[$document->id]) }}" class="btn btn-sm btn-outline-primary shadow-none view-document-btn">
-                                                <i class="ti ti-eye me-1"></i>View
+                                            <a href="#" data-doc-url="{{ asset($employeedoc[$document->id]) }}" class="btn btn-sm btn-outline-primary shadow-none view-document-btn" data-bs-toggle="tooltip" title="{{ __('View') }}">
+                                                <i class="ti ti-eye"></i>
                                             </a>
                                         @else
                                             <span class="badge bg-secondary text-white">Missing</span>
@@ -353,8 +353,8 @@
                                             <td class="text-dark">{{ $edu['grade'] ?? '-' }}</td>
                                             <td>
                                                 @if(isset($edu['document_path']))
-                                                    <a href="#" data-doc-url="{{ asset($edu['document_path']) }}" class="btn btn-sm btn-outline-primary shadow-none view-document-btn">
-                                                        <i class="ti ti-eye me-1"></i>View
+                                                    <a href="#" data-doc-url="{{ asset($edu['document_path']) }}" class="btn btn-sm btn-outline-primary shadow-none view-document-btn" data-bs-toggle="tooltip" title="{{ __('View') }}">
+                                                        <i class="ti ti-eye"></i>
                                                     </a>
                                                 @else
                                                     -

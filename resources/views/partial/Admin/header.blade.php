@@ -164,7 +164,7 @@
                              src="{{ !empty(Auth::user()->avatar) ? $profile . Auth::user()->avatar : $profile . 'avatar.png' }}"
                              class="header-avtar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: white;">
                     </span>
-                    <span class="hide-mob ms-2" style="background-color: white;">{{ 'Hi, ' . Auth::user()->name . '!' }}
+                    <span class="hide-mob ms-2" style="background-color: white;">{{ 'Hi, ' . explode(' ', trim(Auth::user()->name))[0] . '!' }}
                         <i class="ti ti-chevron-down drp-arrow nocolor hide-mob" style="background-color: white;"></i>
                     </span>
                 </a>
