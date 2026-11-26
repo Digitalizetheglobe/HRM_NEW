@@ -1386,8 +1386,61 @@
             });
         }
 
+        let cachedCoords = null;
+        let cachedCoordsAt = 0;
+
+        // Pre-fetch GPS in background on page load so Punch In/Out has zero GPS wait
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    cachedCoords = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    cachedCoordsAt = Date.now();
+                },
+                () => {},
+                { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+            );
+        }
+
         /**
-         * Submit attendance - simplified without location requirements
+         * Get current browser GPS coordinates for office geofence verification (instant if cached within 60s)
+         */
+        function getCurrentCoordinates() {
+            if (cachedCoords && (Date.now() - cachedCoordsAt) < 60000) {
+                return Promise.resolve(cachedCoords);
+            }
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by your browser.'));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        cachedCoords = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        cachedCoordsAt = Date.now();
+                        resolve(cachedCoords);
+                    },
+                    (err) => {
+                        if (err.code === err.PERMISSION_DENIED) {
+                            reject(new Error('Location permission denied. Please allow location access in your browser to Punch In / Punch Out.'));
+                        } else if (err.code === err.TIMEOUT) {
+                            reject(new Error('Location request timed out. Please enable GPS and try again.'));
+                        } else {
+                            reject(new Error('Unable to detect your location. Please enable GPS and try again.'));
+                        }
+                    },
+                    { enableHighAccuracy: false, timeout: 3000, maximumAge: 60000 }
+                );
+            });
+        }
+
+        /**
+         * Submit attendance - requires office location verification
          */
         async function submitAttendance(type) {
             if (isPunchInProgress) return;
@@ -1405,12 +1458,17 @@
             }
 
             clearMessage();
-            showMessage('info', '⏳ Recording your attendance...');
+            showMessage('info', '📍 Verifying your office location...');
 
             try {
+                const coords = await getCurrentCoordinates();
+                showMessage('info', '⏳ Recording your attendance...');
+
                 const formData = new FormData();
                 formData.append('_token', '{{ csrf_token() }}');
                 formData.append(type === 'in' ? 'in' : 'out', '1');
+                formData.append('latitude', coords.latitude);
+                formData.append('longitude', coords.longitude);
 
                 const response = await fetch("{{ url('attendanceemployee/attendance') }}", {
                     method: 'POST',

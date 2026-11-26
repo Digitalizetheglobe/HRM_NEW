@@ -790,9 +790,49 @@ namespace App\Http\Controllers;
                 ->delete();
         }
 
+        /**
+         * Calculate distance in meters between two GPS coordinates using Haversine formula.
+         */
+        private function calculateDistanceMeters(float $lat1, float $lon1, float $lat2, float $lon2): float
+        {
+            $earthRadius = 6371000;
+            $dLat = deg2rad($lat2 - $lat1);
+            $dLon = deg2rad($lon2 - $lon1);
+            $a = sin($dLat / 2) * sin($dLat / 2)
+                + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+                * sin($dLon / 2) * sin($dLon / 2);
+            $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+            return $earthRadius * $c;
+        }
+
         public function attendance(Request $request)
         {
             $isAjax = $request->ajax() || $request->wantsJson();
+
+            // Enforce office geofence for both Punch In and Punch Out
+            // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
+            // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
+            $officeLat = (float) env('OFFICE_LATITUDE', 18.5591);
+            $officeLng = (float) env('OFFICE_LONGITUDE', 73.7856);
+            $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 200);
+
+            $userLat = $request->input('latitude');
+            $userLng = $request->input('longitude');
+
+            if (!is_numeric($userLat) || !is_numeric($userLng)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('Location access is required to Punch In / Punch Out. Please enable GPS/Location and try again.')
+                ], 422);
+            }
+
+            $distance = $this->calculateDistanceMeters((float) $userLat, (float) $userLng, $officeLat, $officeLng);
+            if ($distance > $allowedRadiusMeters) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('You are outside the office location (:distance m away). Punch In / Punch Out is only allowed at the Balewadi office.', ['distance' => round($distance)])
+                ], 422);
+            }
 
             // ================= EMPLOYEE =================
             $employeeId = Auth::user()->employee->id;
@@ -823,15 +863,21 @@ namespace App\Http\Controllers;
                     ->pluck('id')
                     ->toArray();
 
-                app(\App\Services\FcmPushService::class)->sendToUsers(
-                    $companyUserIds,
-                    'Attendance: Punch In',
-                    Auth::user()->name . ' punched in at ' . date('h:i A'),
-                    [
-                        'type' => 'attendance_in',
-                        'url' => route('attendanceemployee.index'),
-                    ]
-                );
+                $punchTimeFormatted = date('h:i A');
+                $userName = Auth::user()->name;
+                $attendanceIndexUrl = route('attendanceemployee.index');
+
+                dispatch(function () use ($companyUserIds, $userName, $punchTimeFormatted, $attendanceIndexUrl) {
+                    app(\App\Services\FcmPushService::class)->sendToUsers(
+                        $companyUserIds,
+                        'Attendance: Punch In',
+                        $userName . ' punched in at ' . $punchTimeFormatted,
+                        [
+                            'type' => 'attendance_in',
+                            'url' => $attendanceIndexUrl,
+                        ]
+                    );
+                })->afterResponse();
 
                 return response()->json([
                     'success' => true,
