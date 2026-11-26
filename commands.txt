@@ -1,0 +1,10 @@
+Server Deployment Commands (hrmdtg.digitalizetheglobe.com)
+
+1. Normal Code Update (Git pull + Cache clear):
+su -s /bin/bash hrmdt3410 -c 'cd /home/hrmdtg.digitalizetheglobe.com/public_html && git pull origin upgrade/laravel-latest && /usr/local/lsws/lsphp84/bin/php artisan optimize:clear && /usr/local/lsws/lsphp84/bin/php artisan config:cache'
+
+2. Only if new Migration added:
+su -s /bin/bash hrmdt3410 -c 'cd /home/hrmdtg.digitalizetheglobe.com/public_html && /usr/local/lsws/lsphp84/bin/php artisan migrate --force'
+
+3. Only if composer.json / composer.lock changed:
+su -s /bin/bash hrmdt3410 -c 'cd /home/hrmdtg.digitalizetheglobe.com/public_html && /usr/local/lsws/lsphp84/bin/php /usr/bin/composer install --no-dev --optimize-autoloader'

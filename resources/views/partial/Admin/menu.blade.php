@@ -21,11 +21,11 @@
 {{-- <nav class="dash-sidebar light-sidebar {{ isset($cust_theme_bg) && $cust_theme_bg == 'on' ? 'transprent-bg' : '' }}"> --}}
 
 <div class="navbar-wrapper">
-    <div class="m-header main-logo mt-1">
-        <a href="{{ route('dashboard') }}" class="b-brand">
+    <div class="m-header main-logo mt-1" style="height: auto; min-height: 115px; padding: 14px 16px; display: flex; align-items: center; justify-content: center;">
+        <a href="{{ route('dashboard') }}" class="b-brand" style="width: 100%; display: flex; align-items: center; justify-content: center;">
             <!-- ========   change your logo hear   ============ -->
             <img src="{{ $logo . (isset($company_logo) && !empty($company_logo) ? $company_logo . '?' . time() : 'logo-dark.png' . '?' . time()) }}"
-                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height:110px; width: auto;">
+                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height: 95px; max-width: 100%; min-height: 55px; width: auto; height: auto; object-fit: contain; display: block;">
         </a>
     </div>
     <div class="navbar-content">
