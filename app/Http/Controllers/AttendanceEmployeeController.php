@@ -830,7 +830,11 @@ namespace App\Http\Controllers;
             if ($distance > $allowedRadiusMeters) {
                 return response()->json([
                     'success' => false,
-                    'message' => __('You are outside the office location (:distance m away). Punch In / Punch Out is only allowed at the Balewadi office.', ['distance' => round($distance)])
+                    'message' => __('You are outside the office location (:distance m away, detected: :lat, :lng). Punch In / Punch Out is only allowed at the Balewadi office.', [
+                        'distance' => round($distance),
+                        'lat'      => round((float) $userLat, 6),
+                        'lng'      => round((float) $userLng, 6),
+                    ])
                 ], 422);
             }
 
