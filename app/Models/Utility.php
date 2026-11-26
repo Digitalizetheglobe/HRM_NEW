@@ -1974,9 +1974,7 @@ class Utility extends Model
 
     public static function getChatGPTSettings()
     {
-        $user = User::find(\Auth::user()->creatorId());
-        $plan = \App\Models\Plan::find($user->plan);
-        return $plan;
+        return (object) ['enable_chatgpt' => 'off'];
     }
 
     public static function getChatGPTSetting()

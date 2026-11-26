@@ -280,6 +280,18 @@ class LeaveController extends Controller
                     }
                 }
             }
+            // Prevent duplicate leave creation from rapid double-clicks
+            $lockKey = 'leave_submit_' . $request->employee_id . '_' . $actual_leave_type->id . '_' . $request->start_date . '_' . $request->end_date;
+            $alreadyExists = LocalLeave::where('employee_id', $request->employee_id)
+                ->where('leave_type_id', $actual_leave_type->id)
+                ->where('start_date', $request->start_date)
+                ->where('end_date', $request->end_date)
+                ->where('created_at', '>=', now()->subSeconds(30))
+                ->exists();
+            if (!\Illuminate\Support\Facades\Cache::add($lockKey, true, 15) || $alreadyExists) {
+                return redirect()->route('leave.index')->with('success', __('Leave successfully created.'));
+            }
+
             $leave = new LocalLeave();
             $leave->employee_id = $request->employee_id;
             $leave->leave_type_id = $actual_leave_type->id;

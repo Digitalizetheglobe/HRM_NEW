@@ -150,7 +150,7 @@
 
 <div class="modal-footer">
     <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Close') }}</button>
-    <input type="submit" value="{{ __('Create') }}" class="btn btn-primary" id="submit-btn">
+    <button type="submit" class="btn btn-primary" id="submit-btn">{{ __('Create') }}</button>
 </div>
 {{ Form::close() }}
 
@@ -300,7 +300,13 @@
 
         $('#last_day_half_day').on('change', updateSummary);
 
-        $('form').on('submit', function(e) {
+        $('#submit-btn').closest('form').on('submit', function(e) {
+            var $form = $(this);
+            if ($form.data('submitting')) {
+                e.preventDefault();
+                return false;
+            }
+
             var selOpt = $('#leave_type_id').find('option:selected');
             var isUnlimited = selOpt.data('unlimited') == 1;
             var available = parseFloat(selOpt.data('available')) || 0;
@@ -311,6 +317,11 @@
                 alert('{{ __("Insufficient balance. Available: ") }}' + available.toFixed(2) + '{{ __(" days, Requested: ") }}' + requested.toFixed(1) + '{{ __(" days.") }}');
                 return false;
             }
+
+            $form.data('submitting', true);
+            $('#submit-btn')
+                .prop('disabled', true)
+                .html('<i class="fas fa-spinner fa-spin me-1"></i>{{ __("Creating...") }}');
         });
     });
 </script>

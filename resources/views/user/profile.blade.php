@@ -91,8 +91,8 @@
                                                 <div class=" bg-primary profile "> <i
                                                         class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
                                                 </div>
-                                                <input type="file" class="form-control file" name="profile" id="profile" onchange="document.getElementById('blah').src = window.URL.createObjectURL(this.files[0])">
-                                                <img id="blah" width="100" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : $profile . 'avatar.png' }}" />
+                                                <input type="file" class="form-control file" name="profile" id="profile" accept="image/*">
+                                                <img id="blah" width="100" height="100" style="object-fit: cover; border-radius: 50%;" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : $profile . 'avatar.png' }}" />
                                             </label>
                                         </div>
                                         <span
@@ -174,4 +174,136 @@
     </div>
 </div>
 </div>
+
+{{-- Avatar Crop Modal --}}
+<div class="modal fade" id="avatarCropModal" tabindex="-1" aria-labelledby="avatarCropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: none;">
+                <h5 class="modal-title text-white" id="avatarCropModalLabel">
+                    <i class="ti ti-crop me-2" style="color: #38bdf8;"></i>{{ __('Crop Profile Photo') }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div style="width: 100%; max-height: 360px; overflow: hidden; background: #f8fafc; border-radius: 10px;">
+                    <img id="avatarCropImage" src="" alt="Crop Preview" style="display: block; max-width: 100%;">
+                </div>
+                <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="cropZoomIn" title="{{ __('Zoom In') }}" style="width:auto; height:auto; padding:6px 12px;">
+                        <i class="ti ti-zoom-in"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="cropZoomOut" title="{{ __('Zoom Out') }}" style="width:auto; height:auto; padding:6px 12px;">
+                        <i class="ti ti-zoom-out"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="cropRotateLeft" title="{{ __('Rotate Left') }}" style="width:auto; height:auto; padding:6px 12px;">
+                        <i class="ti ti-rotate-2"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="cropRotateRight" title="{{ __('Rotate Right') }}" style="width:auto; height:auto; padding:6px 12px;">
+                        <i class="ti ti-rotate-clockwise-2"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="cropReset" title="{{ __('Reset') }}" style="width:auto; height:auto; padding:6px 12px;">
+                        <i class="ti ti-refresh"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="cropApplyBtn">
+                    <i class="ti ti-check me-1"></i>{{ __('Crop & Apply') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fileInput = document.getElementById('profile');
+    const previewImg = document.getElementById('blah');
+    const modalEl = document.getElementById('avatarCropModal');
+    const cropImg = document.getElementById('avatarCropImage');
+    let cropper = null;
+    let croppedApplied = false;
+
+    if (!fileInput || !modalEl || !cropImg) return;
+
+    const cropModal = new bootstrap.Modal(modalEl);
+
+    fileInput.addEventListener('change', function (e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('{{ __("Please select a valid image file.") }}');
+            fileInput.value = '';
+            return;
+        }
+
+        croppedApplied = false;
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+            cropImg.src = evt.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    modalEl.addEventListener('shown.bs.modal', function () {
+        if (cropper) {
+            cropper.destroy();
+        }
+        cropper = new Cropper(cropImg, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.85,
+            responsive: true,
+            background: false,
+        });
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        if (!croppedApplied) {
+            fileInput.value = '';
+        }
+    });
+
+    document.getElementById('cropZoomIn').addEventListener('click', () => cropper && cropper.zoom(0.1));
+    document.getElementById('cropZoomOut').addEventListener('click', () => cropper && cropper.zoom(-0.1));
+    document.getElementById('cropRotateLeft').addEventListener('click', () => cropper && cropper.rotate(-90));
+    document.getElementById('cropRotateRight').addEventListener('click', () => cropper && cropper.rotate(90));
+    document.getElementById('cropReset').addEventListener('click', () => cropper && cropper.reset());
+
+    document.getElementById('cropApplyBtn').addEventListener('click', function () {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 400,
+            height: 400,
+            fillColor: '#ffffff',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        canvas.toBlob(function (blob) {
+            if (!blob) return;
+            const croppedFile = new File([blob], 'avatar.jpg', { type: 'image/jpeg', lastModified: Date.now() });
+            const dt = new DataTransfer();
+            dt.items.add(croppedFile);
+            fileInput.files = dt.files;
+
+            previewImg.src = URL.createObjectURL(blob);
+            croppedApplied = true;
+            cropModal.hide();
+        }, 'image/jpeg', 0.82);
+    });
+});
+</script>
 @endsection
