@@ -2327,6 +2327,24 @@ Route::get('/test-twilio-connection', function() {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chats', [\App\Http\Controllers\WhatsAppChatController::class, 'index'])->name('chats.index');
+    Route::get('/chats/data', [\App\Http\Controllers\WhatsAppChatController::class, 'data'])->name('chats.data');
+    Route::get('/chats/direct/{user}/messages', [\App\Http\Controllers\WhatsAppChatController::class, 'directMessages'])->name('chats.direct.messages');
+    Route::post('/chats/direct/{user}/messages', [\App\Http\Controllers\WhatsAppChatController::class, 'sendDirectMessage'])->name('chats.direct.send');
+
+    Route::prefix('chats/groups')->name('chat.groups.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ChatGroupController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\ChatGroupController::class, 'store'])->name('store');
+        Route::get('/{group}/messages', [\App\Http\Controllers\ChatGroupController::class, 'messages'])->name('messages');
+        Route::post('/{group}/messages', [\App\Http\Controllers\ChatGroupController::class, 'sendMessage'])->name('send');
+        Route::post('/{group}/update', [\App\Http\Controllers\ChatGroupController::class, 'update'])->name('update');
+        Route::post('/{group}/leave', [\App\Http\Controllers\ChatGroupController::class, 'leave'])->name('leave');
+    });
+
+    Route::get('/chats/{id}', [\App\Http\Controllers\WhatsAppChatController::class, 'index'])->where('id', '[0-9]+')->name('chats.user');
+});
+
 Route::get('/storage/{path}', function ($path) {
     $filePath = storage_path('app/public/' . $path);
     

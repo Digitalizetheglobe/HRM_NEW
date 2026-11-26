@@ -175,11 +175,34 @@ class MessagesController extends Controller
             $messageData = Chatify::fetchMessage($messageID);
 
             // send to user using pusher
-            Chatify::push("private-chatify." . $request['id'], 'messaging', [
-                'from_id' => Auth::user()->id,
-                'to_id' => $request['id'],
-                'message' => Chatify::messageCard($messageData, 'default')
-            ]);
+            try {
+                if (!empty(config('chatify.pusher.key'))) {
+                    Chatify::push("private-chatify." . $request['id'], 'messaging', [
+                        'from_id' => Auth::user()->id,
+                        'to_id' => $request['id'],
+                        'message' => Chatify::messageCard($messageData, 'default')
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                // Ignore Pusher errors when Pusher is not configured
+            }
+
+            // Send FCM push notification to recipient
+            $recipientId = (int) $request['id'];
+            $senderName = Auth::user()->name;
+            $msgPreview = trim((string) $request['message']) ?: ($attachment_title ? 'Sent an attachment: ' . $attachment_title : 'New message');
+            $chatUrl = url('/chats');
+            dispatch(function () use ($recipientId, $senderName, $msgPreview, $chatUrl) {
+                app(\App\Services\FcmPushService::class)->sendToUsers(
+                    [$recipientId],
+                    $senderName,
+                    \Illuminate\Support\Str::limit($msgPreview, 80),
+                    [
+                        'type' => 'chat',
+                        'url'  => $chatUrl,
+                    ]
+                );
+            })->afterResponse();
         }
 
         // send the response
@@ -251,8 +274,24 @@ class MessagesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    private function getInactiveUserIds(): array
+    {
+        $creatorId = Auth::user()->creatorId();
+        $terminatedEmpIds = \App\Models\Termination::where('created_by', $creatorId)
+            ->pluck('employee_id')
+            ->toArray();
+        if (empty($terminatedEmpIds)) {
+            return [];
+        }
+        return \App\Models\Employee::whereIn('id', $terminatedEmpIds)
+            ->pluck('user_id')
+            ->filter()
+            ->toArray();
+    }
+
     public function getContacts(Request $request)
     {
+        $inactiveUserIds = $this->getInactiveUserIds();
         // get all users that received/sent message from/to [Auth user]
         $users = Message::join('users',  function ($join) {
             $join->on('ch_messages.from_id', '=', 'users.id')
@@ -263,6 +302,16 @@ class MessagesController extends Controller
                     ->orWhere('ch_messages.to_id', Auth::user()->id);
             })
             ->where('users.id', '!=', Auth::user()->id)
+            ->where('users.is_active', 1)
+            ->where(function ($q) {
+                $q->whereNull('users.is_disable')->orWhere('users.is_disable', 0);
+            })
+            ->where(function ($q) {
+                $q->whereNull('users.is_login_enable')->orWhere('users.is_login_enable', 1);
+            })
+            ->when(!empty($inactiveUserIds), function ($q) use ($inactiveUserIds) {
+                $q->whereNotIn('users.id', $inactiveUserIds);
+            })
             ->select('users.*', DB::raw('MAX(ch_messages.created_at) max_created_at'))
             ->orderBy('max_created_at', 'desc')
             ->groupBy('users.id')
@@ -416,8 +465,19 @@ class MessagesController extends Controller
     {
         $getRecords = null;
         $input = trim(filter_var($request['input']));
+        $inactiveUserIds = $this->getInactiveUserIds();
         $records = User::where('id', '!=', Auth::user()->id)->where('name', '!=', 'Super Admin')
             ->where('created_by', \Auth::user()->creatorId())
+            ->where('is_active', 1)
+            ->where(function ($q) {
+                $q->whereNull('is_disable')->orWhere('is_disable', 0);
+            })
+            ->where(function ($q) {
+                $q->whereNull('is_login_enable')->orWhere('is_login_enable', 1);
+            })
+            ->when(!empty($inactiveUserIds), function ($q) use ($inactiveUserIds) {
+                $q->whereNotIn('id', $inactiveUserIds);
+            })
             ->where('name', 'LIKE', "%{$input}%")
             ->paginate($request->per_page ?? $this->perPage);
         foreach ($records->items() as $record) {

@@ -812,8 +812,8 @@ namespace App\Http\Controllers;
             // Enforce office geofence for both Punch In and Punch Out
             // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
             // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
-            $officeLat = (float) env('OFFICE_LATITUDE', 18.5591);
-            $officeLng = (float) env('OFFICE_LONGITUDE', 73.7856);
+            $officeLat = (float) env('OFFICE_LATITUDE', 18.6056412);
+            $officeLng = (float) env('OFFICE_LONGITUDE', 73.7373704);
             $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 200);
 
             $userLat = $request->input('latitude');

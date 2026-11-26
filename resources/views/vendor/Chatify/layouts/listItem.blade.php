@@ -18,14 +18,14 @@
     <table class="messenger-list-item m-li-divider" data-contact="{{ Auth::user()->id }}">
         <tr data-action="0">
             {{-- Avatar side --}}
-            <td width="100%">
+            <td style="width: 52px;">
                 <div class="avatar av-m"
-                    style="background-color: #d9efff; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <span class="far fa-bookmark" style="font-size: 22px; color: #68a5ff;"></span>
+                    style="background-color: #d9efff !important; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <span class="far fa-bookmark" style="font-size: 20px; color: #018ac8;"></span>
                 </div>
             </td>
             {{-- center side --}}
-            <td style="position: relative" width="100%">
+            <td style="position: relative; width: 100%;">
                 <p data-id="{{ Auth::user()->id }}" data-type="user" style="text-align: start">Saved Messages
                     <span>You</span>
                 </p>
@@ -46,7 +46,12 @@
                 @endif
 
                 @if (!empty($user->avatar))
-                    <div class="avatar av-m" style="background-image: url('{{ $user->avatar }}');"></div>
+                    @php
+                        $avatarUrl = \Illuminate\Support\Str::startsWith($user->avatar, ['http://', 'https://'])
+                            ? $user->avatar
+                            : $profile . '/' . ltrim($user->avatar, '/');
+                    @endphp
+                    <div class="avatar av-m" style="background-image: url('{{ $avatarUrl }}');"></div>
                 @else
                     <div class="avatar av-m" style="background-image: url('{{ $profile . '/avatar.png' }}');"></div>
                 @endif
@@ -82,7 +87,12 @@
             {{-- Avatar side --}}
             <td>
                 @if (!empty($user->avatar))
-                    <div class="avatar av-m" style="background-image: url('{{ $user->avatar }}');"></div>
+                    @php
+                        $avatarUrl = \Illuminate\Support\Str::startsWith($user->avatar, ['http://', 'https://'])
+                            ? $user->avatar
+                            : $profile . '/' . ltrim($user->avatar, '/');
+                    @endphp
+                    <div class="avatar av-m" style="background-image: url('{{ $avatarUrl }}');"></div>
                 @else
                     <div class="avatar av-m" style="background-image: url('{{ $profile . '/avatar.png' }}');"></div>
                 @endif

@@ -3,6 +3,7 @@
     // Enable pusher logging - don't include this in production
     Pusher.logToConsole = false;
 
+    @if (!empty(config('chatify.pusher.key')))
     var pusher = new Pusher("{{ config('chatify.pusher.key') }}", {
         encrypted: true,
         cluster: "{{ config('chatify.pusher.options.cluster') }}",
@@ -13,6 +14,14 @@
             }
         }
     });
+    @else
+    // Safe no-op stub when Pusher keys are not configured (polling handles updates)
+    var pusher = {
+        subscribe: function () { return { bind: function () {} }; },
+        unsubscribe: function () {},
+        connection: { bind: function () {}, state: 'connected' }
+    };
+    @endif
 
     // Bellow are all the methods/variables that using php to assign globally.
     const allowedImages = {!! json_encode(config('chatify.attachments.allowed_images')) !!} || [];
