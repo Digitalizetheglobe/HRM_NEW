@@ -1387,6 +1387,15 @@ Route::group(['middleware' => ['auth']], function () {
             'XSS',
         ]
     );
+
+    // Attendance Regularization
+    Route::middleware(['auth', 'XSS'])->group(function () {
+        Route::get('attendance-regularization', [\App\Http\Controllers\AttendanceRegularizationController::class, 'index'])->name('attendance.regularization.index');
+        Route::get('attendance-regularization/date-info', [\App\Http\Controllers\AttendanceRegularizationController::class, 'fetchDateAttendance'])->name('attendance.regularization.date-info');
+        Route::post('attendance-regularization', [\App\Http\Controllers\AttendanceRegularizationController::class, 'store'])->name('attendance.regularization.store');
+        Route::post('attendance-regularization/{id}/approve', [\App\Http\Controllers\AttendanceRegularizationController::class, 'approve'])->name('attendance.regularization.approve');
+        Route::post('attendance-regularization/{id}/reject', [\App\Http\Controllers\AttendanceRegularizationController::class, 'reject'])->name('attendance.regularization.reject');
+    });
     
 
         // Route::resource('timesheet', TimeSheetController::class)->middleware(

@@ -42,13 +42,22 @@
 
 
 
-    // Get attendance regularization notifications (for company, hr, director types)
+    // Get attendance regularization notifications
     $regularisationNotifications = collect([]);
+    $pendingRegularizations = collect([]);
     $unseenRegularisationCount = 0;
     if (in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director'])) {
         try {
+            if (\Schema::hasTable('attendance_regularizations')) {
+                $pendingRegularizations = \App\Models\AttendanceRegularization::with('employee')
+                    ->where('created_by', \Auth::user()->creatorId())
+                    ->where('status', 'Pending')
+                    ->orderBy('created_at', 'desc')
+                    ->take(10)
+                    ->get();
+                $unseenRegularisationCount += $pendingRegularizations->count();
+            }
             if (\Schema::hasTable('notifications')) {
-                // Get regularisation notifications - use OR condition to catch both exact and partial matches
                 $regularisationNotifications = Auth::user()->unreadNotifications()
                     ->where(function($query) {
                         $query->where('type', 'App\Notifications\AttendanceRegularisationNotification')
@@ -57,34 +66,100 @@
                     ->orderBy('created_at', 'desc')
                     ->take(10)
                     ->get();
-                
-                // Count unread notifications
-                $unseenRegularisationCount = $regularisationNotifications->count();
+                $unseenRegularisationCount += $regularisationNotifications->count();
             }
         } catch (\Exception $e) {
-            // Table doesn't exist or query failed, use empty collection
-            \Log::error('Error fetching regularisation notifications', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            $regularisationNotifications = collect([]);
-            $unseenRegularisationCount = 0;
+            \Log::error('Error fetching regularisation notifications', ['error' => $e->getMessage()]);
+        }
+    } elseif (\Auth::user()->type == 'employee' && !empty(\Auth::user()->employee)) {
+        try {
+            if (\Schema::hasTable('attendance_regularizations')) {
+                $pendingRegularizations = \App\Models\AttendanceRegularization::where('employee_id', \Auth::user()->employee->id)
+                    ->whereIn('status', ['Approved', 'Rejected'])
+                    ->where('updated_at', '>=', now()->subDays(3))
+                    ->orderBy('updated_at', 'desc')
+                    ->take(5)
+                    ->get();
+                $unseenRegularisationCount += $pendingRegularizations->count();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error fetching employee regularisation notifications', ['error' => $e->getMessage()]);
         }
     }
 
-    // Get General Notifications
+    // Employee recent leave status updates (Approved / Rejected in last 3 days)
+    $employeeLeaveUpdates = collect([]);
+    if (\Auth::user()->type == 'employee' && !empty(\Auth::user()->employee)) {
+        try {
+            $employeeLeaveUpdates = \App\Models\Leave::where('employee_id', \Auth::user()->employee->id)
+                ->whereIn('status', ['Approved', 'Reject', 'Rejected'])
+                ->where('updated_at', '>=', now()->subDays(3))
+                ->with('leaveType')
+                ->orderBy('updated_at', 'desc')
+                ->take(5)
+                ->get();
+            $unseenLeaveCount += $employeeLeaveUpdates->count();
+        } catch (\Exception $e) {
+            \Log::error('Error fetching employee leave updates', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // Get Unread Messenger Notifications (Direct + Group)
+    $messengerDirectNotifications = collect([]);
+    $messengerGroupNotifications = collect([]);
+    $unseenMessengerCount = 0;
+    try {
+        if (\Schema::hasTable('ch_messages')) {
+            $messengerDirectNotifications = \DB::table('ch_messages')
+                ->join('users', 'users.id', '=', 'ch_messages.from_id')
+                ->where('ch_messages.to_id', \Auth::id())
+                ->where('ch_messages.seen', 0)
+                ->select(
+                    'ch_messages.from_id',
+                    'users.name as sender_name',
+                    \DB::raw('COUNT(*) as msg_count'),
+                    \DB::raw('MAX(ch_messages.created_at) as last_at'),
+                    \DB::raw('MAX(ch_messages.body) as last_body')
+                )
+                ->groupBy('ch_messages.from_id', 'users.name')
+                ->orderByDesc('last_at')
+                ->take(10)
+                ->get();
+            $unseenMessengerCount += $messengerDirectNotifications->count();
+        }
+        if (\Schema::hasTable('chat_groups') && \Schema::hasTable('chat_group_members') && \Schema::hasTable('chat_group_messages')) {
+            $messengerGroupNotifications = \DB::table('chat_group_members as m')
+                ->join('chat_groups as g', 'g.id', '=', 'm.group_id')
+                ->join('chat_group_messages as msg', 'msg.group_id', '=', 'm.group_id')
+                ->where('m.user_id', \Auth::id())
+                ->where('msg.sender_id', '!=', \Auth::id())
+                ->whereRaw('msg.created_at > COALESCE(m.last_read_at, "1970-01-01 00:00:00")')
+                ->select(
+                    'g.id as group_id',
+                    'g.name as group_name',
+                    \DB::raw('COUNT(*) as msg_count'),
+                    \DB::raw('MAX(msg.created_at) as last_at')
+                )
+                ->groupBy('g.id', 'g.name')
+                ->orderByDesc('last_at')
+                ->take(10)
+                ->get();
+            $unseenMessengerCount += $messengerGroupNotifications->count();
+        }
+    } catch (\Exception $e) {
+        \Log::error('Error fetching messenger notifications', ['error' => $e->getMessage()]);
+    }
+
+    // Get General Notifications (including LeaveCreatedNotification)
     $generalNotifications = collect([]);
     $unseenGeneralCount = 0;
     try {
         if (\Schema::hasTable('notifications')) {
             $generalNotifications = Auth::user()->unreadNotifications()
-                ->whereIn('type', [
-                    'App\Notifications\ProjectAssignmentNotification',
-                    'App\Notifications\ProjectReportSubmittedNotification',
-                    'App\Notifications\ProjectReportApprovalNotification',
-                    'App\Notifications\ClientFeedbackNotification',
-                    'App\Notifications\ProjectAssignedNotification'
-                ])
+                ->where(function($query) {
+                    $query->where('type', '!=', 'App\Notifications\AttendanceRegularisationNotification')
+                          ->where('type', 'NOT LIKE', '%AttendanceRegularisation%');
+                })
                 ->orderBy('created_at', 'desc')
                 ->take(15)
                 ->get();
@@ -95,7 +170,7 @@
     }
 
     // Calculate total unseen notifications
-    $totalUnseenCount = $unseenLeaveCount + $unseenRegularisationCount + $unseenGeneralCount;
+    $totalUnseenCount = $unseenLeaveCount + $unseenRegularisationCount + $unseenGeneralCount + $unseenMessengerCount;
 @endphp
 
 @if (isset($setting['cust_theme_bg']) && $setting['cust_theme_bg'] == 'on')
@@ -497,7 +572,7 @@
                     <span class="n-count">{{ $totalUnseenCount }} new</span>
                 @endif
             </h6>
-            @if($leaveNotifications->count() > 0 || $regularisationNotifications->count() > 0 || (isset($generalNotifications) && $generalNotifications->count() > 0))
+            @if($totalUnseenCount > 0)
                 <form action="{{ route('notifications.readAll') }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="notif-clear-btn">{{ __('Clear All') }}</button>
@@ -589,10 +664,38 @@
             @endif
 
             {{-- ── Attendance Regularisation ── --}}
-            @if(in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director']) && $regularisationNotifications->count() > 0)
+            @if(($pendingRegularizations->count() > 0) || (in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director']) && $regularisationNotifications->count() > 0))
                 <div class="notif-category-label">
                     <i class="ti ti-clock-hour-4"></i> Attendance Regularisation
                 </div>
+                @foreach($pendingRegularizations as $reg)
+                    @php
+                        $regEmpName = $reg->employee->full_name ?? $reg->employee->name ?? 'Employee';
+                        $regDateStr = \Carbon\Carbon::parse($reg->date)->format('d M Y');
+                        $regTitle = \Auth::user()->type == 'employee'
+                            ? ('Regularisation ' . $reg->status)
+                            : ($regEmpName . ' · Regularisation');
+                        $regMsg = \Auth::user()->type == 'employee'
+                            ? ('Date: ' . $regDateStr . ' (' . \Carbon\Carbon::parse($reg->clock_in)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($reg->clock_out)->format('h:i A') . ')')
+                            : ('Date: ' . $regDateStr . ' — ' . Str::limit($reg->reason, 45));
+                        $regAvatar = $reg->status === 'Rejected' ? 'red' : ($reg->status === 'Approved' ? 'green' : 'teal');
+                    @endphp
+                    <div class="notif-item unread">
+                        <div class="notif-avatar {{ $regAvatar }}">
+                            <i class="ti ti-clock-edit"></i>
+                        </div>
+                        <div class="notif-body-text">
+                            <p class="n-title">{{ $regTitle }}</p>
+                            <p class="n-msg">{{ $regMsg }}</p>
+                            <span class="n-time"><i class="ti ti-clock me-1"></i>{{ ($reg->updated_at ?? $reg->created_at)->diffForHumans() }}</span>
+                        </div>
+                        <a href="{{ route('attendance.regularization.index') }}"
+                            class="notif-action-btn teal-btn"
+                            title="{{ __('View Request') }}">
+                            <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                @endforeach
                 @foreach($regularisationNotifications as $notification)
                     @php
                         $data = $notification->data;
@@ -609,7 +712,7 @@
                             <p class="n-msg">Date: {{ $data['date'] ?? 'N/A' }} — {{ Str::limit($data['message'] ?? '', 45) }}</p>
                             <span class="n-time"><i class="ti ti-clock me-1"></i>{{ $notification->created_at->diffForHumans() }}</span>
                         </div>
-                        <a href="{{ $data['url'] ?? route('attendance-regularisation.index') }}"
+                        <a href="{{ $data['url'] ?? route('attendance.regularization.index') }}"
                             class="notif-action-btn teal-btn mark-notification-read"
                             data-notification-id="{{ $notification->id }}"
                             title="{{ __('View Request') }}">
@@ -619,12 +722,70 @@
                 @endforeach
             @endif
 
+            {{-- ── Employee Leave Status Updates ── --}}
+            @if(\Auth::user()->type == 'employee' && isset($employeeLeaveUpdates) && $employeeLeaveUpdates->count() > 0)
+                <div class="notif-category-label">
+                    <i class="ti ti-calendar-event"></i> Leave Updates
+                </div>
+                @foreach($employeeLeaveUpdates as $empLeave)
+                    @php
+                        $isApprovedLeave = strtolower($empLeave->status) === 'approved';
+                    @endphp
+                    <div class="notif-item unread">
+                        <div class="notif-avatar {{ $isApprovedLeave ? 'green' : 'red' }}">
+                            <i class="ti {{ $isApprovedLeave ? 'ti-circle-check' : 'ti-circle-x' }}"></i>
+                        </div>
+                        <div class="notif-body-text">
+                            <p class="n-title">{{ $empLeave->leaveType->title ?? 'Leave' }} · {{ $empLeave->status }}</p>
+                            <p class="n-msg">{{ $empLeave->start_date }} to {{ $empLeave->end_date }}</p>
+                            <span class="n-time"><i class="ti ti-clock me-1"></i>{{ $empLeave->updated_at->diffForHumans() }}</span>
+                        </div>
+                        <a href="{{ route('leave.index') }}" class="notif-action-btn {{ $isApprovedLeave ? 'green-btn' : 'blue-btn' }}" title="{{ __('View Leave') }}">
+                            <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                @endforeach
+            @endif
+
+            {{-- ── Messenger ── --}}
+            @if((isset($messengerDirectNotifications) && $messengerDirectNotifications->count() > 0) || (isset($messengerGroupNotifications) && $messengerGroupNotifications->count() > 0))
+                <div class="notif-category-label">
+                    <i class="ti ti-message-circle"></i> Messenger
+                </div>
+                @foreach($messengerDirectNotifications as $mDirect)
+                    <div class="notif-item unread">
+                        <div class="notif-avatar purple">
+                            <i class="ti ti-message-dots"></i>
+                        </div>
+                        <div class="notif-body-text">
+                            <p class="n-title">{{ $mDirect->sender_name }} <span style="font-weight:600;color:#7c3aed;">({{ $mDirect->msg_count }} new)</span></p>
+                            <p class="n-msg">{{ Str::limit($mDirect->last_body ?: 'Sent an attachment', 45) }}</p>
+                            <span class="n-time"><i class="ti ti-clock me-1"></i>{{ \Carbon\Carbon::parse($mDirect->last_at)->diffForHumans() }}</span>
+                        </div>
+                        <a href="{{ url('chats') }}" class="notif-action-btn purple-btn" title="{{ __('Open Messenger') }}">
+                            <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                @endforeach
+                @foreach($messengerGroupNotifications as $mGroup)
+                    <div class="notif-item unread">
+                        <div class="notif-avatar blue">
+                            <i class="ti ti-users"></i>
+                        </div>
+                        <div class="notif-body-text">
+                            <p class="n-title">{{ $mGroup->group_name }} <span style="font-weight:600;color:#2563eb;">({{ $mGroup->msg_count }} new)</span></p>
+                            <p class="n-msg">New group messages</p>
+                            <span class="n-time"><i class="ti ti-clock me-1"></i>{{ \Carbon\Carbon::parse($mGroup->last_at)->diffForHumans() }}</span>
+                        </div>
+                        <a href="{{ url('chats') }}" class="notif-action-btn blue-btn" title="{{ __('Open Messenger') }}">
+                            <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                @endforeach
+            @endif
+
             {{-- ── Empty State ── --}}
-            @if(
-                $leaveNotifications->count() == 0 &&
-                $regularisationNotifications->count() == 0 &&
-                (!isset($generalNotifications) || $generalNotifications->count() == 0)
-            )
+            @if($totalUnseenCount == 0)
                 <div class="notif-empty">
                     <div class="notif-empty-icon">
                         <i class="ti ti-bell-off"></i>
@@ -638,15 +799,19 @@
         {{-- Footer quick links --}}
         @php
             $hasLeave = (\Auth::user()->type == 'company' || in_array(strtolower(\Auth::user()->type), ['director', 'hr'])) && $leaveNotifications->count() > 0;
-            $hasReg   = in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director']) && $regularisationNotifications->count() > 0;
+            $hasReg   = ($pendingRegularizations->count() > 0) || (in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director']) && $regularisationNotifications->count() > 0);
+            $hasMsg   = ($unseenMessengerCount ?? 0) > 0;
         @endphp
-        @if($hasLeave || $hasReg)
+        @if($hasLeave || $hasReg || $hasMsg)
             <div class="notif-footer-links">
                 @if($hasLeave)
                     <a href="{{ route('leave.index') }}"><i class="ti ti-calendar-event"></i> View All Leave Requests</a>
                 @endif
                 @if($hasReg)
-                    <a href="{{ route('attendance-regularisation.index') }}"><i class="ti ti-clock-hour-4"></i> View All Regularisation Requests</a>
+                    <a href="{{ route('attendance.regularization.index') }}"><i class="ti ti-clock-hour-4"></i> View All Regularisation Requests</a>
+                @endif
+                @if($hasMsg)
+                    <a href="{{ url('chats') }}"><i class="ti ti-message-circle"></i> Open Messenger</a>
                 @endif
             </div>
         @endif

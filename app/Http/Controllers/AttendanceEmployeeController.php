@@ -812,8 +812,8 @@ namespace App\Http\Controllers;
             // Enforce office geofence for both Punch In and Punch Out
             // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
             // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
-            $officeLat = (float) env('OFFICE_LATITUDE', 18.570938);
-            $officeLng = (float) env('OFFICE_LONGITUDE', 73.769654);
+            $officeLat = (float) env('OFFICE_LATITUDE', 18.603356);
+            $officeLng = (float) env('OFFICE_LONGITUDE', 73.732086);
             $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 300);
 
             $userLat = $request->input('latitude');
@@ -849,6 +849,68 @@ namespace App\Http\Controllers;
 
             // ================= PUNCH IN (Session 1) =================
             if (!$attendance) {
+                // If employee punched in on a previous working day (last 7 days) and forgot to add work update,
+                // require adding that day's work update before allowing today's Punch In (skipping Sundays, Holidays, and Approved Leaves).
+                $recentPunchedAttendances = AttendanceEmployee::where('employee_id', $employeeId)
+                    ->where('date', '<', $date)
+                    ->where('date', '>=', Carbon::parse($date)->subDays(7)->toDateString())
+                    ->whereNotNull('clock_in')
+                    ->where('clock_in', '!=', '00:00:00')
+                    ->orderBy('date', 'desc')
+                    ->get();
+
+                $creatorId = Auth::user()->creatorId();
+                foreach ($recentPunchedAttendances as $prevAtt) {
+                    $prevDate = $prevAtt->date;
+
+                    if (Carbon::parse($prevDate)->isSunday()) {
+                        continue;
+                    }
+
+                    $isHoliday = \App\Models\Holiday::where('created_by', $creatorId)
+                        ->whereDate('date', $prevDate)
+                        ->exists();
+                    if ($isHoliday) {
+                        continue;
+                    }
+
+                    $isApprovedLeave = LocalLeave::where('employee_id', $employeeId)
+                        ->where('status', 'Approved')
+                        ->whereDate('start_date', '<=', $prevDate)
+                        ->whereDate('end_date', '>=', $prevDate)
+                        ->exists();
+                    if ($isApprovedLeave) {
+                        continue;
+                    }
+
+                    $hasPrevProjectUpdate = \App\Models\ProjectDailyUpdate::where('employee_id', $employeeId)
+                        ->where('work_date', $prevDate)
+                        ->exists();
+                    $hasPrevGeneralTask = \App\Models\GeneralDailyTask::where('employee_id', $employeeId)
+                        ->where('work_date', $prevDate)
+                        ->exists();
+
+                    if (!$hasPrevProjectUpdate && !$hasPrevGeneralTask) {
+                        $prevLabel = ($prevDate === Carbon::parse($date)->subDay()->toDateString())
+                            ? 'yesterday (' . Carbon::parse($prevDate)->format('d M Y') . ')'
+                            : Carbon::parse($prevDate)->format('d M Y');
+                        $updatesUrl = route('projects.my_updates', [
+                            'start_date' => $prevDate,
+                            'end_date'   => $prevDate,
+                            'work_date'  => $prevDate,
+                        ]);
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => __('Please first add work update for :date before Punch In.', ['date' => $prevLabel])
+                                . ' <a href="' . $updatesUrl . '" class="btn btn-sm btn-primary ms-2">' . __('Add Work Update') . '</a>'
+                        ]);
+                    }
+
+                    // Only enforce on the most recent punched-in working day
+                    break;
+                }
+
                 $attendance = new AttendanceEmployee();
                 $attendance->employee_id = $employeeId;
                 $attendance->date = $date;
@@ -1051,6 +1113,15 @@ namespace App\Http\Controllers;
 
                         $weekOffDay = strtolower('Sunday'); // e.g. 'sunday'
 
+                        $workUpdateDates = \App\Models\ProjectDailyUpdate::where('employee_id', $employee->id)
+                            ->pluck('work_date')
+                            ->merge(
+                                \App\Models\GeneralDailyTask::where('employee_id', $employee->id)->pluck('work_date')
+                            )
+                            ->unique()
+                            ->flip()
+                            ->toArray();
+
                         $employeeData = [];
 
                         // Mark from attendance records
@@ -1066,6 +1137,16 @@ namespace App\Http\Controllers;
                                 $type = 'half_day';
                             }
 
+                            $statusReason = $attendance['status_reason'];
+                            if (empty($statusReason) && in_array($type, ['half_day', 'single_punch'], true)) {
+                                $hasWorkUpdate = isset($workUpdateDates[$attendance['date']]);
+                                if ($attendance['date'] < date('Y-m-d') && !$hasWorkUpdate) {
+                                    $statusReason = 'Missed Punch Out & No Work Update';
+                                } else {
+                                    $statusReason = 'Missed Punch Out';
+                                }
+                            }
+
                             $employeeData[$attendance['date']] = [
                                 'type' => $type,
                                 'status' => $attendance['status'],
@@ -1073,7 +1154,7 @@ namespace App\Http\Controllers;
                                 'clock_out' => $attendance['clock_out'],
                                 'late' => $attendance['late'],
                                 'early_leaving' => $attendance['early_leaving'],
-                                'status_reason' => $attendance['status_reason']
+                                'status_reason' => $statusReason
                             ];
                         }
 
@@ -1245,6 +1326,64 @@ namespace App\Http\Controllers;
                 'success' => true,
                 'message' => __('Attendance successfully updated!')
             ]);
+        }
+
+        /**
+         * Apply an approved attendance regularization directly to AttendanceEmployee.
+         */
+        public function applyRegularizedAttendance(int $employeeId, string $date, string $clockIn, string $clockOut, int $creatorId): AttendanceEmployee
+        {
+            $clockIn = strlen($clockIn) === 5 ? $clockIn . ':00' : $clockIn;
+            $clockOut = strlen($clockOut) === 5 ? $clockOut . ':00' : $clockOut;
+
+            $late = $this->calculateLateMark($clockIn, $date, $employeeId);
+            $earlyArrival = $this->calculateEarlyArrival($clockIn, $date, $employeeId);
+            $earlyLeaving = $this->calculateEarlyLeaving($clockOut, $date, $employeeId);
+
+            $workedSeconds = max(strtotime($clockOut) - strtotime($clockIn), 0);
+            $workedHours = $workedSeconds / 3600;
+            $statusData = $this->determineStatus($date, $workedHours, $employeeId, $clockIn);
+
+            $overtime = '00:00:00';
+            $employee = Employee::find($employeeId);
+            if ($employee) {
+                $shift = $employee->getShiftTimings($date);
+                $startTime = Carbon::parse($date . ' ' . $shift['start_time']);
+                $endTime = Carbon::parse($date . ' ' . $shift['end_time']);
+                if ($endTime->lt($startTime)) {
+                    $endTime->addDay();
+                }
+                $shiftSeconds = (int) $endTime->diffInSeconds($startTime, true);
+                $overtimeStartSeconds = $shiftSeconds + (30 * 60);
+                $totalOvertimeSeconds = $workedSeconds - $overtimeStartSeconds;
+                if ($totalOvertimeSeconds > 0) {
+                    $overtime = gmdate('H:i:s', $totalOvertimeSeconds);
+                }
+            }
+
+            $record = AttendanceEmployee::where('employee_id', $employeeId)
+                ->where('date', $date)
+                ->first();
+
+            if (!$record) {
+                $record = new AttendanceEmployee();
+                $record->employee_id = $employeeId;
+                $record->date = $date;
+                $record->created_by = $creatorId;
+            }
+
+            $record->clock_in = $clockIn;
+            $record->clock_out = $clockOut;
+            $record->status = $statusData['status'];
+            $record->status_reason = $statusData['reason'] ?? 'Regularized';
+            $record->late = $late ?? '00:00:00';
+            $record->early_arrival = $earlyArrival ?? '00:00:00';
+            $record->early_leaving = $earlyLeaving ?? '00:00:00';
+            $record->overtime = $overtime;
+            $record->total_rest = '00:00:00';
+            $record->save();
+
+            return $record;
         }
 
         public function export(Request $request)
@@ -1982,6 +2121,18 @@ namespace App\Http\Controllers;
                 
                 $attendance->clock_out = $clockOut;
                 $attendance->status = AttendanceEmployee::STATUS_HALF_DAY;
+
+                if (empty($attendance->status_reason)) {
+                    $hasWorkUpdate = \App\Models\ProjectDailyUpdate::where('employee_id', $attendance->employee_id)
+                        ->where('work_date', $date)->exists()
+                        || \App\Models\GeneralDailyTask::where('employee_id', $attendance->employee_id)
+                        ->where('work_date', $date)->exists();
+
+                    $attendance->status_reason = $hasWorkUpdate
+                        ? 'Missed Punch Out'
+                        : 'Missed Punch Out & No Work Update';
+                }
+
                 $attendance->save();
             }
         }

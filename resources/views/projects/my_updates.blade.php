@@ -373,6 +373,22 @@
                                     <i class="ti ti-calendar"></i>
                                     {{ \Auth::user()->dateFormat($update->work_date) }}
                                 </span>
+                                @if($update->created_at)
+                                    @php
+                                        $isLateSubmission = $update->created_at->toDateString() > \Carbon\Carbon::parse($update->work_date)->toDateString();
+                                    @endphp
+                                    <div class="mt-1">
+                                        @if($isLateSubmission)
+                                            <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.71rem;font-weight:600;border:1px solid #fde68a;">
+                                                <i class="ti ti-clock-exclamation me-1"></i>{{ __('Added on') }} {{ $update->created_at->format('d M Y, h:i A') }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted" style="font-size:0.72rem;">
+                                                <i class="ti ti-clock me-1"></i>{{ __('Added') }} {{ $update->created_at->format('d M Y, h:i A') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <span class="hrm-project-link">{{ $update->project->project_name ?? '-' }}</span>
@@ -441,6 +457,22 @@
                                     <i class="ti ti-calendar"></i>
                                     {{ \Auth::user()->dateFormat($task->work_date) }}
                                 </span>
+                                @if($task->created_at)
+                                    @php
+                                        $isLateTaskSubmission = $task->created_at->toDateString() > \Carbon\Carbon::parse($task->work_date)->toDateString();
+                                    @endphp
+                                    <div class="mt-1">
+                                        @if($isLateTaskSubmission)
+                                            <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.71rem;font-weight:600;border:1px solid #fde68a;">
+                                                <i class="ti ti-clock-exclamation me-1"></i>{{ __('Added on') }} {{ $task->created_at->format('d M Y, h:i A') }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted" style="font-size:0.72rem;">
+                                                <i class="ti ti-clock me-1"></i>{{ __('Added') }} {{ $task->created_at->format('d M Y, h:i A') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <span class="hrm-project-link">{{ $task->project_name ?? '-' }}</span>
@@ -526,7 +558,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="hrm-modal-label"><i class="ti ti-calendar"></i> {{ __('Work Date') }}</label>
-                        <input type="date" name="work_date" class="hrm-modal-input" style="cursor:pointer;" value="{{ date('Y-m-d') }}" onclick="this.showPicker()" required>
+                        <input type="date" name="work_date" class="hrm-modal-input" style="cursor:pointer;" value="{{ request('work_date', date('Y-m-d')) }}" onclick="this.showPicker()" required>
                     </div>
                     <div class="mb-3">
                         <label class="hrm-modal-label"><i class="ti ti-file-text"></i> {{ __('Work Done') }}</label>
@@ -563,7 +595,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="hrm-modal-label"><i class="ti ti-calendar"></i> {{ __('Work Date') }}</label>
-                        <input type="date" name="work_date" class="hrm-modal-input" style="cursor:pointer;" value="{{ date('Y-m-d') }}" onclick="this.showPicker()" required>
+                        <input type="date" name="work_date" class="hrm-modal-input" style="cursor:pointer;" value="{{ request('work_date', date('Y-m-d')) }}" onclick="this.showPicker()" required>
                     </div>
                     <div class="mb-3">
                         <label class="hrm-modal-label"><i class="ti ti-clock"></i> {{ __('Time Duration') }}</label>

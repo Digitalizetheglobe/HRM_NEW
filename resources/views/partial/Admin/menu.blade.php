@@ -194,6 +194,11 @@
                             </li>
                         @endif
 
+                        <li class="dash-item {{ Request::route()->getName() == 'attendance.regularization.index' ? ' active' : '' }}">
+                            <a class="dash-link text-white hover:text-white hover:bg-[#001a3b] text-base"
+                            href="{{ route('attendance.regularization.index') }}">{{ __('Regularization') }}</a>
+                        </li>
+
                         @can('Create Attendance')
                             <li class="dash-item">
                                 <a class="dash-link text-white hover:text-white hover:bg-[#001a3b] text-base"

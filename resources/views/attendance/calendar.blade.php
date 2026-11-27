@@ -326,21 +326,31 @@
                                     @endif
 
                                     {{-- Indicator badges --}}
-                                     <div class="indicator-row">
+                                     <div class="indicator-row" style="flex-wrap:wrap;gap:3px;">
                                          @if(!empty($dayData['late']) && $dayData['late'] != '00:00:00')
                                              @if($runningLateCount <= 3)
-                                                 <span class="badge-pill-tag" style="background:rgba(253,126,20,0.15);color:#d05300;" title="{{ __('Late Mark #') . $runningLateCount . ' (Grace Warning) - Late by: ' . $dayData['late'] }}">L</span>
-                                                 @php $title .= "\n" . __('Late Mark #') . $runningLateCount . ' (Grace Warning) - Late by: ' . $dayData['late']; @endphp
+                                                 <span class="badge-pill-tag" style="background:rgba(253,126,20,0.15);color:#d05300;" title="{{ __('Late Mark #') . $runningLateCount . ' (3 Late = Half Day Warning) - Late by: ' . $dayData['late'] }}">L{{ $runningLateCount }}/3</span>
+                                                 @php $title .= "\n" . __('Late Mark #') . $runningLateCount . ' (After 3 Lates -> Half Day) - Late by: ' . $dayData['late']; @endphp
                                              @else
-                                                 <span class="badge-pill-tag" style="background:rgba(220,53,69,0.15);color:#bd2130;" title="{{ __('Late Mark #') . $runningLateCount . ' (Half Day Deducted) - Late by: ' . $dayData['late'] }}">L</span>
-                                                 @php $title .= "\n" . __('Late Mark #') . $runningLateCount . ' (Half Day Deducted) - Late by: ' . $dayData['late']; @endphp
+                                                 <span class="badge-pill-tag" style="background:rgba(220,53,69,0.18);color:#bd2130;" title="{{ __('Late Mark #') . $runningLateCount . ' (Half Day Deducted after 3 Lates) - Late by: ' . $dayData['late'] }}">L{{ $runningLateCount }} (HD)</span>
+                                                 @php $title .= "\n" . __('Late Mark #') . $runningLateCount . ' (Half Day Deducted after 3 Lates) - Late by: ' . $dayData['late']; @endphp
                                              @endif
                                          @endif
-                                         @if($dayData['type'] == 'half_day')
-                                             @if(!empty($dayData['status_reason']) && strpos($dayData['status_reason'], 'Late Mark') !== false)
-                                                 <span class="badge-pill-tag" style="background:#fd7e14;color:#fff;" title="{{ $dayData['status_reason'] }} (Late Policy Deduction)">H (Late)</span>
+                                         @if(in_array($dayData['type'], ['half_day', 'single_punch']))
+                                             @php
+                                                 $hdReason = $dayData['status_reason'] ?? '';
+                                                 if ($dayData['type'] === 'single_punch' && empty($hdReason)) {
+                                                     $hdReason = 'Missed Punch Out';
+                                                 }
+                                             @endphp
+                                             @if(!empty($hdReason) && strpos($hdReason, 'Late Mark') !== false)
+                                                 <span class="badge-pill-tag" style="background:#fd7e14;color:#fff;" title="{{ $hdReason }}">H: 3+ Late</span>
+                                             @elseif(!empty($hdReason) && strpos($hdReason, 'No Work Update') !== false)
+                                                 <span class="badge-pill-tag" style="background:#dc3545;color:#fff;" title="{{ $hdReason }}">H: No Update</span>
+                                             @elseif(!empty($hdReason) && strpos($hdReason, 'Missed Punch Out') !== false)
+                                                 <span class="badge-pill-tag" style="background:#6f42c1;color:#fff;" title="{{ $hdReason }}">H: No Punch Out</span>
                                              @else
-                                                 <span class="badge-pill-tag" style="background:var(--color-customColor, #5c59e8);color:#fff;" title="{{ !empty($dayData['status_reason']) ? $dayData['status_reason'] : __('Half Day') }}">H</span>
+                                                 <span class="badge-pill-tag" style="background:var(--color-customColor, #5c59e8);color:#fff;" title="{{ !empty($hdReason) ? $hdReason : __('Half Day') }}">{{ !empty($hdReason) ? 'H: ' . \Illuminate\Support\Str::limit($hdReason, 14) : 'H' }}</span>
                                              @endif
                                          @endif
                                      </div>
