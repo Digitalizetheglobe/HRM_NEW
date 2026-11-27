@@ -31,7 +31,7 @@
         background: #fff;
         border: 1px solid #e8edf5;
         border-radius: 16px;
-        padding: 18px 20px;
+        padding: 16px 18px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -45,19 +45,20 @@
         letter-spacing: 0.06em;
     }
     .hrm-stat-value {
-        font-size: 1.55rem;
+        font-size: 1.5rem;
         font-weight: 800;
         color: #1e293b;
         margin-top: 2px;
     }
     .hrm-stat-icon {
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.2rem;
+        flex-shrink: 0;
     }
 
     .hrm-tabs-nav {
@@ -66,7 +67,8 @@
         border-bottom: 2px solid #f1f5f9;
         margin-bottom: 20px;
         padding-bottom: 8px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
     .hrm-tab-btn {
         background: none;
@@ -81,6 +83,8 @@
         align-items: center;
         gap: 6px;
         text-decoration: none;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     .hrm-tab-btn.active { background: #eff6ff; color: #1e3a8a; }
     .hrm-tab-btn:hover:not(.active) { background: #f8fafc; color: #1e293b; }
@@ -93,7 +97,7 @@
         overflow: hidden;
     }
     .hrm-card-hdr {
-        padding: 18px 24px;
+        padding: 16px 20px;
         border-bottom: 1px solid #f1f5f9;
         display: flex;
         align-items: center;
@@ -118,13 +122,13 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        padding: 12px 20px;
+        padding: 12px 18px;
         text-align: left;
         border-bottom: 1px solid #f1f5f9;
         white-space: nowrap;
     }
     .hrm-table td {
-        padding: 15px 20px;
+        padding: 14px 18px;
         border-bottom: 1px solid #f8fafc;
         font-size: 0.84rem;
         color: #374151;
@@ -141,8 +145,9 @@
         color: #1e293b;
         border-radius: 8px;
         padding: 4px 10px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 600;
+        white-space: nowrap;
     }
     .hrm-time-tag {
         display: inline-flex;
@@ -152,17 +157,19 @@
         color: #1e3a8a;
         border-radius: 8px;
         padding: 4px 10px;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 700;
+        white-space: nowrap;
     }
     .hrm-badge {
         display: inline-flex;
         align-items: center;
         gap: 5px;
         border-radius: 20px;
-        padding: 4px 12px;
-        font-size: 0.73rem;
+        padding: 4px 11px;
+        font-size: 0.72rem;
         font-weight: 700;
+        white-space: nowrap;
     }
     .hrm-badge-approved { background: #d1fae5; color: #065f46; }
     .hrm-badge-pending  { background: #fef3c7; color: #92400e; }
@@ -180,14 +187,53 @@
         font-size: 0.9rem;
         transition: all 0.2s;
         padding: 0;
+        color: #fff;
     }
-    .hrm-icon-btn-success { background: #d1fae5; color: #065f46; }
-    .hrm-icon-btn-success:hover { background: #a7f3d0; color: #065f46; }
-    .hrm-icon-btn-danger  { background: #fee2e2; color: #b91c1c; }
-    .hrm-icon-btn-danger:hover { background: #fecaca; color: #b91c1c; }
+    .hrm-icon-btn-success { background: #198754; color: #fff; }
+    .hrm-icon-btn-success:hover { background: #157347; color: #fff; }
+    .hrm-icon-btn-danger  { background: #dc3545; color: #fff; }
+    .hrm-icon-btn-danger:hover { background: #bb2d3b; color: #fff; }
+
+    /* Mobile Card List */
+    .reg-mobile-card {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .reg-mobile-card:last-child { border-bottom: none; }
+
+    /* Modals matching My Daily Work */
+    .hrm-modal .modal-content { border: none; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: visible; }
+    .hrm-modal .modal-header { background: linear-gradient(135deg, #001a3b, #1e3a8a); padding: 18px 22px; border: none; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+    .hrm-modal .modal-title { color: #fff; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+    .hrm-modal .btn-close { filter: brightness(0) invert(1); }
+    .hrm-modal .modal-body { padding: 22px; overflow: visible; }
+    .hrm-modal .modal-footer { padding: 14px 22px; background: #fafbfd; border-top: 1px solid #f1f5f9; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+    .hrm-modal-label { font-size: 0.78rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .hrm-modal-label i { color: #001a3b; }
+    .hrm-modal-input, .hrm-modal-select, .hrm-modal-textarea {
+        width: 100%; border: 2px solid #e8edf5; border-radius: 10px; padding: 9px 13px;
+        font-size: 0.85rem; color: #1e293b; background: #fafbfd; outline: none; transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .hrm-modal-input:focus, .hrm-modal-select:focus, .hrm-modal-textarea:focus {
+        border-color: #001a3b; background: #fff; box-shadow: 0 0 0 4px rgba(0,26,59,0.08);
+    }
+    .hrm-modal-textarea { resize: vertical; min-height: 90px; }
+    .hrm-modal-btn-cancel {
+        background: #f1f5f9; color: #374151; border: none; border-radius: 10px;
+        padding: 9px 20px; font-size: 0.84rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s;
+    }
+    .hrm-modal-btn-cancel:hover { background: #e2e8f0; }
+    .hrm-modal-btn-submit {
+        background: linear-gradient(135deg, #001a3b, #1e3a8a); color: #fff; border: none; border-radius: 10px;
+        padding: 9px 22px; font-size: 0.84rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;
+        cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0,26,59,0.25);
+    }
+    .hrm-modal-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,26,59,0.35); }
+    .hrm-modal-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .reg-date-hint {
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         border-radius: 10px;
         padding: 8px 12px;
         margin-top: 8px;
@@ -276,7 +322,8 @@
             </span>
         </div>
 
-        <div style="overflow-x:auto;">
+        {{-- Desktop Table --}}
+        <div class="d-none d-md-block" style="overflow-x:auto;">
             <table class="hrm-table">
                 <thead>
                     <tr>
@@ -321,7 +368,7 @@
                                     {{ \Carbon\Carbon::parse($reg->clock_out)->format('h:i A') }}
                                 </span>
                             </td>
-                            <td style="max-width: 280px;">
+                            <td style="max-width: 260px;">
                                 <div class="text-dark small">{{ $reg->reason }}</div>
                                 @if ($reg->status === 'Rejected' && !empty($reg->rejection_reason))
                                     <div class="text-danger small mt-1">
@@ -400,32 +447,134 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Mobile Responsive Card List --}}
+        <div class="d-md-none">
+            @forelse ($regularizations as $reg)
+                <div class="reg-mobile-card">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                        <div>
+                            @if (!$isEmployee)
+                                <div class="fw-bold text-dark" style="font-size:0.9rem;">{{ $reg->employee->full_name ?? $reg->employee->name ?? '-' }}</div>
+                            @endif
+                            <div class="mt-1">
+                                <span class="hrm-date-chip">
+                                    <i class="ti ti-calendar"></i>
+                                    {{ \Carbon\Carbon::parse($reg->date)->format('d M Y') }}
+                                </span>
+                                <span class="text-muted ms-1" style="font-size:0.75rem;">{{ \Carbon\Carbon::parse($reg->date)->format('D') }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            @if ($reg->status === 'Pending')
+                                <span class="hrm-badge hrm-badge-pending"><i class="ti ti-clock"></i> {{ __('Pending') }}</span>
+                            @elseif ($reg->status === 'Approved')
+                                <span class="hrm-badge hrm-badge-approved"><i class="ti ti-circle-check"></i> {{ __('Approved') }}</span>
+                            @else
+                                <span class="hrm-badge hrm-badge-rejected"><i class="ti ti-circle-x"></i> {{ __('Rejected') }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <span class="hrm-time-tag">
+                            <i class="ti ti-login"></i> {{ \Carbon\Carbon::parse($reg->clock_in)->format('h:i A') }}
+                        </span>
+                        <span class="hrm-time-tag">
+                            <i class="ti ti-logout"></i> {{ \Carbon\Carbon::parse($reg->clock_out)->format('h:i A') }}
+                        </span>
+                    </div>
+
+                    <div class="text-dark small mb-2" style="word-break:break-word;">
+                        <span class="text-muted fw-semibold">{{ __('Reason:') }}</span> {{ $reg->reason }}
+                        @if ($reg->status === 'Rejected' && !empty($reg->rejection_reason))
+                            <div class="text-danger small mt-1">
+                                <strong>{{ __('Rejection Note:') }}</strong> {{ $reg->rejection_reason }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2" style="border-top:1px dashed #e2e8f0;">
+                        <div class="text-muted" style="font-size:0.74rem;">
+                            @if ($reg->actionUser)
+                                {{ __('By') }} <strong class="text-dark">{{ $reg->actionUser->name }}</strong>
+                                · {{ $reg->action_at ? $reg->action_at->format('d M, h:i A') : '' }}
+                            @else
+                                {{ __('Awaiting action') }}
+                            @endif
+                        </div>
+                        @if ($canApprove)
+                            <div class="d-inline-flex align-items-center gap-2">
+                                @if ($reg->status === 'Pending')
+                                    <button type="button"
+                                            class="hrm-icon-btn hrm-icon-btn-success approve-reg-btn"
+                                            data-action="{{ route('attendance.regularization.approve', $reg->id) }}"
+                                            data-employee="{{ $reg->employee->full_name ?? $reg->employee->name ?? '-' }}"
+                                            data-date="{{ \Carbon\Carbon::parse($reg->date)->format('d M Y') }}"
+                                            data-in="{{ \Carbon\Carbon::parse($reg->clock_in)->format('h:i A') }}"
+                                            data-out="{{ \Carbon\Carbon::parse($reg->clock_out)->format('h:i A') }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#approveRegModal"
+                                            title="{{ __('Approve') }}">
+                                        <i class="ti ti-check"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="hrm-icon-btn hrm-icon-btn-danger reject-reg-btn"
+                                            data-action="{{ route('attendance.regularization.reject', $reg->id) }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#rejectRegModal"
+                                            title="{{ __('Reject') }}">
+                                        <i class="ti ti-x"></i>
+                                    </button>
+                                @elseif ($reg->status === 'Approved')
+                                    <button type="button"
+                                            class="hrm-icon-btn hrm-icon-btn-danger reject-reg-btn"
+                                            data-action="{{ route('attendance.regularization.reject', $reg->id) }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#rejectRegModal"
+                                            title="{{ __('Reject Approved Request') }}">
+                                        <i class="ti ti-x"></i>
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-5 text-muted">
+                    <i class="ti ti-calendar-off fs-2 d-block mb-2"></i>
+                    {{ __('No attendance regularization requests found.') }}
+                </div>
+            @endforelse
+        </div>
     </div>
 
     @if ($isEmployee)
         <!-- Request Regularization Modal -->
-        <div class="modal fade" id="regularizationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade hrm-modal" id="regularizationModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                    <div class="modal-header" style="background: #001a3b; color: #fff;">
-                        <h5 class="modal-title text-white">
-                            <i class="ti ti-calendar-plus me-2"></i>{{ __('Attendance Regularization Request') }}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ti ti-calendar-plus"></i> {{ __('Attendance Regularization Request') }}
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('attendance.regularization.store') }}" method="POST" id="regSubmitForm">
                         @csrf
-                        <div class="modal-body p-4">
+                        <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">{{ __('Attendance Date') }} <span class="text-danger">*</span></label>
+                                <label class="hrm-modal-label"><i class="ti ti-calendar"></i> {{ __('Attendance Date') }} <span class="text-danger">*</span></label>
                                 <input type="date"
                                        name="date"
                                        id="regDateInput"
-                                       class="form-control"
+                                       class="hrm-modal-input"
+                                       style="cursor:pointer;"
                                        max="{{ date('Y-m-d', strtotime('-1 day')) }}"
                                        value="{{ old('date', date('Y-m-d', strtotime('-1 day'))) }}"
+                                       onclick="this.showPicker && this.showPicker()"
                                        required>
-                                <div class="form-text text-muted">
+                                <div class="form-text text-muted small mt-1">
                                     {{ __('Only past dates with a submitted work update (excluding Sundays, Holidays & Leaves) are allowed.') }}
                                 </div>
                                 <div id="regDateHint" class="reg-date-hint"></div>
@@ -433,28 +582,28 @@
 
                             <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label class="form-label fw-semibold">{{ __('Punch In Time') }} <span class="text-danger">*</span></label>
+                                    <label class="hrm-modal-label"><i class="ti ti-login"></i> {{ __('Punch In') }} <span class="text-danger">*</span></label>
                                     <input type="time"
                                            name="clock_in"
                                            id="regClockInInput"
-                                           class="form-control"
+                                           class="hrm-modal-input"
                                            value="{{ old('clock_in') }}"
                                            required>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label fw-semibold">{{ __('Punch Out Time') }} <span class="text-danger">*</span></label>
+                                    <label class="hrm-modal-label"><i class="ti ti-logout"></i> {{ __('Punch Out') }} <span class="text-danger">*</span></label>
                                     <input type="time"
                                            name="clock_out"
                                            id="regClockOutInput"
-                                           class="form-control"
+                                           class="hrm-modal-input"
                                            value="{{ old('clock_out') }}"
                                            required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">{{ __('Reason Type') }}</label>
-                                <select name="reason_type" id="regReasonType" class="form-select">
+                                <label class="hrm-modal-label"><i class="ti ti-category"></i> {{ __('Reason Type') }}</label>
+                                <select name="reason_type" id="regReasonType" class="hrm-modal-select">
                                     <option value="Forgot to Punch Out">{{ __('Forgot to Punch Out') }}</option>
                                     <option value="Forgot to Punch In">{{ __('Forgot to Punch In') }}</option>
                                     <option value="Forgot Both Punch In & Out">{{ __('Forgot Both Punch In & Out') }}</option>
@@ -465,18 +614,17 @@
                             </div>
 
                             <div class="mb-1">
-                                <label class="form-label fw-semibold">{{ __('Reason (Why was attendance missed?)') }} <span class="text-danger">*</span></label>
+                                <label class="hrm-modal-label"><i class="ti ti-file-text"></i> {{ __('Reason') }} <span class="text-danger">*</span></label>
                                 <textarea name="reason"
-                                          class="form-control"
-                                          rows="3"
+                                          class="hrm-modal-textarea"
                                           placeholder="{{ __('Explain briefly why Punch In / Punch Out was missed...') }}"
                                           required>{{ old('reason') }}</textarea>
                             </div>
                         </div>
-                        <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-                            <button type="submit" class="btn btn-primary" id="regSubmitBtn">
-                                <i class="ti ti-send me-1"></i> {{ __('Submit Request') }}
+                        <div class="modal-footer">
+                            <button type="button" class="hrm-modal-btn-cancel" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                            <button type="submit" class="hrm-modal-btn-submit" id="regSubmitBtn">
+                                <i class="ti ti-send"></i> {{ __('Submit Request') }}
                             </button>
                         </div>
                     </form>
@@ -487,29 +635,29 @@
 
     @if ($canApprove)
         <!-- Approve Confirmation Modal -->
-        <div class="modal fade" id="approveRegModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade hrm-modal" id="approveRegModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title text-white">
-                            <i class="ti ti-circle-check me-2"></i>{{ __('Approve Regularization Request') }}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ti ti-circle-check"></i> {{ __('Approve Regularization Request') }}
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="approveRegForm" method="POST">
                         @csrf
-                        <div class="modal-body p-4">
-                            <p class="mb-3 text-dark">{{ __('Are you sure you want to approve this regularization request and update the employee attendance?') }}</p>
+                        <div class="modal-body">
+                            <p class="mb-3 text-dark" style="font-size:0.88rem;">{{ __('Are you sure you want to approve this regularization request and update the employee attendance?') }}</p>
                             <div class="p-3 rounded-3 bg-light border small">
                                 <div class="mb-1"><strong>{{ __('Employee:') }}</strong> <span id="approveEmpName">-</span></div>
                                 <div class="mb-1"><strong>{{ __('Date:') }}</strong> <span id="approveRegDate">-</span></div>
                                 <div><strong>{{ __('Timing:') }}</strong> <span id="approveRegIn">-</span> - <span id="approveRegOut">-</span></div>
                             </div>
                         </div>
-                        <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="ti ti-check me-1"></i>{{ __('Confirm Approve') }}
+                        <div class="modal-footer">
+                            <button type="button" class="hrm-modal-btn-cancel" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                            <button type="submit" class="hrm-modal-btn-submit">
+                                <i class="ti ti-check"></i> {{ __('Confirm Approve') }}
                             </button>
                         </div>
                     </form>
@@ -518,22 +666,26 @@
         </div>
 
         <!-- Reject Reason Modal -->
-        <div class="modal fade" id="rejectRegModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade hrm-modal" id="rejectRegModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title text-white">{{ __('Reject Regularization Request') }}</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ti ti-circle-x"></i> {{ __('Reject Regularization Request') }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="rejectRegForm" method="POST">
                         @csrf
-                        <div class="modal-body p-4">
-                            <label class="form-label fw-semibold">{{ __('Rejection Reason (Optional)') }}</label>
-                            <textarea name="rejection_reason" class="form-control" rows="3" placeholder="{{ __('Enter reason for rejection...') }}"></textarea>
+                        <div class="modal-body">
+                            <label class="hrm-modal-label"><i class="ti ti-file-text"></i> {{ __('Rejection Reason (Optional)') }}</label>
+                            <textarea name="rejection_reason" class="hrm-modal-textarea" placeholder="{{ __('Enter reason for rejection...') }}"></textarea>
                         </div>
-                        <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
-                            <button type="submit" class="btn btn-danger">{{ __('Confirm Reject') }}</button>
+                        <div class="modal-footer">
+                            <button type="button" class="hrm-modal-btn-cancel" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                            <button type="submit" class="hrm-modal-btn-submit">
+                                <i class="ti ti-x"></i> {{ __('Confirm Reject') }}
+                            </button>
                         </div>
                     </form>
                 </div>
