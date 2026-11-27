@@ -12,18 +12,33 @@ class CheckTermination
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->type == 'employee') {
-            $employee = Employee::where('user_id', Auth::id())->first();
-            
-            if ($employee) {
-                $termination = Termination::where('employee_id', $employee->id)->first();
-                
-                if ($termination) {
-                    Auth::logout();
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
-                    return redirect()->route('login')->with('error', __('Your account has been terminated. Please contact administrator.'));
+        if (Auth::check()) {
+            $user = Auth::user();
+            $isTerminated = false;
+
+            if ($user->is_active == 0 && !in_array(strtolower($user->type), ['super admin', 'company'], true)) {
+                $isTerminated = true;
+            } elseif ($user->type === 'employee') {
+                $employee = Employee::where('user_id', $user->id)->first();
+                if ($employee && Termination::where('employee_id', $employee->id)->exists()) {
+                    $isTerminated = true;
                 }
+            }
+
+            if ($isTerminated) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success'  => false,
+                        'message'  => __('Your account has been terminated. Please contact administrator.'),
+                        'redirect' => route('login'),
+                    ], 401);
+                }
+
+                return redirect()->route('login')->with('error', __('Your account has been terminated. Please contact administrator.'));
             }
         }
 

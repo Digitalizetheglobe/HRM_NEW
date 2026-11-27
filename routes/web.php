@@ -1395,6 +1395,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('attendance-regularization', [\App\Http\Controllers\AttendanceRegularizationController::class, 'store'])->name('attendance.regularization.store');
         Route::post('attendance-regularization/{id}/approve', [\App\Http\Controllers\AttendanceRegularizationController::class, 'approve'])->name('attendance.regularization.approve');
         Route::post('attendance-regularization/{id}/reject', [\App\Http\Controllers\AttendanceRegularizationController::class, 'reject'])->name('attendance.regularization.reject');
+
+        // Work From Home (WFH)
+        Route::get('work-from-home', [\App\Http\Controllers\WorkFromHomeController::class, 'index'])->name('attendance.wfh.index');
+        Route::post('work-from-home', [\App\Http\Controllers\WorkFromHomeController::class, 'store'])->name('attendance.wfh.store');
+        Route::post('work-from-home/{id}/approve', [\App\Http\Controllers\WorkFromHomeController::class, 'approve'])->name('attendance.wfh.approve');
+        Route::post('work-from-home/{id}/reject', [\App\Http\Controllers\WorkFromHomeController::class, 'reject'])->name('attendance.wfh.reject');
     });
     
 

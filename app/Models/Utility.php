@@ -716,21 +716,41 @@ class Utility extends Model
                     // }
 
                     try {
-                        config(
-                            [
-                                'mail.driver' => $settings['mail_driver'] ? $settings['mail_driver'] : $setting['mail_driver'],
-                                'mail.host' => $settings['mail_host'] ? $settings['mail_host'] : $setting['mail_host'],
-                                'mail.port' => $settings['mail_port'] ? $settings['mail_port'] : $setting['mail_port'],
-                                'mail.encryption' => $settings['mail_encryption'] ? $settings['mail_encryption'] : $setting['mail_encryption'],
-                                'mail.username' => $settings['mail_username'] ? $settings['mail_username'] : $setting['mail_username'],
-                                'mail.password' => $settings['mail_password'] ? $settings['mail_password'] : $setting['mail_password'],
-                                'mail.from.address' => $settings['mail_from_address'] ? $settings['mail_from_address'] : $setting['mail_from_address'],
-                                'mail.from.name' => $settings['mail_from_name'] ? $settings['mail_from_name'] : $setting['mail_from_name'],
-                            ]
-                        );
+                        $envHost = env('MAIL_HOST');
+                        $envUser = env('MAIL_USERNAME');
+                        $envPass = env('MAIL_PASSWORD');
+                        $useEnvMail = !empty($envHost) && $envHost !== 'mailhog' && !empty($envUser) && $envUser !== 'null';
 
+                        $mailDriver = $useEnvMail ? env('MAIL_MAILER', 'smtp') : (!empty($settings['mail_driver']) ? $settings['mail_driver'] : (!empty($setting['mail_driver']) ? $setting['mail_driver'] : 'smtp'));
+                        $mailHost = $useEnvMail ? $envHost : (!empty($settings['mail_host']) ? $settings['mail_host'] : (!empty($setting['mail_host']) ? $setting['mail_host'] : 'smtp.hostinger.com'));
+                        $mailPort = $useEnvMail ? env('MAIL_PORT', 465) : (!empty($settings['mail_port']) ? $settings['mail_port'] : (!empty($setting['mail_port']) ? $setting['mail_port'] : 465));
+                        $mailEnc = $useEnvMail ? env('MAIL_ENCRYPTION', 'ssl') : (!empty($settings['mail_encryption']) ? $settings['mail_encryption'] : (!empty($setting['mail_encryption']) ? $setting['mail_encryption'] : 'ssl'));
+                        $mailUser = $useEnvMail ? $envUser : (!empty($settings['mail_username']) ? $settings['mail_username'] : (!empty($setting['mail_username']) ? $setting['mail_username'] : ''));
+                        $mailPass = $useEnvMail ? $envPass : (!empty($settings['mail_password']) ? $settings['mail_password'] : (!empty($setting['mail_password']) ? $setting['mail_password'] : ''));
+                        $mailFrom = $useEnvMail ? env('MAIL_FROM_ADDRESS', $mailUser) : (!empty($settings['mail_from_address']) ? $settings['mail_from_address'] : (!empty($setting['mail_from_address']) ? $setting['mail_from_address'] : $mailUser));
+                        $mailFromName = $useEnvMail ? env('MAIL_FROM_NAME', config('app.name')) : (!empty($settings['mail_from_name']) ? $settings['mail_from_name'] : (!empty($setting['mail_from_name']) ? $setting['mail_from_name'] : config('app.name')));
+
+                        config([
+                            'mail.default' => $mailDriver,
+                            'mail.driver' => $mailDriver,
+                            'mail.host' => $mailHost,
+                            'mail.port' => $mailPort,
+                            'mail.encryption' => $mailEnc,
+                            'mail.username' => $mailUser,
+                            'mail.password' => $mailPass,
+                            'mail.mailers.smtp.host' => $mailHost,
+                            'mail.mailers.smtp.port' => $mailPort,
+                            'mail.mailers.smtp.encryption' => $mailEnc,
+                            'mail.mailers.smtp.username' => $mailUser,
+                            'mail.mailers.smtp.password' => $mailPass,
+                            'mail.from.address' => $mailFrom,
+                            'mail.from.name' => $mailFromName,
+                        ]);
+
+                        Mail::purge('smtp');
                         Mail::to($mailTo)->send(new CommonEmailTemplate($content, $settings, $mailTo[0]));
                     } catch (\Exception $e) {
+                        \Log::error('Mail send error: ' . $e->getMessage());
                         $error = __('E-Mail has been not sent due to SMTP configuration');
                     }
 

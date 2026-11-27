@@ -676,8 +676,26 @@
                                         </div>
                                         <div class="card-body" style="padding: 20px 22px;">
 
+                                            @php
+                                                $isWfhToday = false;
+                                                if (\Auth::check() && !empty(\Auth::user()->employee) && \Illuminate\Support\Facades\Schema::hasTable('work_from_homes')) {
+                                                    $todayWfhDate = date('Y-m-d');
+                                                    $isWfhToday = \App\Models\WorkFromHome::where('employee_id', \Auth::user()->employee->id)
+                                                        ->where('status', 'Approved')
+                                                        ->whereDate('start_date', '<=', $todayWfhDate)
+                                                        ->whereDate('end_date', '>=', $todayWfhDate)
+                                                        ->exists();
+                                                }
+                                            @endphp
                                             <!-- Punch In/Out Section - Premium Redesign -->
                                             <div id="punchInOutSection" class="mb-3">
+                                                @if($isWfhToday)
+                                                    <div class="text-center mb-2">
+                                                        <span class="badge rounded-pill px-3 py-1" style="background:#dcfce7;color:#166534;font-size:12px;font-weight:700;">
+                                                            <i class="ti ti-home me-1"></i> {{ __('WFH Approved Today') }}
+                                                        </span>
+                                                    </div>
+                                                @endif
 
                                                 {{-- Status Pill --}}
                                                 <div class="text-center mb-3">
@@ -1386,11 +1404,12 @@
             });
         }
 
+        const isWfhToday = {{ !empty($isWfhToday) ? 'true' : 'false' }};
         let cachedCoords = null;
         let cachedCoordsAt = 0;
 
-        // Pre-fetch and keep GPS warm in background so Punch In/Out is instant with no timeout
-        if (navigator.geolocation) {
+        // Pre-fetch and keep GPS warm in background so Punch In/Out is instant with no timeout (skip on WFH days)
+        if (!isWfhToday && navigator.geolocation) {
             const updateCachedCoords = (position) => {
                 cachedCoords = {
                     latitude: position.coords.latitude,
@@ -1468,19 +1487,22 @@
             }
 
             clearMessage();
-            if (!cachedCoords || (Date.now() - cachedCoordsAt) >= 300000) {
+            if (!isWfhToday && (!cachedCoords || (Date.now() - cachedCoordsAt) >= 300000)) {
                 showMessage('info', '📍 Detecting your location...');
             }
 
             try {
-                const coords = await getCurrentCoordinates();
-                showMessage('info', '⏳ Recording your attendance...');
-
                 const formData = new FormData();
                 formData.append('_token', '{{ csrf_token() }}');
                 formData.append(type === 'in' ? 'in' : 'out', '1');
-                formData.append('latitude', coords.latitude);
-                formData.append('longitude', coords.longitude);
+
+                if (!isWfhToday) {
+                    const coords = await getCurrentCoordinates();
+                    formData.append('latitude', coords.latitude);
+                    formData.append('longitude', coords.longitude);
+                }
+
+                showMessage('info', '⏳ Recording your attendance...');
 
                 const response = await fetch("{{ url('attendanceemployee/attendance') }}", {
                     method: 'POST',

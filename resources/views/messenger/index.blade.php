@@ -655,8 +655,13 @@
                 state.users = res.users || [];
                 state.groups = res.groups || [];
                 renderList();
-                if (openInitial && initialUserId) {
-                    openChat('user', initialUserId);
+                const initialGroupId = Number(new URLSearchParams(window.location.search).get('group_id')) || null;
+                if (openInitial) {
+                    if (initialGroupId) {
+                        openChat('group', initialGroupId);
+                    } else if (initialUserId) {
+                        openChat('user', initialUserId);
+                    }
                 }
             })
             .catch(() => {});

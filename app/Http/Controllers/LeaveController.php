@@ -330,16 +330,20 @@ class LeaveController extends Controller
                 try {
                     // Send SMS notification to specified numbers
                     $this->sendLeaveCreationSMS($employee, $leaveTypeName, $leave);
+                } catch (\Throwable $e) {
+                    \Log::warning('Leave creation SMS failed: ' . $e->getMessage());
+                }
 
-                    // Send notification to company users and director users
-                    $notificationData = [
-                        'leave_id' => $leave->id,
-                        'message' => 'New leave application: ' . ($employee ? $employee->full_name : 'Employee') . ' applied for ' . $leaveTypeName,
-                        'employee_name' => $employee ? $employee->full_name : 'Employee',
-                        'leave_type' => $leaveTypeName,
-                        'url' => $leaveIndexUrl,
-                    ];
+                // Send notification to company users and director users
+                $notificationData = [
+                    'leave_id' => $leave->id,
+                    'message' => 'New leave application: ' . ($employee ? $employee->full_name : 'Employee') . ' applied for ' . $leaveTypeName,
+                    'employee_name' => $employee ? $employee->full_name : 'Employee',
+                    'leave_type' => $leaveTypeName,
+                    'url' => $leaveIndexUrl,
+                ];
 
+                try {
                     $companyUsers = User::where('type', 'company')
                         ->where('created_by', $creatorId)
                         ->get();
@@ -392,26 +396,27 @@ class LeaveController extends Controller
                             'url'  => $leaveIndexUrl,
                         ]
                     );
+                } catch (\Throwable $e) {
+                    \Log::warning('Leave creation push/DB notifications failed: ' . $e->getMessage());
+                }
 
-                    // Send email to company
-                    if ($employee && isset($setings['leave_status']) && $setings['leave_status'] == 1) {
-                        $companyUser = User::find($employee->created_by);
-                        if ($companyUser) {
-                            $company_email = !empty($setings['company_email']) ? $setings['company_email'] : $companyUser->email;
-                            $uArr = [
-                                'leave_email' => $employee->email,
-                                'leave_status_name' => $employee->full_name,
-                                'leave_status' => 'Applied',
-                                'leave_reason' => $leave->leave_reason,
-                                'leave_start_date' => $leave->start_date,
-                                'leave_end_date' => $leave->end_date,
-                                'total_leave_days' => $leave->total_leave_days,
-                            ];
-                            Utility::sendEmailTemplate('leave_status', [$company_email], $uArr);
-                        }
+                try {
+                    // Send email to HR mail
+                    if ($employee) {
+                        $hrEmail = env('HR_NOTIFICATION_EMAIL', 'hr@digitalizetheglobe.com');
+                        $uArr = [
+                            'leave_email' => $employee->email,
+                            'leave_status_name' => $employee->full_name,
+                            'leave_status' => 'Applied',
+                            'leave_reason' => $leave->leave_reason,
+                            'leave_start_date' => $leave->start_date,
+                            'leave_end_date' => $leave->end_date,
+                            'total_leave_days' => $leave->total_leave_days,
+                        ];
+                        Utility::sendEmailTemplate('leave_status', [$hrEmail], $uArr);
                     }
                 } catch (\Throwable $e) {
-                    \Log::warning('Leave creation background notifications failed: ' . $e->getMessage());
+                    \Log::warning('Leave creation email failed: ' . $e->getMessage());
                 }
             })->afterResponse();
 
@@ -827,31 +832,44 @@ class LeaveController extends Controller
             );
         }
 
-        if ($employeeUser) {
-            app(\App\Services\FcmPushService::class)->sendToUsers(
-                [$employeeUser->id],
-                $leaveTitle,
-                $leaveMessage,
-                [
-                    'type' => 'leave_status',
-                    'url'  => route('leave.index'),
-                ]
-            );
-        }
+        $employeeUserId = $employeeUser ? $employeeUser->id : null;
+        $leaveIndexUrl = route('leave.index');
+        $empEmail = $employee ? $employee->email : null;
+        $uArr = [
+            'leave_email' => $empEmail,
+            'leave_status_name' => $employee ? $employee->full_name : '',
+            'leave_status' => $request->status,
+            'leave_reason' => $leave->leave_reason,
+            'leave_start_date' => $leave->start_date,
+            'leave_end_date' => $leave->end_date,
+            'total_leave_days' => $leave->total_leave_days,
+        ];
 
-        if ($setings['leave_status'] == 1) {
-            $uArr = [
-                'leave_email' => $employee->email,
-                'leave_status_name' => $employee->full_name,
-                'leave_status' => $request->status,
-                'leave_reason' => $leave->leave_reason,
-                'leave_start_date' => $leave->start_date,
-                'leave_end_date' => $leave->end_date,
-                'total_leave_days' => $leave->total_leave_days,
-            ];
-            $resp = Utility::sendEmailTemplate('leave_status', [$employee->email], $uArr);
-            return redirect()->route('leave.index')->with('success', __('Leave status successfully updated.') . ((!empty($resp) && $resp['is_success'] == false && !empty($resp['error'])) ? '<br> <span class="text-danger">' . $resp['error'] . '</span>' : ''));
-        }
+        dispatch(function () use ($employeeUserId, $leaveTitle, $leaveMessage, $leaveIndexUrl, $empEmail, $uArr) {
+            try {
+                if ($employeeUserId) {
+                    app(\App\Services\FcmPushService::class)->sendToUsers(
+                        [$employeeUserId],
+                        $leaveTitle,
+                        $leaveMessage,
+                        [
+                            'type' => 'leave_status',
+                            'url'  => $leaveIndexUrl,
+                        ]
+                    );
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('Leave action FCM failed: ' . $e->getMessage());
+            }
+
+            try {
+                if (!empty($empEmail)) {
+                    Utility::sendEmailTemplate('leave_status', [$empEmail], $uArr);
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('Leave action email failed: ' . $e->getMessage());
+            }
+        })->afterResponse();
 
         return redirect()->route('leave.index')->with('success', __('Leave status successfully updated.'));
     }

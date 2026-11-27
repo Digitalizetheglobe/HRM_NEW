@@ -41,13 +41,6 @@ class TerminationController extends Controller
     {
         if(\Auth::user()->can('Create Termination'))
         {
-            $approvedResignedEmployeeIds = Resignation::where('created_by', \Auth::user()->creatorId())
-                ->where('status', 'approved')
-                ->pluck('employee_id')
-                ->unique()
-                ->filter()
-                ->values();
-
             // Get employee IDs that already have terminations
             $terminatedEmployeeIds = Termination::where('created_by', \Auth::user()->creatorId())
                 ->pluck('employee_id')
@@ -56,9 +49,8 @@ class TerminationController extends Controller
                 ->values()
                 ->toArray();
 
-            // Get employees with approved resignations but exclude those who already have terminations
+            // Company user can directly terminate any active employee without requiring a resignation
             $employees = Employee::where('created_by', \Auth::user()->creatorId())
-                ->whereIn('id', $approvedResignedEmployeeIds)
                 ->whereNotIn('id', $terminatedEmployeeIds)
                 ->get()
                 ->mapWithKeys(function ($employee) {
@@ -109,7 +101,9 @@ class TerminationController extends Controller
 
             if(empty($noticeDate))
             {
-                $noticeDate = now()->toDateString();
+                $noticeDate = Carbon::parse($request->termination_date)->lt(now()->startOfDay())
+                    ? $request->termination_date
+                    : now()->toDateString();
             }
 
             if(Carbon::parse($request->termination_date)->lt(Carbon::parse($noticeDate)))
@@ -138,8 +132,22 @@ class TerminationController extends Controller
 
             $employee = Employee::find($request->employee_id);
             if ($employee && $employee->user) {
-                $employee->user->is_active = 0;
-                $employee->user->save();
+                $terminatedUser = $employee->user;
+                $terminatedUser->is_active = 0;
+                $terminatedUser->remember_token = null;
+                $terminatedUser->save();
+
+                // Force-invalidate any active DB sessions and FCM push tokens for this user
+                try {
+                    if (\Schema::hasTable('sessions')) {
+                        \DB::table('sessions')->where('user_id', $terminatedUser->id)->delete();
+                    }
+                    if (\Schema::hasTable('fcm_tokens')) {
+                        \App\Models\FcmToken::where('user_id', $terminatedUser->id)->delete();
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning('Termination session cleanup failed: ' . $e->getMessage());
+                }
             }
 
 

@@ -104,6 +104,33 @@
         }
     }
 
+    // Work From Home (WFH) Notifications
+    $wfhNotifications = collect([]);
+    $unseenWfhCount = 0;
+    try {
+        if (\Schema::hasTable('work_from_homes')) {
+            if (in_array(strtolower(\Auth::user()->type), ['company', 'hr', 'director'])) {
+                $wfhNotifications = \App\Models\WorkFromHome::with('employee')
+                    ->where('created_by', \Auth::user()->creatorId())
+                    ->where('status', 'Pending')
+                    ->orderBy('created_at', 'desc')
+                    ->take(10)
+                    ->get();
+                $unseenWfhCount = $wfhNotifications->count();
+            } elseif (\Auth::user()->type == 'employee' && !empty(\Auth::user()->employee)) {
+                $wfhNotifications = \App\Models\WorkFromHome::where('employee_id', \Auth::user()->employee->id)
+                    ->whereIn('status', ['Approved', 'Rejected'])
+                    ->where('updated_at', '>=', now()->subDays(3))
+                    ->orderBy('updated_at', 'desc')
+                    ->take(5)
+                    ->get();
+                $unseenWfhCount = $wfhNotifications->count();
+            }
+        }
+    } catch (\Exception $e) {
+        \Log::error('Error fetching WFH notifications', ['error' => $e->getMessage()]);
+    }
+
     // Get Unread Messenger Notifications (Direct + Group)
     $messengerDirectNotifications = collect([]);
     $messengerGroupNotifications = collect([]);
@@ -170,7 +197,7 @@
     }
 
     // Calculate total unseen notifications
-    $totalUnseenCount = $unseenLeaveCount + $unseenRegularisationCount + $unseenGeneralCount + $unseenMessengerCount;
+    $totalUnseenCount = $unseenLeaveCount + $unseenRegularisationCount + $unseenGeneralCount + $unseenMessengerCount + $unseenWfhCount;
 @endphp
 
 @if (isset($setting['cust_theme_bg']) && $setting['cust_theme_bg'] == 'on')
@@ -747,6 +774,34 @@
                 @endforeach
             @endif
 
+            {{-- ── Work From Home (WFH) ── --}}
+            @if(isset($wfhNotifications) && $wfhNotifications->count() > 0)
+                <div class="notif-category-label">
+                    <i class="ti ti-home"></i> Work From Home
+                </div>
+                @foreach($wfhNotifications as $wfhNotif)
+                    @php
+                        $wfhEmpName = $wfhNotif->employee->full_name ?? $wfhNotif->employee->name ?? 'Employee';
+                        $wfhDates = \Carbon\Carbon::parse($wfhNotif->start_date)->format('d M') . ($wfhNotif->start_date !== $wfhNotif->end_date ? ' - ' . \Carbon\Carbon::parse($wfhNotif->end_date)->format('d M') : '');
+                        $wfhTitle = \Auth::user()->type == 'employee' ? ('WFH ' . $wfhNotif->status) : ($wfhEmpName . ' · WFH');
+                        $wfhAvatar = $wfhNotif->status === 'Rejected' ? 'red' : ($wfhNotif->status === 'Approved' ? 'green' : 'blue');
+                    @endphp
+                    <div class="notif-item unread">
+                        <div class="notif-avatar {{ $wfhAvatar }}">
+                            <i class="ti ti-home"></i>
+                        </div>
+                        <div class="notif-body-text">
+                            <p class="n-title">{{ $wfhTitle }}</p>
+                            <p class="n-msg">{{ $wfhDates }} — {{ Str::limit($wfhNotif->reason, 40) }}</p>
+                            <span class="n-time"><i class="ti ti-clock me-1"></i>{{ ($wfhNotif->updated_at ?? $wfhNotif->created_at)->diffForHumans() }}</span>
+                        </div>
+                        <a href="{{ route('attendance.wfh.index') }}" class="notif-action-btn blue-btn" title="{{ __('View WFH') }}">
+                            <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                @endforeach
+            @endif
+
             {{-- ── Messenger ── --}}
             @if((isset($messengerDirectNotifications) && $messengerDirectNotifications->count() > 0) || (isset($messengerGroupNotifications) && $messengerGroupNotifications->count() > 0))
                 <div class="notif-category-label">
@@ -762,7 +817,7 @@
                             <p class="n-msg">{{ Str::limit($mDirect->last_body ?: 'Sent an attachment', 45) }}</p>
                             <span class="n-time"><i class="ti ti-clock me-1"></i>{{ \Carbon\Carbon::parse($mDirect->last_at)->diffForHumans() }}</span>
                         </div>
-                        <a href="{{ url('chats') }}" class="notif-action-btn purple-btn" title="{{ __('Open Messenger') }}">
+                        <a href="{{ route('chats.user', $mDirect->from_id) }}" class="notif-action-btn purple-btn" title="{{ __('Open Chat') }}">
                             <i class="ti ti-chevron-right"></i>
                         </a>
                     </div>
@@ -777,7 +832,7 @@
                             <p class="n-msg">New group messages</p>
                             <span class="n-time"><i class="ti ti-clock me-1"></i>{{ \Carbon\Carbon::parse($mGroup->last_at)->diffForHumans() }}</span>
                         </div>
-                        <a href="{{ url('chats') }}" class="notif-action-btn blue-btn" title="{{ __('Open Messenger') }}">
+                        <a href="{{ url('chats?group_id=' . $mGroup->group_id) }}" class="notif-action-btn blue-btn" title="{{ __('Open Group Chat') }}">
                             <i class="ti ti-chevron-right"></i>
                         </a>
                     </div>

@@ -14,7 +14,7 @@ class AttendanceEmployee extends Model
     const STATUS_SINGLE_PUNCH = 'Single Punch In';
     const REQUIRED_WORKING_HOURS = 8.0; // 8 hours
     const EARLY_LEAVING_HOURS = 5.0; // 5 hours
-    const SATURDAY_REQUIRED_WORKING_HOURS = 4.5; // 4.5 hours
+    const SATURDAY_REQUIRED_WORKING_HOURS = 4.0; // 4 hours
     const SATURDAY_EARLY_LEAVING_HOURS = 3.0; // 3 hours
 
 

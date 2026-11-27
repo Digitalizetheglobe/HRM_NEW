@@ -21,11 +21,11 @@
 {{-- <nav class="dash-sidebar light-sidebar {{ isset($cust_theme_bg) && $cust_theme_bg == 'on' ? 'transprent-bg' : '' }}"> --}}
 
 <div class="navbar-wrapper">
-    <div class="m-header main-logo mt-1">
-        <a href="{{ route('dashboard') }}" class="b-brand">
+    <div class="m-header main-logo mt-1" style="height:auto !important; padding:16px 18px 12px !important; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        <a href="{{ route('dashboard') }}" class="b-brand" style="display:flex; align-items:center; justify-content:center; width:100%;">
             <!-- ========   change your logo hear   ============ -->
-            <img src="{{ $logo . (isset($company_logo) && !empty($company_logo) ? $company_logo . '?' . time() : 'logo-dark.png' . '?' . time()) }}"
-                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="max-height:110px; width: auto;">
+            <img src="{{ asset('logo.png') }}?v={{ file_exists(public_path('logo.png')) ? filemtime(public_path('logo.png')) : time() }}"
+                alt="{{ config('app.name', 'HRMGo') }}" class="logo logo-lg" style="width:185px !important; max-width:100% !important; height:auto !important; max-height:78px !important; object-fit:contain; display:block;">
         </a>
     </div>
     <div class="navbar-content">
@@ -197,6 +197,11 @@
                         <li class="dash-item {{ Request::route()->getName() == 'attendance.regularization.index' ? ' active' : '' }}">
                             <a class="dash-link text-white hover:text-white hover:bg-[#001a3b] text-base"
                             href="{{ route('attendance.regularization.index') }}">{{ __('Regularization') }}</a>
+                        </li>
+
+                        <li class="dash-item {{ Request::route()->getName() == 'attendance.wfh.index' ? ' active' : '' }}">
+                            <a class="dash-link text-white hover:text-white hover:bg-[#001a3b] text-base"
+                            href="{{ route('attendance.wfh.index') }}">{{ __('Work From Home') }}</a>
                         </li>
 
                         @can('Create Attendance')

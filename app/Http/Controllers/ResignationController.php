@@ -145,24 +145,51 @@ class ResignationController extends Controller
 
             $resignation->save();
 
-            $settings = Utility::settings();
-            if (isset($settings['employee_resignation']) && $settings['employee_resignation'] == 1) {
-                $employee = Employee::find($resignation->employee_id);
-                if ($employee) {
-                    $companyUser = User::find($employee->created_by);
-                    if ($companyUser) {
-                        $company_email = !empty($settings['company_email']) ? $settings['company_email'] : $companyUser->email;
-                        
+            // Send FCM Push Notification to company user(s) when employee submits resignation
+            $creatorId = \Auth::user()->creatorId();
+            $resignationEmployee = Employee::find($resignation->employee_id);
+            $employeeName = $resignationEmployee ? ($resignationEmployee->full_name ?: $resignationEmployee->name) : (\Auth::user()->name ?? 'Employee');
+            $resignationUrl = route('resignation.index');
+            $companyUserIds = User::where('type', 'company')
+                ->where(function ($q) use ($creatorId) {
+                    $q->where('id', $creatorId)->orWhere('created_by', $creatorId);
+                })
+                ->pluck('id')
+                ->unique()
+                ->values()
+                ->toArray();
+
+            dispatch(function () use ($companyUserIds, $employeeName, $resignationUrl, $resignationEmployee, $resignation) {
+                try {
+                    if (!empty($companyUserIds)) {
+                        app(\App\Services\FcmPushService::class)->sendToUsers(
+                            $companyUserIds,
+                            'New Resignation Submitted',
+                            "{$employeeName} has submitted a resignation request.",
+                            [
+                                'type' => 'resignation_created',
+                                'url'  => $resignationUrl,
+                            ]
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning('Resignation creation FCM failed: ' . $e->getMessage());
+                }
+
+                try {
+                    if ($resignationEmployee) {
+                        $hrEmail = env('HR_NOTIFICATION_EMAIL', 'hr@digitalizetheglobe.com');
                         $uArr = [
-                            'assign_user' => $employee->full_name,
+                            'assign_user' => $resignationEmployee->full_name,
                             'notice_date' => $resignation->notice_date,
                             'resignation_date' => $resignation->resignation_date,
                         ];
-                        
-                        Utility::sendEmailTemplate('employee_resignation', [$company_email], $uArr);
+                        Utility::sendEmailTemplate('employee_resignation', [$hrEmail], $uArr);
                     }
+                } catch (\Throwable $e) {
+                    \Log::warning('Resignation creation email failed: ' . $e->getMessage());
                 }
-            }
+            })->afterResponse();
 
             return redirect()->route('resignation.index')->with('success', __('Resignation successfully created.'));
         }
@@ -367,19 +394,44 @@ class ResignationController extends Controller
                 'approved_at' => now(),
             ]);
 
-            // Send approval email to employee
-            $settings = Utility::settings();
-            if (isset($settings['employee_resignation']) && $settings['employee_resignation'] == 1) {
-                $employee = Employee::find($resignation->employee_id);
-                if ($employee && !empty($employee->email)) {
-                    $uArr = [
-                        'assign_user' => $employee->full_name,
-                        'notice_date' => $resignation->notice_date,
-                        'resignation_date' => $resignation->resignation_date,
-                    ];
-                    
-                    Utility::sendEmailTemplate('employee_resignation', [$employee->email], $uArr);
-                }
+            // Send FCM Push Notification to employee when resignation is approved
+            $approvedEmployee = Employee::find($resignation->employee_id);
+            $empUserId = $approvedEmployee ? $approvedEmployee->user_id : null;
+            $lastWorkingStr = \Carbon\Carbon::parse($resignation->resignation_date)->format('d M Y');
+            $resignationUrl = route('resignation.index');
+
+            if ($empUserId || ($approvedEmployee && !empty($approvedEmployee->email))) {
+                $empEmail = $approvedEmployee ? $approvedEmployee->email : null;
+                $uArr = [
+                    'assign_user' => $approvedEmployee ? $approvedEmployee->full_name : '',
+                    'notice_date' => $resignation->notice_date,
+                    'resignation_date' => $resignation->resignation_date,
+                ];
+                dispatch(function () use ($empUserId, $lastWorkingStr, $resignationUrl, $empEmail, $uArr) {
+                    try {
+                        if ($empUserId) {
+                            app(\App\Services\FcmPushService::class)->sendToUsers(
+                                [$empUserId],
+                                'Resignation Approved',
+                                "Your resignation has been approved. Last working day: {$lastWorkingStr}.",
+                                [
+                                    'type' => 'resignation_approved',
+                                    'url'  => $resignationUrl,
+                                ]
+                            );
+                        }
+                    } catch (\Throwable $e) {
+                        \Log::warning('Resignation approval FCM failed: ' . $e->getMessage());
+                    }
+
+                    try {
+                        if (!empty($empEmail)) {
+                            Utility::sendEmailTemplate('employee_resignation', [$empEmail], $uArr);
+                        }
+                    } catch (\Throwable $e) {
+                        \Log::warning('Resignation approval email failed: ' . $e->getMessage());
+                    }
+                })->afterResponse();
             }
 
             return redirect()->route('resignation.index')

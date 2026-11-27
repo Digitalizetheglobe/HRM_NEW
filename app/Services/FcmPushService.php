@@ -14,7 +14,7 @@ class FcmPushService
      */
     public function sendToUsers(array $userIds, string $title, string $body, array $data = []): void
     {
-        if (empty($userIds)) {
+        if (empty($userIds) || !\Illuminate\Support\Facades\Schema::hasTable('fcm_tokens')) {
             return;
         }
 

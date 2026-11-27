@@ -472,9 +472,9 @@ public function getShiftTimings($date = null)
     $date = $date ? \Carbon\Carbon::parse($date) : \Carbon\Carbon::now();
     $dayOfWeek = $date->dayOfWeek;
 
-    // Saturday fixed rule for all employees
+    // Saturday fixed rule for all employees (4 hours)
     if ($dayOfWeek == \Carbon\Carbon::SATURDAY) {
-        return ['start_time' => '11:00:00', 'end_time' => '15:30:00'];
+        return ['start_time' => '11:00:00', 'end_time' => '15:00:00'];
     }
 
     // Mon-Fri rules based on assigned shift

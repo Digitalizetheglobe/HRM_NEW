@@ -327,6 +327,9 @@
 
                                     {{-- Indicator badges --}}
                                      <div class="indicator-row" style="flex-wrap:wrap;gap:3px;">
+                                         @if(!empty($dayData['is_wfh']))
+                                             <span class="badge-pill-tag" style="background:#0d9488;color:#fff;" title="{{ __('Work From Home') }}">WFH</span>
+                                         @endif
                                          @if(!empty($dayData['late']) && $dayData['late'] != '00:00:00')
                                              @if($runningLateCount <= 3)
                                                  <span class="badge-pill-tag" style="background:rgba(253,126,20,0.15);color:#d05300;" title="{{ __('Late Mark #') . $runningLateCount . ' (3 Late = Half Day Warning) - Late by: ' . $dayData['late'] }}">L{{ $runningLateCount }}/3</span>

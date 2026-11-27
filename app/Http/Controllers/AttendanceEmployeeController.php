@@ -808,40 +808,49 @@ namespace App\Http\Controllers;
         public function attendance(Request $request)
         {
             $isAjax = $request->ajax() || $request->wantsJson();
-
-            // Enforce office geofence for both Punch In and Punch Out
-            // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
-            // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
-            $officeLat = (float) env('OFFICE_LATITUDE', 18.603356);
-            $officeLng = (float) env('OFFICE_LONGITUDE', 73.732086);
-            $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 300);
-
-            $userLat = $request->input('latitude');
-            $userLng = $request->input('longitude');
-
-            if (!is_numeric($userLat) || !is_numeric($userLng)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('Location access is required to Punch In / Punch Out. Please enable GPS/Location and try again.')
-                ], 422);
-            }
-
-            $distance = $this->calculateDistanceMeters((float) $userLat, (float) $userLng, $officeLat, $officeLng);
-            if ($distance > $allowedRadiusMeters) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('You are outside the office location (:distance m away, detected: :lat, :lng). Punch In / Punch Out is only allowed at the office.', [
-                        'distance' => round($distance),
-                        'lat' => round((float) $userLat, 6),
-                        'lng' => round((float) $userLng, 6),
-                    ])
-                ], 422);
-            }
-
-            // ================= EMPLOYEE =================
             $employeeId = Auth::user()->employee->id;
             $date = date('Y-m-d');
             $time = date('H:i:s');
+
+            $isWfhToday = \Illuminate\Support\Facades\Schema::hasTable('work_from_homes')
+                && \App\Models\WorkFromHome::where('employee_id', $employeeId)
+                    ->where('status', 'Approved')
+                    ->whereDate('start_date', '<=', $date)
+                    ->whereDate('end_date', '>=', $date)
+                    ->exists();
+
+            if (!$isWfhToday) {
+                // Enforce office geofence for both Punch In and Punch Out
+                // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
+                // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
+                $officeLat = (float) env('OFFICE_LATITUDE', 18.570938);
+                $officeLng = (float) env('OFFICE_LONGITUDE', 73.769654);
+                $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 300);
+
+                $userLat = $request->input('latitude');
+                $userLng = $request->input('longitude');
+
+                if (!is_numeric($userLat) || !is_numeric($userLng)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('Location access is required to Punch In / Punch Out. Please enable GPS/Location and try again.')
+                    ], 422);
+                }
+
+                $distance = $this->calculateDistanceMeters((float) $userLat, (float) $userLng, $officeLat, $officeLng);
+                if ($distance > $allowedRadiusMeters) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('You are outside the office location (:distance m away, detected: :lat, :lng). Punch In / Punch Out is only allowed at the office.', [
+                            'distance' => round($distance),
+                            'lat' => round((float) $userLat, 6),
+                            'lng' => round((float) $userLng, 6),
+                        ])
+                    ], 422);
+                }
+            }
+
+            // ================= EMPLOYEE =================
 
             $attendance = AttendanceEmployee::where('employee_id', $employeeId)
                 ->where('date', $date)
@@ -1122,6 +1131,20 @@ namespace App\Http\Controllers;
                             ->flip()
                             ->toArray();
 
+                        $wfhDates = [];
+                        if (\Illuminate\Support\Facades\Schema::hasTable('work_from_homes')) {
+                            $approvedWfhs = \App\Models\WorkFromHome::where('employee_id', $employee->id)
+                                ->where('status', 'Approved')
+                                ->get(['start_date', 'end_date']);
+                            foreach ($approvedWfhs as $wfhItem) {
+                                $wStart = \Carbon\Carbon::parse($wfhItem->start_date);
+                                $wEnd = \Carbon\Carbon::parse($wfhItem->end_date);
+                                for ($wd = $wStart->copy(); $wd->lte($wEnd); $wd->addDay()) {
+                                    $wfhDates[$wd->format('Y-m-d')] = true;
+                                }
+                            }
+                        }
+
                         $employeeData = [];
 
                         // Mark from attendance records
@@ -1154,7 +1177,8 @@ namespace App\Http\Controllers;
                                 'clock_out' => $attendance['clock_out'],
                                 'late' => $attendance['late'],
                                 'early_leaving' => $attendance['early_leaving'],
-                                'status_reason' => $statusReason
+                                'status_reason' => $statusReason,
+                                'is_wfh' => isset($wfhDates[$attendance['date']]),
                             ];
                         }
 
@@ -1783,7 +1807,7 @@ namespace App\Http\Controllers;
                         if ($dayOfWeek == \Carbon\Carbon::SUNDAY) continue;
                         
                         $totalWorkingDays++;
-                        $requiredMinutes = ($dayOfWeek == \Carbon\Carbon::SATURDAY) ? 270 : 480;
+                        $requiredMinutes = ($dayOfWeek == \Carbon\Carbon::SATURDAY) ? 240 : 480;
                         $totalRequiredMinutes += $requiredMinutes;
                         
                         $att = $attendanceData[$empId][$date] ?? null;
@@ -2365,7 +2389,7 @@ namespace App\Http\Controllers;
                         }
                     }
 
-                    $totalHours = (\Carbon\Carbon::parse($date)->dayOfWeek == \Carbon\Carbon::SATURDAY) ? 4.5 : 8;
+                    $totalHours = (\Carbon\Carbon::parse($date)->dayOfWeek == \Carbon\Carbon::SATURDAY) ? 4 : 8;
                     
                     $requiredSeconds = $totalHours * 3600;
                     $workedSeconds = isset($totalSeconds) ? $totalSeconds : 0;
@@ -2408,7 +2432,7 @@ namespace App\Http\Controllers;
                         'overtime_label' => 'Daily Overtime'
                     ];
                 } else {
-                    $totalHours = (\Carbon\Carbon::parse($date)->dayOfWeek == \Carbon\Carbon::SATURDAY) ? 4.5 : 8;
+                    $totalHours = (\Carbon\Carbon::parse($date)->dayOfWeek == \Carbon\Carbon::SATURDAY) ? 4 : 8;
                     $requiredSeconds = $totalHours * 3600;
                     $remaining_formatted = $totalHours . " " . ($totalHours == 1 ? "hour" : "hours") . ", 0 minutes, 0 seconds";
                     $data = [
@@ -2516,7 +2540,7 @@ namespace App\Http\Controllers;
                 $current = $startOfWeek->copy();
                 while ($current <= $endOfWeek) {
                     if ($current->dayOfWeek == \Carbon\Carbon::SATURDAY) {
-                        $totalHours += 4.5;
+                        $totalHours += 4;
                     } elseif ($current->dayOfWeek !== \Carbon\Carbon::SUNDAY) {
                         $totalHours += 8;
                     }
@@ -2675,7 +2699,7 @@ namespace App\Http\Controllers;
                 $current = $startOfMonth->copy();
                 while ($current <= $endOfMonth) {
                     if ($current->dayOfWeek == \Carbon\Carbon::SATURDAY) {
-                        $totalHours += 4.5;
+                        $totalHours += 4;
                     } elseif ($current->dayOfWeek !== \Carbon\Carbon::SUNDAY) {
                         $totalHours += 8;
                     }
