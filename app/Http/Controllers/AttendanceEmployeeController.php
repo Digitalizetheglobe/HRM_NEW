@@ -812,9 +812,9 @@ namespace App\Http\Controllers;
             // Enforce office geofence for both Punch In and Punch Out
             // Office: 4th Floor, Dharamveer Nagar, High Street, Fortune Square, Office No: A, 401,
             // opposite of Tatva Pre School, Balewadi, Pune, Maharashtra 411045
-            $officeLat = (float) env('OFFICE_LATITUDE', 18.5591);
-            $officeLng = (float) env('OFFICE_LONGITUDE', 73.7856);
-            $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 200);
+            $officeLat = (float) env('OFFICE_LATITUDE', 18.5707);
+            $officeLng = (float) env('OFFICE_LONGITUDE', 73.7743);
+            $allowedRadiusMeters = (float) env('OFFICE_RADIUS_METERS', 300);
 
             $userLat = $request->input('latitude');
             $userLng = $request->input('longitude');
@@ -830,8 +830,10 @@ namespace App\Http\Controllers;
             if ($distance > $allowedRadiusMeters) {
                 return response()->json([
                     'success' => false,
-                    'message' => __('You are outside the office location (:distance m away). Punch In / Punch Out is only allowed at the office.', [
+                    'message' => __('You are outside the office location (:distance m away, detected: :lat, :lng). Punch In / Punch Out is only allowed at the office.', [
                         'distance' => round($distance),
+                        'lat' => round((float) $userLat, 6),
+                        'lng' => round((float) $userLng, 6),
                     ])
                 ], 422);
             }
