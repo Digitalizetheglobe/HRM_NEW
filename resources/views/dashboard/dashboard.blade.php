@@ -1389,26 +1389,34 @@
         let cachedCoords = null;
         let cachedCoordsAt = 0;
 
-        // Pre-fetch GPS in background on page load so Punch In/Out has zero GPS wait
+        // Pre-fetch and keep GPS warm in background so Punch In/Out is instant with no timeout
         if (navigator.geolocation) {
+            const updateCachedCoords = (position) => {
+                cachedCoords = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+                cachedCoordsAt = Date.now();
+            };
+
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    cachedCoords = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    };
-                    cachedCoordsAt = Date.now();
-                },
+                updateCachedCoords,
                 () => {},
-                { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+            );
+
+            navigator.geolocation.watchPosition(
+                updateCachedCoords,
+                () => {},
+                { enableHighAccuracy: false, maximumAge: 300000 }
             );
         }
 
         /**
-         * Get current browser GPS coordinates for office geofence verification (instant if cached within 60s)
+         * Get current browser GPS coordinates for office geofence verification (instant if cached)
          */
         function getCurrentCoordinates() {
-            if (cachedCoords && (Date.now() - cachedCoordsAt) < 60000) {
+            if (cachedCoords && (Date.now() - cachedCoordsAt) < 300000) {
                 return Promise.resolve(cachedCoords);
             }
             return new Promise((resolve, reject) => {
@@ -1426,15 +1434,17 @@
                         resolve(cachedCoords);
                     },
                     (err) => {
+                        if (cachedCoords) {
+                            resolve(cachedCoords);
+                            return;
+                        }
                         if (err.code === err.PERMISSION_DENIED) {
                             reject(new Error('Location permission denied. Please allow location access in your browser to Punch In / Punch Out.'));
-                        } else if (err.code === err.TIMEOUT) {
-                            reject(new Error('Location request timed out. Please enable GPS and try again.'));
                         } else {
                             reject(new Error('Unable to detect your location. Please enable GPS and try again.'));
                         }
                     },
-                    { enableHighAccuracy: false, timeout: 3000, maximumAge: 60000 }
+                    { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
                 );
             });
         }
@@ -1458,7 +1468,9 @@
             }
 
             clearMessage();
-            showMessage('info', '📍 Verifying your office location...');
+            if (!cachedCoords || (Date.now() - cachedCoordsAt) >= 300000) {
+                showMessage('info', '📍 Detecting your location...');
+            }
 
             try {
                 const coords = await getCurrentCoordinates();
