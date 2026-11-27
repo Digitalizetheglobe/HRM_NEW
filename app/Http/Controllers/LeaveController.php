@@ -319,89 +319,101 @@ class LeaveController extends Controller
             
             $leave->save();
 
-            // Send SMS notification to specified numbers
+            // Prepare data for background notifications so the HTTP response returns immediately
             $employee = Employee::find($leave->employee_id);
             $leaveTypeName = $actual_leave_type ? $actual_leave_type->title : 'Leave';
-            $this->sendLeaveCreationSMS($employee, $leaveTypeName, $leave);
-
-            // Send notification to company users and director users
-            $notificationData = [
-                'leave_id' => $leave->id,
-                'message' => 'New leave application: ' . ($employee ? $employee->full_name : 'Employee') . ' applied for ' . $leaveTypeName,
-                'employee_name' => $employee ? $employee->full_name : 'Employee',
-                'leave_type' => $leaveTypeName,
-                'url' => route('leave.index'),
-            ];
-
-            // Get all company users and director users
-            $companyUsers = User::where('type', 'company')
-                ->where('created_by', \Auth::user()->creatorId())
-                ->get();
-            
-            $directorUsers = User::where(function($query) {
-                    $query->where('type', 'director')
-                          ->orWhere('type', 'Director');
-                })
-                ->where('created_by', \Auth::user()->creatorId())
-                ->get();
-
-            // Send notifications
-            $adminDeviceTokens = [];
-            foreach ($companyUsers as $user) {
-                $user->notify(new LeaveCreatedNotification($notificationData));
-                if ($user->device_token) $adminDeviceTokens[] = $user->device_token;
-            }
-            
-            foreach ($directorUsers as $user) {
-                $user->notify(new LeaveCreatedNotification($notificationData));
-                if ($user->device_token) $adminDeviceTokens[] = $user->device_token;
-            }
-
-            if (!empty($adminDeviceTokens)) {
-                \App\Helpers\OneSignalHelper::sendPushNotification(
-                    $adminDeviceTokens,
-                    'New Leave Request',
-                    $notificationData['message'],
-                    ['url' => route('leave.index')]
-                );
-            }
-
-            // Send FCM push notification to company & director users
-            $fcmTargetIds = $companyUsers->pluck('id')
-                ->merge($directorUsers->pluck('id'))
-                ->push(\Auth::user()->creatorId())
-                ->unique()
-                ->values()
-                ->toArray();
-
-            app(\App\Services\FcmPushService::class)->sendToUsers(
-                $fcmTargetIds,
-                'New Leave Request',
-                $notificationData['message'],
-                [
-                    'type' => 'leave_created',
-                    'url'  => route('leave.index'),
-                ]
-            );
-
-            // Send email to company
+            $creatorId = \Auth::user()->creatorId();
+            $leaveIndexUrl = route('leave.index');
             $setings = Utility::settings();
-            if (isset($setings['leave_status']) && $setings['leave_status'] == 1) {
-                $companyUser = User::find($employee->created_by);
-                if ($companyUser) {
-                    $company_email = !empty($setings['company_email']) ? $setings['company_email'] : $companyUser->email;
-                    $uArr = [
-                        'leave_email' => $employee->email,
-                        'leave_status_name' => $employee->full_name,
-                        'leave_status' => 'Applied',
-                        'leave_reason' => $leave->leave_reason,
-                        'leave_start_date' => $leave->start_date,
-                        'leave_end_date' => $leave->end_date,
-                        'total_leave_days' => $leave->total_leave_days,
+
+            dispatch(function () use ($leave, $employee, $leaveTypeName, $creatorId, $leaveIndexUrl, $setings) {
+                try {
+                    // Send SMS notification to specified numbers
+                    $this->sendLeaveCreationSMS($employee, $leaveTypeName, $leave);
+
+                    // Send notification to company users and director users
+                    $notificationData = [
+                        'leave_id' => $leave->id,
+                        'message' => 'New leave application: ' . ($employee ? $employee->full_name : 'Employee') . ' applied for ' . $leaveTypeName,
+                        'employee_name' => $employee ? $employee->full_name : 'Employee',
+                        'leave_type' => $leaveTypeName,
+                        'url' => $leaveIndexUrl,
                     ];
-                    Utility::sendEmailTemplate('leave_status', [$company_email], $uArr);
+
+                    $companyUsers = User::where('type', 'company')
+                        ->where('created_by', $creatorId)
+                        ->get();
+
+                    $directorUsers = User::where(function ($query) {
+                            $query->where('type', 'director')
+                                  ->orWhere('type', 'Director');
+                        })
+                        ->where('created_by', $creatorId)
+                        ->get();
+
+                    $adminDeviceTokens = [];
+                    foreach ($companyUsers as $user) {
+                        $user->notify(new LeaveCreatedNotification($notificationData));
+                        if ($user->device_token) {
+                            $adminDeviceTokens[] = $user->device_token;
+                        }
+                    }
+
+                    foreach ($directorUsers as $user) {
+                        $user->notify(new LeaveCreatedNotification($notificationData));
+                        if ($user->device_token) {
+                            $adminDeviceTokens[] = $user->device_token;
+                        }
+                    }
+
+                    if (!empty($adminDeviceTokens)) {
+                        \App\Helpers\OneSignalHelper::sendPushNotification(
+                            $adminDeviceTokens,
+                            'New Leave Request',
+                            $notificationData['message'],
+                            ['url' => $leaveIndexUrl]
+                        );
+                    }
+
+                    // Send FCM push notification to company & director users
+                    $fcmTargetIds = $companyUsers->pluck('id')
+                        ->merge($directorUsers->pluck('id'))
+                        ->push($creatorId)
+                        ->unique()
+                        ->values()
+                        ->toArray();
+
+                    app(\App\Services\FcmPushService::class)->sendToUsers(
+                        $fcmTargetIds,
+                        'New Leave Request',
+                        $notificationData['message'],
+                        [
+                            'type' => 'leave_created',
+                            'url'  => $leaveIndexUrl,
+                        ]
+                    );
+
+                    // Send email to company
+                    if ($employee && isset($setings['leave_status']) && $setings['leave_status'] == 1) {
+                        $companyUser = User::find($employee->created_by);
+                        if ($companyUser) {
+                            $company_email = !empty($setings['company_email']) ? $setings['company_email'] : $companyUser->email;
+                            $uArr = [
+                                'leave_email' => $employee->email,
+                                'leave_status_name' => $employee->full_name,
+                                'leave_status' => 'Applied',
+                                'leave_reason' => $leave->leave_reason,
+                                'leave_start_date' => $leave->start_date,
+                                'leave_end_date' => $leave->end_date,
+                                'total_leave_days' => $leave->total_leave_days,
+                            ];
+                            Utility::sendEmailTemplate('leave_status', [$company_email], $uArr);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning('Leave creation background notifications failed: ' . $e->getMessage());
                 }
-            }
+            })->afterResponse();
 
             // Google calendar sync
             if ($request->get('synchronize_type') == 'google_calender') {
